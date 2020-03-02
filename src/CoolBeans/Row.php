@@ -104,7 +104,7 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
     {
         foreach ($this->row->toArray() as $name => $value) {
             if (!$this->offsetExists($name)) {
-                throw new \App\Infinityloop\CoolBeans\Exception\MissingProperty(static::class . ': ' . $name);
+                throw new \Infinityloop\CoolBeans\Exception\MissingProperty(static::class . ': ' . $name);
             }
         }
     }
@@ -123,7 +123,7 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
             }
 
             if (!$type instanceof \ReflectionType) {
-                throw new \App\Infinityloop\CoolBeans\Exception\MissingType($property->getName() . ' does not have type.');
+                throw new \Infinityloop\CoolBeans\Exception\MissingType($property->getName() . ' does not have type.');
             }
 
             switch ($type->getName()) {
