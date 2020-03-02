@@ -10,7 +10,7 @@ abstract class PrimaryKey
 
     abstract public function getName() : string;
 
-    public static function create(\Nette\Database\Table\ActiveRow $activeRow) : self
+    public static function create(\Nette\Database\Table\ActiveRow $activeRow) : ?self
     {
         $primary = $activeRow->getPrimary();
 
