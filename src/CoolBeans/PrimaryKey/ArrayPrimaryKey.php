@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans\PrimaryKey;
 
-class ArrayPrimaryKey extends PrimaryKey
+final class ArrayPrimaryKey extends PrimaryKey
 {
     private array $value;
 
