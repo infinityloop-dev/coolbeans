@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans\PrimaryKey;
 
-class IntPrimaryKey implements PrimaryKey
+final class IntPrimaryKey extends PrimaryKey
 {
     private int $value;
     private string $name;
