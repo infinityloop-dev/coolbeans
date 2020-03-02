@@ -42,13 +42,8 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
 
     public function offsetGet($offset)
     {
-        try {
-            $property = $this->reflection->getProperty($offset);
-
-            if ($property->isPublic()) {
-                return $this->{$offset};
-            }
-        } catch (\ReflectionException $e) {
+        if ($this->offsetExists($offset)) {
+            return $this->{$offset};
         }
 
         throw new \Nette\InvalidStateException('Column not defined.');
