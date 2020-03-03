@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace App\Storage\Common\MariaDb;
+namespace Infinityloop\CoolBeans;
 
 abstract class Selection implements \Iterator, \Countable
 {
@@ -224,8 +224,8 @@ abstract class Selection implements \Iterator, \Countable
     protected static function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\Infinityloop\CoolBeans\Row
     {
         $rowClassName = static::ROW_CLASS;
-        
-        return new $rowClassName($row);    
+
+        return new $rowClassName($row);
     }
 
     /**
