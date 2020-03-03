@@ -13,7 +13,7 @@ abstract class Selection implements \Iterator, \Countable
     protected \Nette\Database\Table\Selection $selection;
     protected \ReflectionClass $reflection;
 
-    public function __construct(\Nette\Database\Table\Selection $selection)
+    final public function __construct(\Nette\Database\Table\Selection $selection)
     {
         $this->selection = $selection;
         $this->reflection =  new \ReflectionClass(static::class);
@@ -221,7 +221,7 @@ abstract class Selection implements \Iterator, \Countable
     /**
      * Function to return specific Row class.
      */
-    protected static function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\Infinityloop\CoolBeans\Row
+    final protected static function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\Infinityloop\CoolBeans\Row
     {
         $rowClassName = static::ROW_CLASS;
 
