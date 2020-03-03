@@ -22,6 +22,6 @@ abstract class PrimaryKey
             return new ArrayPrimaryKey($primary);
         }
 
-        return null;
+        throw new MissingPrimaryKey('Table [' . $activeRow->getTable()->getName() . '] has no primary key.');
     }
 }
