@@ -225,7 +225,9 @@ abstract class Selection implements \Iterator, \Countable
     {
         $rowClassName = static::ROW_CLASS;
 
-        return new $rowClassName($row);
+        return $row instanceof \Nette\Database\Table\ActiveRow
+            ? new $rowClassName($row)
+            : null;
     }
 
     /**
