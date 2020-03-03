@@ -25,21 +25,33 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
         $this->initiateProperties();
     }
 
+    /**
+     * Returns table name.
+     */
     public function getTableName() : string
     {
         return $this->row->getTable()->getName();
     }
 
+    /**
+     * Returns iterator to all columns.
+     */
     public function getIterator() : \Traversable
     {
         return $this->row->getIterator();
     }
 
+    /**
+     * Returns all columns in array.
+     */
     public function toArray() : array
     {
         return $this->row->toArray();
     }
 
+    /**
+     * Array access interface method.
+     */
     public function offsetGet($offset)
     {
         if ($this->offsetExists($offset)) {
@@ -49,6 +61,9 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
         throw new \Infinityloop\CoolBeans\Exception\InvalidColumn('Column [' . $offset . '] is not defined.');
     }
 
+    /**
+     * Array access interface method.
+     */
     public function offsetExists($offset) : bool
     {
         try {
@@ -60,11 +75,17 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
         }
     }
 
+    /**
+     * Array access interface method.
+     */
     public function offsetSet($offset, $value) : void
     {
         throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot set to Row.');
     }
 
+    /**
+     * Array access interface method.
+     */
     public function offsetUnset($offset) : void
     {
         throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot unset from Row.');
