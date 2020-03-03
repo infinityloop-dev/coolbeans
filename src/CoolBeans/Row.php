@@ -46,7 +46,7 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
             return $this->{$offset};
         }
 
-        throw new \Nette\InvalidStateException('Column not defined.');
+        throw new \Infinityloop\CoolBeans\Exception\InvalidColumn('Column [' . $offset . '] is not defined.');
     }
 
     public function offsetExists($offset) : bool
@@ -62,12 +62,12 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
 
     public function offsetSet($offset, $value) : void
     {
-        throw new \Nette\InvalidStateException();
+        throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot set to Row.');
     }
 
     public function offsetUnset($offset) : void
     {
-        throw new \Nette\InvalidStateException();
+        throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot unset from Row.');
     }
 
     protected function ref(string $key, ?string $throughColumn = null) : ?\Nette\Database\Table\ActiveRow
@@ -91,7 +91,7 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
         }
 
         if ($tableName !== \Infinityloop\Utils\CaseConverter::toSnakeCase($className)) {
-            throw new \Nette\InvalidStateException('Provided ActiveRow table doesnt match.');
+            throw new \Infinityloop\CoolBeans\Exception\InvalidTable('Provided ActiveRow table [' . $tableName . '] doesnt match [' . $className . '].');
         }
     }
 
@@ -99,7 +99,7 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
     {
         foreach ($this->row->toArray() as $name => $value) {
             if (!$this->offsetExists($name)) {
-                throw new \Infinityloop\CoolBeans\Exception\MissingProperty(static::class . ': ' . $name);
+                throw new \Infinityloop\CoolBeans\Exception\MissingProperty('Property for column [' . $name . '] is not defined.');
             }
         }
     }
@@ -118,7 +118,7 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
             }
 
             if (!$type instanceof \ReflectionType) {
-                throw new \Infinityloop\CoolBeans\Exception\MissingType($property->getName() . ' does not have type.');
+                throw new \Infinityloop\CoolBeans\Exception\MissingType('Property [' . $property->getName() . '] does not have type.');
             }
 
             switch ($type->getName()) {
