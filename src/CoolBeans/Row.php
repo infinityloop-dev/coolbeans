@@ -91,16 +91,28 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
         throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot unset from Row.');
     }
 
-    protected function ref(string $key, ?string $throughColumn = null) : ?\Nette\Database\Table\ActiveRow
+    /**
+     * Selects referenced row from $table where <referencedRowPrimary> = $throughColumn
+     */
+    protected function ref(string $table, ?string $throughColumn = null) : ?\Nette\Database\Table\ActiveRow
     {
-        return $this->row->ref($key, $throughColumn);
+        return $this->row->ref($table, $throughColumn);
     }
 
-    protected function related(string $key, ?string $throughColumn = null) : \Nette\Database\Table\GroupedSelection
+    /**
+     * Selects all related columns from $table where $throughColumn = <currentRowPrimary>
+     */
+    protected function related(string $table, ?string $throughColumn = null) : \Nette\Database\Table\GroupedSelection
     {
-        return $this->row->related($key, $throughColumn);
+        return $this->row->related($table, $throughColumn);
     }
 
+    /**
+     * Validates whether table name matches class name.
+     *
+     * Foo -> foo
+     * FooBar -> foo_bar
+     */
     protected function validateTableName() : void
     {
         $tableName = $this->getTableName();
@@ -116,6 +128,9 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
         }
     }
 
+    /**
+     * Validates whether every column in database have its column property.
+     */
     protected function validateMissingColumns() : void
     {
         foreach ($this->row->toArray() as $name => $value) {
@@ -125,6 +140,9 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
         }
     }
 
+    /**
+     * Initiates values into column properties.
+     */
     protected function initiateProperties() : void
     {
         $this->primaryKey = \Infinityloop\CoolBeans\PrimaryKey\PrimaryKey::create($this->row);
