@@ -247,7 +247,7 @@ abstract class Selection implements \Iterator, \Countable
         }
 
         if ($tableName !== \Infinityloop\Utils\CaseConverter::toSnakeCase($className)) {
-            throw new \Nette\InvalidStateException('Provided Selection table doesnt match.');
+            throw new \Infinityloop\CoolBeans\Exception\InvalidTable('Provided Selection table [' . $tableName . '] doesnt match [' . $className . '].');
         }
     }
 
