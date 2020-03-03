@@ -149,12 +149,13 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
 
         foreach ($this->reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             $name = $property->getName();
-            $type = $property->getType();
-            $value = $this->row[$name];
 
             if ($name === 'primaryKey') {
                 continue;
             }
+
+            $type = $property->getType();
+            $value = $this->row[$name];
 
             if (!$type instanceof \ReflectionType) {
                 throw new \Infinityloop\CoolBeans\Exception\MissingType('Property [' . $property->getName() . '] does not have type.');
