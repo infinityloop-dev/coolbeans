@@ -22,6 +22,6 @@ abstract class PrimaryKey
             return new ArrayPrimaryKey($primary);
         }
 
-        throw new MissingPrimaryKey('Table [' . $activeRow->getTable()->getName() . '] has no primary key.');
+        throw new \Infinityloop\CoolBeans\Exception\MissingPrimaryKey('Table [' . $activeRow->getTable()->getName() . '] has no primary key.');
     }
 }
