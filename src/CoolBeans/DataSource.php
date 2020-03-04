@@ -9,34 +9,46 @@ use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 interface DataSource
 {
     /**
-     * Returns table name
+     * Returns table name.
      */
     public function getName() : string;
 
     /**
-     * Returns row from table by its id
+     * Returns row from table by its id.
      */
     public function getRow(PrimaryKey $key);
 
     /**
-     * Returns selection of all entries
+     * Returns selection of all entries.
      */
     public function findAll() : \Iterator;
 
     /**
-     * Returns selection of entries found by associative array
+     * Returns selection of entries found by associative array.
      */
     public function findByArray(array $filter) : \Iterator;
 
     /**
-     * Inserts data into table
+     * Inserts data into table.
      */
     public function insert(array $data) : PrimaryKey;
 
     /**
-     * Updates row
+     * Inserts multiple rows into table.
+     * Returns array of new Primary keys.
+     */
+    public function insertMultiple(array $data) : array;
+
+    /**
+     * Updates row.
      */
     public function update(PrimaryKey $key, array $data) : PrimaryKey;
+
+    /**
+     * Updates selection of entries found by associative array.
+     * Returns number of affected rows.
+     */
+    public function updateByArray(array $filter, array $data) : int;
 
     /**
      * Deletes row
@@ -44,7 +56,13 @@ interface DataSource
     public function delete(PrimaryKey $key) : void;
 
     /**
-     * Inserts data if no key provided, updates otherwise
+     * Deletes selection of entries found by associative array.
+     * Returns number of affected rows.
+     */
+    public function deleteByArray(array $filter) : int;
+
+    /**
+     * Inserts data if no key provided, updates otherwise.
      */
     public function upsert(?PrimaryKey $key, array $values) : PrimaryKey;
 }
