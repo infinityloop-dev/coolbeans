@@ -6,6 +6,8 @@ namespace Infinityloop\CoolBeans\PrimaryKey;
 
 abstract class PrimaryKey
 {
+    use \Nette\SmartObject;
+    
     abstract public function getValue();
 
     abstract public function getName() : string;
