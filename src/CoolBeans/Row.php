@@ -8,14 +8,15 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
 {
     use \Nette\SmartObject;
 
-    public ?\Infinityloop\CoolBeans\PrimaryKey\PrimaryKey $primaryKey;
     protected \Nette\Database\Table\ActiveRow $row;
     protected \ReflectionClass $reflection;
+    protected ?\Infinityloop\CoolBeans\PrimaryKey\PrimaryKey $primaryKey;
 
     final public function __construct(\Nette\Database\Table\ActiveRow $row)
     {
         $this->row = $row;
         $this->reflection = new \ReflectionClass(static::class);
+        $this->primaryKey = \Infinityloop\CoolBeans\PrimaryKey\PrimaryKey::create($this->row);
 
         if (\App\Bootstrap::isDebugMode()) {
             $this->validateTableName();
@@ -25,6 +26,14 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
         $this->initiateProperties();
     }
 
+    /**
+     * Returns primary key object.
+     */
+    public function getPrimaryKey() : ?\Infinityloop\CoolBeans\PrimaryKey\PrimaryKey
+    {
+        return $this->primaryKey;
+    }
+    
     /**
      * Returns table name.
      */
@@ -145,15 +154,8 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
      */
     protected function initiateProperties() : void
     {
-        $this->primaryKey = \Infinityloop\CoolBeans\PrimaryKey\PrimaryKey::create($this->row);
-
         foreach ($this->reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             $name = $property->getName();
-
-            if ($name === 'primaryKey') {
-                continue;
-            }
-
             $type = $property->getType();
             $value = $this->row[$name];
 
