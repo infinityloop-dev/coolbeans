@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans;
+namespace Infinityloop\CoolBeans\Decorator;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
