@@ -6,7 +6,7 @@ namespace Infinityloop\CoolBeans\Decorator;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
-class Bean implements \Infinityloop\CoolBeans\DataSource
+final class Bean implements \Infinityloop\CoolBeans\DataSource
 {
     use \Nette\SmartObject;
     use \Infinityloop\CoolBeans\Decorator\TDecorator;
@@ -39,7 +39,7 @@ class Bean implements \Infinityloop\CoolBeans\DataSource
     /**
      * Function to create according ActiveRow wrapper
      */
-    final protected function createRow(\Nette\Database\Table\ActiveRow $row) : \Infinityloop\CoolBeans\Row
+    protected function createRow(\Nette\Database\Table\ActiveRow $row) : \Infinityloop\CoolBeans\Row
     {
         return new $this->rowClass($row);
     }
@@ -47,7 +47,7 @@ class Bean implements \Infinityloop\CoolBeans\DataSource
     /**
      * Function to create according Selection wrapper
      */
-    final protected function createSelection(\Nette\Database\Table\Selection $sel) : \Infinityloop\CoolBeans\Selection
+    protected function createSelection(\Nette\Database\Table\Selection $sel) : \Infinityloop\CoolBeans\Selection
     {
         return new $this->selectionClass($sel);
     }
