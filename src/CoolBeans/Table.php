@@ -11,23 +11,23 @@ use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
  *
  * Low level implementation of DataSource interface, provides a way to interact directly with nette/database classes.
  */
-abstract class Table implements \Infinityloop\CoolBeans\DataSource
+class Table implements \Infinityloop\CoolBeans\DataSource
 {
     use \Nette\SmartObject;
     use \Infinityloop\CoolBeans\TDataSource;
 
-    public const TABLE_NAME = '';
-
     protected \Nette\Database\Context $context;
+    protected string $tableName;
 
-    public function __construct(\Nette\Database\Context $context)
+    public function __construct(\Nette\Database\Context $context, string $tableName)
     {
         $this->context = $context;
+        $this->tableName = $tableName;
     }
 
     public function getName() : string
     {
-        return static::TABLE_NAME;
+        return $this->tableName;
     }
 
     public function getRow(PrimaryKey $key) : \Nette\Database\Table\ActiveRow
@@ -43,7 +43,7 @@ abstract class Table implements \Infinityloop\CoolBeans\DataSource
 
     public function findAll() : \Nette\Database\Table\Selection
     {
-        return $this->getContext()->table(static::TABLE_NAME);
+        return $this->getContext()->table($this->tableName);
     }
 
     public function findByArray(array $filter) : \Nette\Database\Table\Selection
@@ -104,7 +104,7 @@ abstract class Table implements \Infinityloop\CoolBeans\DataSource
      */
     public function getStructure() : array
     {
-        return $this->getContext()->getStructure()->getColumns(static::TABLE_NAME);
+        return $this->getContext()->getStructure()->getColumns($this->tableName);
     }
 
     /**
