@@ -8,7 +8,7 @@ use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
 trait TDecorator
 {
-    protected DataSource $dataSource;
+    protected \Infinityloop\CoolBeans\DataSource $dataSource;
     
     public function getName() : string
     {
