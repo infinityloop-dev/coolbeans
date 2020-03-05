@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans;
 
-abstract class Row implements \ArrayAccess, \IteratorAggregate
+abstract class Bean implements \ArrayAccess, \IteratorAggregate
 {
     use \Nette\SmartObject;
 
@@ -89,7 +89,7 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
      */
     public function offsetSet($offset, $value) : void
     {
-        throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot set to Row.');
+        throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot set to Bean.');
     }
 
     /**
@@ -97,7 +97,7 @@ abstract class Row implements \ArrayAccess, \IteratorAggregate
      */
     public function offsetUnset($offset) : void
     {
-        throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot unset from Row.');
+        throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot unset from Bean.');
     }
 
     /**
