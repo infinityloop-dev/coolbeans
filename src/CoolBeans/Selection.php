@@ -8,7 +8,7 @@ abstract class Selection implements \Iterator, \Countable
 {
     use \Nette\SmartObject;
 
-    protected const ROW_CLASS = \Infinityloop\CoolBeans\Row::class;
+    protected const ROW_CLASS = \Infinityloop\CoolBeans\Bean::class;
 
     protected \Nette\Database\Table\Selection $selection;
     protected \ReflectionClass $reflection;
@@ -133,7 +133,7 @@ abstract class Selection implements \Iterator, \Countable
     /**
      * Function to fetch row.
      */
-    public function fetch() : ?\Infinityloop\CoolBeans\Row
+    public function fetch() : ?\Infinityloop\CoolBeans\Bean
     {
         return static::createRow($this->selection->fetch());
     }
@@ -141,7 +141,7 @@ abstract class Selection implements \Iterator, \Countable
     /**
      * Function to fetch all rows.
      *
-     * @return array<\Infinityloop\CoolBeans\Row>
+     * @return array<\Infinityloop\CoolBeans\Bean>
      */
     public function fetchAll() : array
     {
@@ -201,7 +201,7 @@ abstract class Selection implements \Iterator, \Countable
     /**
      * Iterator interface method.
      */
-    public function current() : ?\Infinityloop\CoolBeans\Row
+    public function current() : ?\Infinityloop\CoolBeans\Bean
     {
         $current = $this->selection->current();
 
@@ -221,7 +221,7 @@ abstract class Selection implements \Iterator, \Countable
     /**
      * Function to return specific Row class.
      */
-    final protected static function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\Infinityloop\CoolBeans\Row
+    final protected static function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\Infinityloop\CoolBeans\Bean
     {
         $rowClassName = static::ROW_CLASS;
 
