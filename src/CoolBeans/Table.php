@@ -35,7 +35,7 @@ class Table implements \Infinityloop\CoolBeans\DataSource
         $row = $this->findAll()->wherePrimary($key->getValue())->fetch();
 
         if (!$row instanceof \Nette\Database\Table\ActiveRow) {
-            throw new \Infinityloop\CoolBeans\Exception\RowNotFound('Row with key [' . $key->print() . '] not found in table [' . $this->getName() . '].');
+            throw new \Infinityloop\CoolBeans\Exception\RowNotFound('Row with key [' . $key->printValue() . '] not found in table [' . $this->getName() . '].');
         }
 
         return $row;
