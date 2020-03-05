@@ -19,6 +19,11 @@ final class IntPrimaryKey extends PrimaryKey
     {
         return $this->value;
     }
+    
+    public function printValue() : string
+    {
+        return (string) $this->value;
+    }
 
     public function getName() : string
     {
