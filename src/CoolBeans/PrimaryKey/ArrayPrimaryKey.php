@@ -17,6 +17,11 @@ final class ArrayPrimaryKey extends PrimaryKey
     {
         return $this->value;
     }
+    
+    public function printValue(): string
+    {
+        return \implode('|', $this->value);
+    }
 
     public function getName() : string
     {
