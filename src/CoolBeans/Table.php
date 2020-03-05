@@ -14,7 +14,6 @@ use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 class Table implements \Infinityloop\CoolBeans\DataSource
 {
     use \Nette\SmartObject;
-    use \Infinityloop\CoolBeans\TDataSource;
 
     protected \Nette\Database\Context $context;
     protected string $tableName;
@@ -97,6 +96,17 @@ class Table implements \Infinityloop\CoolBeans\DataSource
     public function deleteByArray(array $filter) : int
     {
         return $this->findByArray($filter)->delete();
+    }
+    
+    public function upsert(?PrimaryKey $key, array $values) : PrimaryKey
+    {
+        if ($key instanceof PrimaryKey) {
+            $this->update($key, $values);
+
+            return $key;
+        }
+
+        return $this->insert($values);
     }
 
     /**
