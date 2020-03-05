@@ -21,7 +21,7 @@ final class Bean implements \Infinityloop\CoolBeans\DataSource
         $this->selectionClass = $selectionClass;
     }
 
-    public function getRow(PrimaryKey $entryId) : \Infinityloop\CoolBeans\Row
+    public function getRow(PrimaryKey $entryId) : \Infinityloop\CoolBeans\Bean
     {
         return $this->createRow($this->dataSource->getRow($entryId));
     }
@@ -39,7 +39,7 @@ final class Bean implements \Infinityloop\CoolBeans\DataSource
     /**
      * Function to create according ActiveRow wrapper
      */
-    protected function createRow(\Nette\Database\Table\ActiveRow $row) : \Infinityloop\CoolBeans\Row
+    protected function createRow(\Nette\Database\Table\ActiveRow $row) : \Infinityloop\CoolBeans\Bean
     {
         return new $this->rowClass($row);
     }
