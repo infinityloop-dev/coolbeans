@@ -9,6 +9,8 @@ abstract class PrimaryKey
     use \Nette\SmartObject;
     
     abstract public function getValue();
+    
+    abstract public function printValue() : string;
 
     abstract public function getName() : string;
 
