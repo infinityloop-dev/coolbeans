@@ -15,13 +15,23 @@ class Table implements \Infinityloop\CoolBeans\NetteDataSource
 {
     use \Nette\SmartObject;
 
-    protected \Nette\Database\Context $context;
     protected string $tableName;
+    protected ?\Nette\Database\Context $context = null;
+    protected ?\Infinityloop\CoolBeans\Contract\ContextFactory $contextFactory = null;
 
-    public function __construct(\Nette\Database\Context $context, string $tableName)
+    public function __construct(
+        string $tableName, 
+        ?\Nette\Database\Context $context = null, 
+        ?\Infinityloop\CoolBeans\Contract\ContextFactory $contextFactory = null
+    )
     {
-        $this->context = $context;
+        if ($context === null && $contextFactory === null) {
+            throw new \Infinityloop\CoolBeans\Exception\InvalidFunctionParameters('Either context or its factory must be provided.');
+        }
+
         $this->tableName = $tableName;
+        $this->context = $context;
+        $this->contextFactory = $contextFactory;
     }
 
     public function getName() : string
@@ -146,12 +156,12 @@ class Table implements \Infinityloop\CoolBeans\NetteDataSource
         }
     }
 
-    /**
-     * Internal function to initiate context.
-     * Adds option to override this function and initiate context manually (for cases you can't use DI).
-     */
     protected function getContext() : \Nette\Database\Context
     {
+        if (!$this->context instanceof \Nette\Database\Context) {
+            $this->context = $this->contextFactory->create();
+        }
+
         return $this->context;
     }
 }
