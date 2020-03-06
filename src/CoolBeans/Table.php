@@ -11,7 +11,7 @@ use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
  *
  * Low level implementation of DataSource interface, provides a way to interact directly with nette/database classes.
  */
-class Table implements \Infinityloop\CoolBeans\DataSource
+class Table implements \Infinityloop\CoolBeans\NetteDataSource
 {
     use \Nette\SmartObject;
 
