@@ -6,15 +6,16 @@ namespace Infinityloop\CoolBeans\Decorator;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
-final class Bean implements \Infinityloop\CoolBeans\DataSource
+final class Bean implements \Infinityloop\CoolBeans\BeanDataSource
 {
     use \Nette\SmartObject;
-    use \Infinityloop\CoolBeans\Decorator\TDecorator;
+    use \Infinityloop\CoolBeans\Decorator\TCommon;
 
+    protected \Infinityloop\CoolBeans\NetteDataSource $dataSource;
     protected string $rowClass;
     protected string $selectionClass;
 
-    public function __construct(\Infinityloop\CoolBeans\DataSource $dataSource, string $rowClass, string $selectionClass)
+    public function __construct(\Infinityloop\CoolBeans\NetteDataSource $dataSource, string $rowClass, string $selectionClass)
     {
         $this->dataSource = $dataSource;
         $this->rowClass = $rowClass;
