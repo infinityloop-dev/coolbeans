@@ -9,8 +9,4 @@ interface Row extends \ArrayAccess
     public function toArray() : array;
 
     public function getPrimaryKey() : ?\Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
-
-    public function __get(string $name);
-
-    public function __isset($name);
 }
