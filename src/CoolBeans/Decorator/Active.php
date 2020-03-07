@@ -29,12 +29,14 @@ final class Active implements \Infinityloop\CoolBeans\DataSource
 
     public function findAll() : \Iterator
     {
-        return $this->dataSource->findAll()->where('active >= ?', 0);
+        return $this->dataSource->findAll()
+            ->where($this->getName() . '.active >= ?', 0);
     }
 
     public function findByArray(array $filter) : \Iterator
     {
-        return $this->dataSource->findByArray($filter)->where('active >= ?', 0);
+        return $this->dataSource->findByArray($filter)
+            ->where($this->getName() . '.active >= ?', 0);
     }
 
     public function delete(PrimaryKey $key) : void
