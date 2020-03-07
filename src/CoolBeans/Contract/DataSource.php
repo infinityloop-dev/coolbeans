@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans;
+namespace Infinityloop\CoolBeans\Contract;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
@@ -16,17 +16,17 @@ interface DataSource
     /**
      * Returns row from table by its id.
      */
-    public function getRow(PrimaryKey $key);
+    public function getRow(PrimaryKey $key) : \Infinityloop\CoolBeans\Contract\Row;
 
     /**
      * Returns selection of all entries.
      */
-    public function findAll() : \Iterator;
+    public function findAll() : \Infinityloop\CoolBeans\Contract\Selection;
 
     /**
      * Returns selection of entries found by associative array.
      */
-    public function findByArray(array $filter) : \Iterator;
+    public function findByArray(array $filter) : \Infinityloop\CoolBeans\Contract\Selection;
 
     /**
      * Inserts data into table.
