@@ -6,7 +6,7 @@ namespace Infinityloop\CoolBeans;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
-interface BeanDataSource extends \Infinityloop\CoolBeans\Contract\DataSource
+interface DataSource extends \Infinityloop\CoolBeans\Contract\DataSource
 {
     public function getRow(PrimaryKey $key) : \Infinityloop\CoolBeans\Bean;
 
