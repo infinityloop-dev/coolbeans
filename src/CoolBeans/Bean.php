@@ -27,14 +27,6 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
     }
 
     /**
-     * Returns primary key object.
-     */
-    public function getPrimaryKey() : ?\Infinityloop\CoolBeans\PrimaryKey\PrimaryKey
-    {
-        return $this->primaryKey;
-    }
-    
-    /**
      * Returns table name.
      */
     public function getTableName() : string
@@ -43,19 +35,27 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
     }
 
     /**
-     * Returns iterator to all columns.
-     */
-    public function getIterator() : \Traversable
-    {
-        return $this->row->getIterator();
-    }
-
-    /**
      * Returns all columns in array.
      */
     public function toArray() : array
     {
         return $this->row->toArray();
+    }
+
+    /**
+     * Returns primary key object.
+     */
+    public function getPrimaryKey() : ?\Infinityloop\CoolBeans\PrimaryKey\PrimaryKey
+    {
+        return $this->primaryKey;
+    }
+
+    /**
+     * Returns iterator to all columns.
+     */
+    public function getIterator() : \Traversable
+    {
+        return $this->row->getIterator();
     }
 
     /**
