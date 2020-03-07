@@ -9,7 +9,7 @@ use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 /**
  * Trait TCommon
  * 
- * @property \Infinityloop\CoolBeans\DataSource $dataSource
+ * @property \Infinityloop\CoolBeans\Contract\DataSource $dataSource
  */
 trait TCommon
 {
