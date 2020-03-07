@@ -51,7 +51,7 @@ abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
      */
     public function where(string $col, ...$val) : self
     {
-        $this->selection->where($col, $val);
+        $this->selection->where($col, ...$val);
 
         return $this;
     }
