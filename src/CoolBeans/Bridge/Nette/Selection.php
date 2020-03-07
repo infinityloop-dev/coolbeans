@@ -6,7 +6,7 @@ namespace Infinityloop\CoolBeans\Bridge\Nette;
 
 class Selection extends \Nette\Database\Table\Selection implements \Infinityloop\CoolBeans\Contract\Selection
 {
-    public function getTableName(): string
+    public function getTableName() : string
     {
         return $this->getName();
     }
