@@ -2,15 +2,15 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Decorator;
+namespace Infinityloop\CoolBeans;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
-trait TBeanDecorator
+trait TDecorator
 {
     use \Infinityloop\CoolBeans\Decorator\TCommon;
 
-    protected \Infinityloop\CoolBeans\BeanDataSource $dataSource;
+    protected \Infinityloop\CoolBeans\DataSource $dataSource;
 
     public function getRow(PrimaryKey $key) : \Infinityloop\CoolBeans\Bean
     {
