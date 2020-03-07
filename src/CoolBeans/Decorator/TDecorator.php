@@ -12,17 +12,17 @@ trait TDecorator
 
     protected \Infinityloop\CoolBeans\DataSource $dataSource;
     
-    public function getRow(PrimaryKey $key)
+    public function getRow(PrimaryKey $key) : \Infinityloop\CoolBeans\Contract\Row
     {
         return $this->dataSource->getRow($key);
     }
 
-    public function findAll() : \Iterator
+    public function findAll() : \Infinityloop\CoolBeans\Contract\Selection
     {
         return $this->dataSource->findAll();
     }
 
-    public function findByArray(array $filter) : \Iterator
+    public function findByArray(array $filter) : \Infinityloop\CoolBeans\Contract\Selection
     {
         return $this->dataSource->findByArray($filter);
     }
