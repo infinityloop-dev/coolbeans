@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans;
 
-abstract class Bean implements \ArrayAccess, \IteratorAggregate
+abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAggregate
 {
     use \Nette\SmartObject;
 
