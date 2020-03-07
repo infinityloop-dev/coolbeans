@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans;
 
-abstract class Selection implements \Iterator, \Countable
+abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
 {
     use \Nette\SmartObject;
 
