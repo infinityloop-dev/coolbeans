@@ -6,7 +6,7 @@ namespace Infinityloop\CoolBeans\Bridge\Nette;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
-trait TNetteDecorator
+trait TDecorator
 {
     use \Infinityloop\CoolBeans\Decorator\TCommon;
 
