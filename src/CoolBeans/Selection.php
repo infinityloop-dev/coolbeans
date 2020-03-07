@@ -49,7 +49,7 @@ abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
      * @param string|int|array $val
      * @return static
      */
-    public function where(string $col, $val) : self
+    public function where(string $col, ...$val) : self
     {
         $this->selection->where($col, $val);
 
