@@ -11,6 +11,10 @@ final class IntPrimaryKey extends PrimaryKey
 
     public function __construct(int $key, string $name = 'id')
     {
+        if ($key <= 0) {
+            throw new \Infinityloop\CoolBeans\Exception\InvalidFunctionParameters('Primary key must be positive integer.');
+        }
+
         $this->value = $key;
         $this->name = $name;
     }
