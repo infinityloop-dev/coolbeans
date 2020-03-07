@@ -8,9 +8,9 @@ interface Selection extends \Iterator, \Countable
 {
     public function getTableName() : string;
 
-    public function fetch() : ?\Infinityloop\CoolBeans\Contract\Row;
+    public function fetch(); // : ?\Infinityloop\CoolBeans\Contract\Row
 
-    public function where(string $column, $value) : self;
+    public function where(string $column, ...$value); // : static
 
     public function count() : int;
 
@@ -18,7 +18,7 @@ interface Selection extends \Iterator, \Countable
 
     public function valid() : bool;
 
-    public function key();
+    public function key(); // : string|int
 
     public function current() : ?\Infinityloop\CoolBeans\Contract\Row;
 
