@@ -4,19 +4,21 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans;
 
+use Infinityloop\CoolBeans\Contract\PrimaryKey;
+
 abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAggregate
 {
     use \Nette\SmartObject;
 
     protected \Nette\Database\Table\ActiveRow $row;
     protected \ReflectionClass $reflection;
-    protected ?\Infinityloop\CoolBeans\PrimaryKey\PrimaryKey $primaryKey;
+    protected ?PrimaryKey $primaryKey;
 
     final public function __construct(\Nette\Database\Table\ActiveRow $row)
     {
         $this->row = $row;
         $this->reflection = new \ReflectionClass(static::class);
-        $this->primaryKey = \Infinityloop\CoolBeans\PrimaryKey\PrimaryKey::create($this->row);
+        $this->primaryKey = PrimaryKey::create($this->row);
 
         if (\App\Bootstrap::isDebugMode()) {
             $this->validateTableName();
@@ -45,7 +47,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
     /**
      * Returns primary key object.
      */
-    public function getPrimaryKey() : ?\Infinityloop\CoolBeans\PrimaryKey\PrimaryKey
+    public function getPrimaryKey() : ?PrimaryKey
     {
         return $this->primaryKey;
     }

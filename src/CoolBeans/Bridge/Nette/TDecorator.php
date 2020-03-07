@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans\Bridge\Nette;
 
-use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
+use Infinityloop\CoolBeans\Contract\PrimaryKey;
 
 trait TDecorator
 {

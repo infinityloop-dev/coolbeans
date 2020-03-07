@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans;
 
-use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
+use Infinityloop\CoolBeans\Contract\PrimaryKey;
 use Infinityloop\CoolBeans\Bridge\Nette\ActiveRow;
 use Infinityloop\CoolBeans\Bridge\Nette\Selection;
 

@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans\Contract;
 
-use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
+use Infinityloop\CoolBeans\Contract\PrimaryKey;
 
 interface DataSource
 {

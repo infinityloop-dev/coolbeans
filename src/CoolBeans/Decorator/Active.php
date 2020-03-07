@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace Infinityloop\CoolBeans\Decorator;
 
-use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
+use Infinityloop\CoolBeans\Contract\PrimaryKey;
 
 final class Active implements \Infinityloop\CoolBeans\Contract\DataSource
 {

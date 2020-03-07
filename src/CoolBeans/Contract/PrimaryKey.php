@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\PrimaryKey;
+namespace Infinityloop\CoolBeans\Contract;
 
 abstract class PrimaryKey
 {
@@ -19,11 +19,11 @@ abstract class PrimaryKey
         $primary = $activeRow->getPrimary();
 
         if (\is_int($primary)) {
-            return new IntPrimaryKey($primary);
+            return new \Infinityloop\CoolBeans\PrimaryKey\IntPrimaryKey($primary);
         }
 
         if (\is_array($primary)) {
-            return new ArrayPrimaryKey($primary);
+            return new \Infinityloop\CoolBeans\PrimaryKey\ArrayPrimaryKey($primary);
         }
 
         throw new \Infinityloop\CoolBeans\Exception\MissingPrimaryKey('Table [' . $activeRow->getTable()->getName() . '] has no primary key.');
