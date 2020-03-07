@@ -10,7 +10,7 @@ trait TDecorator
 {
     use \Infinityloop\CoolBeans\Decorator\TCommon;
 
-    protected \Infinityloop\CoolBeans\DataSource $dataSource;
+    protected \Infinityloop\CoolBeans\Contract\DataSource $dataSource;
     
     public function getRow(PrimaryKey $key) : \Infinityloop\CoolBeans\Contract\Row
     {
