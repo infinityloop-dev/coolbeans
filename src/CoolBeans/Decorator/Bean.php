@@ -11,11 +11,11 @@ final class Bean implements \Infinityloop\CoolBeans\BeanDataSource
     use \Nette\SmartObject;
     use \Infinityloop\CoolBeans\Decorator\TCommon;
 
-    protected \Infinityloop\CoolBeans\NetteDataSource $dataSource;
+    protected \Infinityloop\CoolBeans\Bridge\Nette\DataSource $dataSource;
     protected string $rowClass;
     protected string $selectionClass;
 
-    public function __construct(\Infinityloop\CoolBeans\NetteDataSource $dataSource, string $rowClass, string $selectionClass)
+    public function __construct(\Infinityloop\CoolBeans\Bridge\Nette\DataSource $dataSource, string $rowClass, string $selectionClass)
     {
         $this->dataSource = $dataSource;
         $this->rowClass = $rowClass;
@@ -40,7 +40,7 @@ final class Bean implements \Infinityloop\CoolBeans\BeanDataSource
     /**
      * Function to create according ActiveRow wrapper
      */
-    protected function createRow(\Nette\Database\Table\ActiveRow $row) : \Infinityloop\CoolBeans\Bean
+    protected function createRow(\Infinityloop\CoolBeans\Bridge\Nette\ActiveRow $row) : \Infinityloop\CoolBeans\Bean
     {
         return new $this->rowClass($row);
     }
@@ -48,7 +48,7 @@ final class Bean implements \Infinityloop\CoolBeans\BeanDataSource
     /**
      * Function to create according Selection wrapper
      */
-    protected function createSelection(\Nette\Database\Table\Selection $sel) : \Infinityloop\CoolBeans\Selection
+    protected function createSelection(\Infinityloop\CoolBeans\Bridge\Nette\Selection $sel) : \Infinityloop\CoolBeans\Selection
     {
         return new $this->selectionClass($sel);
     }
