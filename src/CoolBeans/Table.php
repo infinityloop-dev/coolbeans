@@ -8,7 +8,7 @@ use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 use Infinityloop\CoolBeans\Bridge\Nette\ActiveRow;
 use Infinityloop\CoolBeans\Bridge\Nette\Selection;
 
-class Table implements \Infinityloop\CoolBeans\NetteDataSource
+class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
 {
     use \Nette\SmartObject;
 
