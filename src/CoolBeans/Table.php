@@ -5,12 +5,9 @@ declare(strict_types = 1);
 namespace Infinityloop\CoolBeans;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
+use Infinityloop\CoolBeans\Bridge\Nette\ActiveRow;
+use Infinityloop\CoolBeans\Bridge\Nette\Selection;
 
-/**
- * Class Table
- *
- * Low level implementation of DataSource interface, provides a way to interact directly with nette/database classes.
- */
 class Table implements \Infinityloop\CoolBeans\NetteDataSource
 {
     use \Nette\SmartObject;
@@ -39,23 +36,25 @@ class Table implements \Infinityloop\CoolBeans\NetteDataSource
         return $this->tableName;
     }
 
-    public function getRow(PrimaryKey $key) : \Nette\Database\Table\ActiveRow
+    public function getRow(PrimaryKey $key) : ActiveRow
     {
         $row = $this->findAll()->wherePrimary($key->getValue())->fetch();
 
-        if (!$row instanceof \Nette\Database\Table\ActiveRow) {
+        if (!$row instanceof ActiveRow) {
             throw new \Infinityloop\CoolBeans\Exception\RowNotFound('Row with key [' . $key->printValue() . '] not found in table [' . $this->getName() . '].');
         }
 
         return $row;
     }
 
-    public function findAll() : \Nette\Database\Table\Selection
+    public function findAll() : Selection
     {
-        return $this->getContext()->table($this->tableName);
+        $cache = \array_values((array) $this->getContext())[3];
+
+        return new Selection($this->getContext(), $this->getContext()->getConventions(), $this->getName(), $cache);
     }
 
-    public function findByArray(array $filter) : \Nette\Database\Table\Selection
+    public function findByArray(array $filter) : Selection
     {
         return $this->findAll()->where($filter);
     }
