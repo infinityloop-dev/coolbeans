@@ -6,7 +6,7 @@ namespace Infinityloop\CoolBeans\Decorator;
 
 use Infinityloop\CoolBeans\PrimaryKey\PrimaryKey;
 
-final class Bean implements \Infinityloop\CoolBeans\BeanDataSource
+final class Bean implements \Infinityloop\CoolBeans\DataSource
 {
     use \Nette\SmartObject;
     use \Infinityloop\CoolBeans\Decorator\TCommon;
