@@ -18,41 +18,41 @@ trait TCommon
         return $this->dataSource->getName();
     }
 
-    public function insert(array $data) : PrimaryKey
+    public function insert(array $data) : \Infinityloop\CoolBeans\Result\Insert
     {
         return $this->dataSource->insert($data);
     }
 
-    public function insertMultiple(array $data) : array
+    public function insertMultiple(array $data) : \Infinityloop\CoolBeans\Result\InsertMultiple
     {
         return $this->dataSource->insertMultiple($data);
     }
 
-    public function update(PrimaryKey $key, array $data) : PrimaryKey
+    public function update(PrimaryKey $key, array $data) : \Infinityloop\CoolBeans\Result\Update
     {
         return $this->dataSource->update($key, $data);
     }
 
-    public function updateByArray(array $filter, array $data) : int
+    public function updateByArray(array $filter, array $data) : \Infinityloop\CoolBeans\Result\UpdateByArray
     {
         return $this->dataSource->updateByArray($filter, $data);
     }
 
-    public function delete(PrimaryKey $key) : void
+    public function delete(PrimaryKey $key) : \Infinityloop\CoolBeans\Result\Delete
     {
         $this->dataSource->delete($key);
     }
 
-    public function deleteByArray(array $filter) : int
+    public function deleteByArray(array $filter) : \Infinityloop\CoolBeans\Result\DeleteByArray
     {
         return $this->dataSource->deleteByArray($filter);
     }
 
-    public function upsert(?PrimaryKey $key, array $values) : PrimaryKey
+    public function upsert(?PrimaryKey $key, array $values) : \Infinityloop\CoolBeans\Contract\Result
     {
         return $this->dataSource->upsert($key, $values);
     }
-    
+
     public function transaction(callable $function)
     {
         return $this->dataSource->transaction($function);
