@@ -14,9 +14,9 @@ abstract class PrimaryKey
 
     abstract public function getName() : string;
 
-    public static function create(\Nette\Database\Table\ActiveRow $activeRow) : ?self
+    public static function create(\Nette\Database\Table\ActiveRow $activeRow) : self
     {
-        $primary = $activeRow->getPrimary();
+        $primary = $activeRow->getPrimary(false);
 
         if (\is_int($primary)) {
             return new \Infinityloop\CoolBeans\PrimaryKey\IntPrimaryKey($primary);
@@ -27,5 +27,16 @@ abstract class PrimaryKey
         }
 
         throw new \Infinityloop\CoolBeans\Exception\MissingPrimaryKey('Table [' . $activeRow->getTable()->getName() . '] has no primary key.');
+    }
+
+    public static function fromSelection(\Nette\Database\Table\Selection $selection) : array
+    {
+        $primaryKeys = [];
+
+        foreach ($selection as $row) {
+            $primaryKeys[] = PrimaryKey::create($row);
+        }
+
+        return $primaryKeys;
     }
 }
