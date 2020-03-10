@@ -118,21 +118,9 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
         return $this->insert($values);
     }
 
-    /**
-     * Returns structure of columns in table.
-     */
-    public function getStructure() : array
-    {
-        return $this->getContext()->getStructure()->getColumns($this->tableName);
-    }
-
-    /**
-     * Executes given function in transaction and returns its output.
-     * Transaction is rolled back on exception and exception is thrown again.
-     */
     public function transaction(callable $function)
     {
-        $inTransaction = !$this->getContext()->getConnection()->getPdo()->inTransaction();
+        $inTransaction = $this->getContext()->getConnection()->getPdo()->inTransaction();
 
         try {
             if (!$inTransaction) {
@@ -153,6 +141,14 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
 
             throw $e;
         }
+    }
+
+    /**
+     * Returns structure of columns in table.
+     */
+    public function getStructure() : array
+    {
+        return $this->getContext()->getStructure()->getColumns($this->tableName);
     }
 
     protected function getContext() : \Nette\Database\Context
