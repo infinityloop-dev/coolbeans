@@ -65,4 +65,9 @@ interface DataSource
      * Inserts data if no key provided, updates otherwise.
      */
     public function upsert(?PrimaryKey $key, array $values) : PrimaryKey;
+    
+    /**
+     * Executes function enclosed in PDO transaction.
+     */
+    public function transaction(callable $function);
 }
