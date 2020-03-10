@@ -11,4 +11,9 @@ class Insert implements \Infinityloop\CoolBeans\Contract\Result
     use \Nette\SmartObject;
 
     public PrimaryKey $insertedId;
+    
+    public function __construct(PrimaryKey $insertedId)
+    {
+        $this->insertedId = $insertedId;
+    }
 }
