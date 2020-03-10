@@ -8,9 +8,9 @@ class HistoryUpdateByArray extends UpdateByArray
 {
     public array $historyIds;
 
-    public function __construct(array $updatedIds, array $historyIds)
+    public function __construct(array $updatedIds, array $changedIds, array $historyIds)
     {
-        parent::__construct($updatedIds);
+        parent::__construct($updatedIds, $changedIds);
         $this->historyIds = $historyIds;
     }
 }
