@@ -52,4 +52,9 @@ trait TCommon
     {
         return $this->dataSource->upsert($key, $values);
     }
+    
+    public function transaction(callable $function)
+    {
+        return $this->dataSource->transaction($function);
+    }
 }
