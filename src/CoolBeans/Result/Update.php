@@ -12,4 +12,10 @@ class Update implements \Infinityloop\CoolBeans\Contract\Result
 
     public PrimaryKey $updatedId;
     public bool $dataChanged;
+    
+    public function __construct(PrimaryKey $updatedId, bool $dataChanged)
+    {
+        $this->updatedId = $updatedId;
+        $this->dataChanged = $dataChanged;
+    }
 }
