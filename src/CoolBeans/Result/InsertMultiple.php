@@ -9,4 +9,9 @@ class InsertMultiple implements \Infinityloop\CoolBeans\Contract\Result
     use \Nette\SmartObject;
 
     public array $insertedIds;
+
+    public function __construct(array $insertedIds)
+    {
+        $this->insertedIds = $insertedIds;
+    }
 }
