@@ -12,7 +12,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
 
     protected \Nette\Database\Table\ActiveRow $row;
     protected \ReflectionClass $reflection;
-    protected ?PrimaryKey $primaryKey;
+    protected PrimaryKey $primaryKey;
 
     final public function __construct(\Nette\Database\Table\ActiveRow $row)
     {
@@ -47,7 +47,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
     /**
      * Returns primary key object.
      */
-    public function getPrimaryKey() : ?PrimaryKey
+    public function getPrimaryKey() : PrimaryKey
     {
         return $this->primaryKey;
     }
