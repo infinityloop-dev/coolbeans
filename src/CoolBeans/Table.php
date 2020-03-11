@@ -59,7 +59,7 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
         return $this->findAll()->where($filter);
     }
 
-    public function insert(array $data) : PrimaryKey
+    public function insert(array $data) : \Infinityloop\CoolBeans\Result\Insert
     {
         $row = $this->findAll()->insert($data);
 
@@ -67,52 +67,67 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
             throw new \Nette\InvalidStateException('Insert has failed.');
         }
 
-        return PrimaryKey::create($row);
+        return new \Infinityloop\CoolBeans\Result\Insert(PrimaryKey::create($row));
     }
 
-    public function insertMultiple(array $data) : array
+    public function insertMultiple(array $data) : \Infinityloop\CoolBeans\Result\InsertMultiple
     {
-        $result = $this->findAll()->insert($data);
+        $insertedIds = [];
+        
+        foreach ($data as $toInsert) {
+            $result = $this->insert($toInsert);
+            $insertedIds[] = $result->insertedId;
+        }
+        
+        return new \Infinityloop\CoolBeans\Result\InsertMultiple($insertedIds);
+    }
 
-        if ($result instanceof \Nette\Database\Table\ActiveRow) {
-            return [PrimaryKey::create($result)];
+    public function update(PrimaryKey $key, array $data) : \Infinityloop\CoolBeans\Result\Update
+    {
+        $changed = $this->getRow($key)->update($data);
+
+        return new \Infinityloop\CoolBeans\Result\Update($key, $changed);
+    }
+
+    public function updateByArray(array $filter, array $data) : \Infinityloop\CoolBeans\Result\UpdateByArray
+    {
+        $updatedIds = [];
+        $changedIds = [];
+
+        foreach ($this->findByArray($filter) as $row) {
+            $key = PrimaryKey::create($row);
+            $updatedIds[] = $key;
+
+            $changed = $row->update($data);
+
+            if ($changed) {
+                $changedIds[] = $key;
+            }
         }
 
-        if (\is_int($result)) {
-            // TODO
-        }
-
-        throw new \Nette\InvalidStateException('Insert has failed.');
+        return new \Infinityloop\CoolBeans\Result\UpdateByArray($updatedIds, $changedIds);
     }
 
-    public function update(PrimaryKey $key, array $data) : PrimaryKey
+    public function delete(PrimaryKey $key) : \Infinityloop\CoolBeans\Result\Delete
     {
-        $this->getRow($key)->update($data);
+        $this->getRow($key)->delete();
 
-        return $key;
+        return new \Infinityloop\CoolBeans\Result\Delete($key);
     }
 
-    public function updateByArray(array $filter, array $data) : int
+    public function deleteByArray(array $filter) : \Infinityloop\CoolBeans\Result\DeleteByArray
     {
-        return $this->findByArray($filter)->update($data);
-    }
+        $selection = $this->findByArray($filter);
+        $deletedIds = PrimaryKey::fromSelection($selection);
+        $selection->delete();
 
-    public function delete(PrimaryKey $key) : void
-    {
-        $this->findRow($key)->delete();
-    }
-
-    public function deleteByArray(array $filter) : int
-    {
-        return $this->findByArray($filter)->delete();
+        return new \Infinityloop\CoolBeans\Result\DeleteByArray($deletedIds);
     }
     
-    public function upsert(?PrimaryKey $key, array $values) : PrimaryKey
+    public function upsert(?PrimaryKey $key, array $values) : \Infinityloop\CoolBeans\Contract\Result
     {
         if ($key instanceof PrimaryKey) {
-            $this->update($key, $values);
-
-            return $key;
+            return $this->update($key, $values);
         }
 
         return $this->insert($values);
