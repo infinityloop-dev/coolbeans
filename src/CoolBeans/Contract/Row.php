@@ -10,5 +10,5 @@ interface Row extends \ArrayAccess
     
     public function toArray() : array;
 
-    public function getPrimaryKey() : ?\Infinityloop\CoolBeans\Contract\PrimaryKey;
+    public function getPrimaryKey() : \Infinityloop\CoolBeans\Contract\PrimaryKey;
 }
