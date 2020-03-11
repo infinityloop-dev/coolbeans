@@ -39,13 +39,17 @@ final class Active implements \Infinityloop\CoolBeans\Contract\DataSource
             ->where($this->getName() . '.active >= ?', 0);
     }
 
-    public function delete(PrimaryKey $key) : void
+    public function delete(PrimaryKey $key) : \Infinityloop\CoolBeans\Result\Delete
     {
         $this->dataSource->update($key, ['active' => -1]);
+
+        return new \Infinityloop\CoolBeans\Result\Delete($key);
     }
 
     public function deleteByArray(array $filter): int
     {
-        return $this->dataSource->updateByArray($filter, ['active' => -1]);
+        $result = $this->dataSource->updateByArray($filter, ['active' => -1]);
+
+        return new \Infinityloop\CoolBeans\Result\DeleteByArray($result->changedIds);
     }
 }
