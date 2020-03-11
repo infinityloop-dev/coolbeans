@@ -46,7 +46,7 @@ final class Active implements \Infinityloop\CoolBeans\Contract\DataSource
         return new \Infinityloop\CoolBeans\Result\Delete($key);
     }
 
-    public function deleteByArray(array $filter): int
+    public function deleteByArray(array $filter) : \Infinityloop\CoolBeans\Result\DeleteByArray
     {
         $result = $this->dataSource->updateByArray($filter, ['active' => -1]);
 
