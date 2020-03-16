@@ -12,7 +12,7 @@ class Routing
     {
         foreach ($parameters as $key => $param) {
             if ($param !== null && self::isPrimaryKey($key)) {
-                if (!\is_int($param) || !\is_numeric($param)) {
+                if (!\is_int($param) && !\is_numeric($param)) {
                     throw new \Infinityloop\CoolBeans\Exception\InvalidFunctionParameters('Id parameters needs to be integers.');
                 }
 
