@@ -40,7 +40,7 @@ trait TCommon
 
     public function delete(PrimaryKey $key) : \Infinityloop\CoolBeans\Result\Delete
     {
-        $this->dataSource->delete($key);
+        return $this->dataSource->delete($key);
     }
 
     public function deleteByArray(array $filter) : \Infinityloop\CoolBeans\Result\DeleteByArray
