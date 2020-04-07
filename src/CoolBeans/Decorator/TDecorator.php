@@ -2,27 +2,27 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Decorator;
+namespace CoolBeans\Decorator;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
 trait TDecorator
 {
-    use \Infinityloop\CoolBeans\Decorator\TCommon;
+    use \CoolBeans\Decorator\TCommon;
 
-    protected \Infinityloop\CoolBeans\Contract\DataSource $dataSource;
+    protected \CoolBeans\Contract\DataSource $dataSource;
     
-    public function getRow(PrimaryKey $key) : \Infinityloop\CoolBeans\Contract\Row
+    public function getRow(PrimaryKey $key) : \CoolBeans\Contract\Row
     {
         return $this->dataSource->getRow($key);
     }
 
-    public function findAll() : \Infinityloop\CoolBeans\Contract\Selection
+    public function findAll() : \CoolBeans\Contract\Selection
     {
         return $this->dataSource->findAll();
     }
 
-    public function findByArray(array $filter) : \Infinityloop\CoolBeans\Contract\Selection
+    public function findByArray(array $filter) : \CoolBeans\Contract\Selection
     {
         return $this->dataSource->findByArray($filter);
     }

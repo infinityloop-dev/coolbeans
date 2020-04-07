@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Result;
+namespace CoolBeans\Result;
 
 class HistoryUpdateByArray extends UpdateByArray
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Contract;
+namespace CoolBeans\Contract;
 
 interface Result
 {

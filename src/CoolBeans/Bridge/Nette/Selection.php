@@ -2,16 +2,16 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Bridge\Nette;
+namespace CoolBeans\Bridge\Nette;
 
-class Selection extends \Nette\Database\Table\Selection implements \Infinityloop\CoolBeans\Contract\Selection
+class Selection extends \Nette\Database\Table\Selection implements \CoolBeans\Contract\Selection
 {
     public function getTableName() : string
     {
         return $this->getName();
     }
 
-    public function current() : ?\Infinityloop\CoolBeans\Bridge\Nette\ActiveRow
+    public function current() : ?\CoolBeans\Bridge\Nette\ActiveRow
     {
         if (($key = current($this->keys)) !== false) {
             return $this->data[$key];
@@ -20,8 +20,8 @@ class Selection extends \Nette\Database\Table\Selection implements \Infinityloop
         }
     }
 
-    protected function createRow(array $row) : \Infinityloop\CoolBeans\Bridge\Nette\ActiveRow
+    protected function createRow(array $row) : \CoolBeans\Bridge\Nette\ActiveRow
     {
-        return new \Infinityloop\CoolBeans\Bridge\Nette\ActiveRow($row, $this);
+        return new \CoolBeans\Bridge\Nette\ActiveRow($row, $this);
     }
 }

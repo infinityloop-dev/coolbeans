@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\PrimaryKey;
+namespace CoolBeans\PrimaryKey;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
 final class ArrayPrimaryKey extends PrimaryKey
 {

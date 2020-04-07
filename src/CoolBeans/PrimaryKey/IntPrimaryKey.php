@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\PrimaryKey;
+namespace CoolBeans\PrimaryKey;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
 final class IntPrimaryKey extends PrimaryKey
 {
@@ -14,7 +14,7 @@ final class IntPrimaryKey extends PrimaryKey
     public function __construct(int $key, string $name = 'id')
     {
         if ($key <= 0) {
-            throw new \Infinityloop\CoolBeans\Exception\InvalidFunctionParameters('Primary key must be positive integer.');
+            throw new \CoolBeans\Exception\InvalidFunctionParameters('Primary key must be positive integer.');
         }
 
         $this->value = $key;

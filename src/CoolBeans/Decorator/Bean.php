@@ -2,24 +2,24 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Decorator;
+namespace CoolBeans\Decorator;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
-final class Bean implements \Infinityloop\CoolBeans\DataSource
+final class Bean implements \CoolBeans\DataSource
 {
     use \Nette\SmartObject;
-    use \Infinityloop\CoolBeans\Decorator\TCommon;
+    use \CoolBeans\Decorator\TCommon;
 
-    protected \Infinityloop\CoolBeans\Contract\DataSource $dataSource;
+    protected \CoolBeans\Contract\DataSource $dataSource;
     protected string $rowClass;
     protected string $selectionClass;
 
-    public function __construct(\Infinityloop\CoolBeans\Contract\DataSource $dataSource, string $rowClass, string $selectionClass)
+    public function __construct(\CoolBeans\Contract\DataSource $dataSource, string $rowClass, string $selectionClass)
     {
-        if (!\is_subclass_of($rowClass, \Infinityloop\CoolBeans\Bean::class) ||
-            !\is_subclass_of($selectionClass, \Infinityloop\CoolBeans\Selection::class)) {
-            throw new \Infinityloop\CoolBeans\Exception\InvalidFunctionParameters('Bean decorator can transform only to Bean instance.');
+        if (!\is_subclass_of($rowClass, \CoolBeans\Bean::class) ||
+            !\is_subclass_of($selectionClass, \CoolBeans\Selection::class)) {
+            throw new \CoolBeans\Exception\InvalidFunctionParameters('Bean decorator can transform only to Bean instance.');
         }
 
         $this->dataSource = $dataSource;
@@ -27,17 +27,17 @@ final class Bean implements \Infinityloop\CoolBeans\DataSource
         $this->selectionClass = $selectionClass;
     }
 
-    public function getRow(PrimaryKey $entryId) : \Infinityloop\CoolBeans\Bean
+    public function getRow(PrimaryKey $entryId) : \CoolBeans\Bean
     {
         return $this->createRow($this->dataSource->getRow($entryId));
     }
 
-    public function findAll() : \Infinityloop\CoolBeans\Selection
+    public function findAll() : \CoolBeans\Selection
     {
         return $this->createSelection($this->dataSource->findAll());
     }
 
-    public function findByArray(array $filter) : \Infinityloop\CoolBeans\Selection
+    public function findByArray(array $filter) : \CoolBeans\Selection
     {
         return $this->createSelection($this->dataSource->findByArray($filter));
     }
@@ -45,7 +45,7 @@ final class Bean implements \Infinityloop\CoolBeans\DataSource
     /**
      * Function to create according ActiveRow wrapper
      */
-    protected function createRow(\Infinityloop\CoolBeans\Contract\Row $row) : \Infinityloop\CoolBeans\Bean
+    protected function createRow(\CoolBeans\Contract\Row $row) : \CoolBeans\Bean
     {
         return new $this->rowClass($row);
     }
@@ -53,7 +53,7 @@ final class Bean implements \Infinityloop\CoolBeans\DataSource
     /**
      * Function to create according Selection wrapper
      */
-    protected function createSelection(\Infinityloop\CoolBeans\Contract\Selection $sel) : \Infinityloop\CoolBeans\Selection
+    protected function createSelection(\CoolBeans\Contract\Selection $sel) : \CoolBeans\Selection
     {
         return new $this->selectionClass($sel);
     }

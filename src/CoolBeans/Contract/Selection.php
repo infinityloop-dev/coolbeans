@@ -2,13 +2,13 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Contract;
+namespace CoolBeans\Contract;
 
 interface Selection extends \Iterator, \Countable
 {
     public function getTableName() : string;
 
-    public function fetch(); // : ?\Infinityloop\CoolBeans\Contract\Row
+    public function fetch(); // : ?\CoolBeans\Contract\Row
 
     public function where(string $column, ...$value); // : static
 
@@ -20,7 +20,7 @@ interface Selection extends \Iterator, \Countable
 
     public function key(); // : string|int
 
-    public function current() : ?\Infinityloop\CoolBeans\Contract\Row;
+    public function current() : ?\CoolBeans\Contract\Row;
 
     public function next() : void;
 }

@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Contract;
+namespace CoolBeans\Contract;
 
 interface Row extends \ArrayAccess
 {
@@ -10,5 +10,5 @@ interface Row extends \ArrayAccess
     
     public function toArray() : array;
 
-    public function getPrimaryKey() : \Infinityloop\CoolBeans\Contract\PrimaryKey;
+    public function getPrimaryKey() : \CoolBeans\Contract\PrimaryKey;
 }

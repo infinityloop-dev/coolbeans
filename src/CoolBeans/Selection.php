@@ -2,13 +2,13 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans;
+namespace CoolBeans;
 
-abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
+abstract class Selection implements \CoolBeans\Contract\Selection
 {
     use \Nette\SmartObject;
 
-    protected const ROW_CLASS = \Infinityloop\CoolBeans\Bean::class;
+    protected const ROW_CLASS = \CoolBeans\Bean::class;
 
     protected \Nette\Database\Table\Selection $selection;
     protected \ReflectionClass $reflection;
@@ -133,7 +133,7 @@ abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
     /**
      * Function to fetch row.
      */
-    public function fetch() : ?\Infinityloop\CoolBeans\Bean
+    public function fetch() : ?\CoolBeans\Bean
     {
         return static::createRow($this->selection->fetch());
     }
@@ -141,7 +141,7 @@ abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
     /**
      * Function to fetch all rows.
      *
-     * @return array<\Infinityloop\CoolBeans\Bean>
+     * @return array<\CoolBeans\Bean>
      */
     public function fetchAll() : array
     {
@@ -201,7 +201,7 @@ abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
     /**
      * Iterator interface method.
      */
-    public function current() : ?\Infinityloop\CoolBeans\Bean
+    public function current() : ?\CoolBeans\Bean
     {
         $current = $this->selection->current();
 
@@ -221,7 +221,7 @@ abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
     /**
      * Function to return specific Row class.
      */
-    final protected static function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\Infinityloop\CoolBeans\Bean
+    final protected static function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\CoolBeans\Bean
     {
         $rowClassName = static::ROW_CLASS;
 
@@ -247,7 +247,7 @@ abstract class Selection implements \Infinityloop\CoolBeans\Contract\Selection
         }
 
         if ($tableName !== \Infinityloop\Utils\CaseConverter::toSnakeCase($className)) {
-            throw new \Infinityloop\CoolBeans\Exception\InvalidTable('Provided Selection table [' . $tableName . '] doesnt match [' . $className . '].');
+            throw new \CoolBeans\Exception\InvalidTable('Provided Selection table [' . $tableName . '] doesnt match [' . $className . '].');
         }
     }
 

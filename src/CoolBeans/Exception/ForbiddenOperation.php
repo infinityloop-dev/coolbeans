@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Exception;
+namespace CoolBeans\Exception;
 
 final class ForbiddenOperation extends \Exception
 {

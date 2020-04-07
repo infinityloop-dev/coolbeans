@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Result;
+namespace CoolBeans\Result;
 
-class InsertMultiple implements \Infinityloop\CoolBeans\Contract\Result
+class InsertMultiple implements \CoolBeans\Contract\Result
 {
     use \Nette\SmartObject;
 

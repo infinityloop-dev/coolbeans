@@ -2,15 +2,15 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Bridge\Nette;
+namespace CoolBeans\Bridge\Nette;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
-interface DataSource extends \Infinityloop\CoolBeans\Contract\DataSource
+interface DataSource extends \CoolBeans\Contract\DataSource
 {
-    public function getRow(PrimaryKey $key) : \Infinityloop\CoolBeans\Bridge\Nette\ActiveRow;
+    public function getRow(PrimaryKey $key) : \CoolBeans\Bridge\Nette\ActiveRow;
 
-    public function findAll() : \Infinityloop\CoolBeans\Bridge\Nette\Selection;
+    public function findAll() : \CoolBeans\Bridge\Nette\Selection;
 
-    public function findByArray(array $filter) : \Infinityloop\CoolBeans\Bridge\Nette\Selection;
+    public function findByArray(array $filter) : \CoolBeans\Bridge\Nette\Selection;
 }

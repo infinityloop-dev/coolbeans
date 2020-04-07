@@ -2,27 +2,27 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Bridge\Nette;
+namespace CoolBeans\Bridge\Nette;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
 trait TDecorator
 {
-    use \Infinityloop\CoolBeans\Decorator\TCommon;
+    use \CoolBeans\Decorator\TCommon;
 
-    protected \Infinityloop\CoolBeans\Bridge\Nette\DataSource $dataSource;
+    protected \CoolBeans\Bridge\Nette\DataSource $dataSource;
 
-    public function getRow(PrimaryKey $key) : \Infinityloop\CoolBeans\Bridge\Nette\ActiveRow
+    public function getRow(PrimaryKey $key) : \CoolBeans\Bridge\Nette\ActiveRow
     {
         return $this->dataSource->getRow($key);
     }
 
-    public function findAll() : \Infinityloop\CoolBeans\Bridge\Nette\Selection
+    public function findAll() : \CoolBeans\Bridge\Nette\Selection
     {
         return $this->dataSource->findAll();
     }
 
-    public function findByArray(array $filter) : \Infinityloop\CoolBeans\Bridge\Nette\Selection
+    public function findByArray(array $filter) : \CoolBeans\Bridge\Nette\Selection
     {
         return $this->dataSource->findByArray($filter);
     }

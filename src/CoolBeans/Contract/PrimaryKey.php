@@ -2,7 +2,7 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Contract;
+namespace CoolBeans\Contract;
 
 abstract class PrimaryKey
 {
@@ -19,14 +19,14 @@ abstract class PrimaryKey
         $primary = $activeRow->getPrimary(false);
 
         if (\is_int($primary)) {
-            return new \Infinityloop\CoolBeans\PrimaryKey\IntPrimaryKey($primary);
+            return new \CoolBeans\PrimaryKey\IntPrimaryKey($primary);
         }
 
         if (\is_array($primary)) {
-            return new \Infinityloop\CoolBeans\PrimaryKey\ArrayPrimaryKey($primary);
+            return new \CoolBeans\PrimaryKey\ArrayPrimaryKey($primary);
         }
 
-        throw new \Infinityloop\CoolBeans\Exception\MissingPrimaryKey('Table [' . $activeRow->getTable()->getName() . '] has no primary key.');
+        throw new \CoolBeans\Exception\MissingPrimaryKey('Table [' . $activeRow->getTable()->getName() . '] has no primary key.');
     }
 
     public static function fromSelection(\Nette\Database\Table\Selection $selection) : array

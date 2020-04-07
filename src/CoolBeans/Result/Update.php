@@ -2,11 +2,11 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Result;
+namespace CoolBeans\Result;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
-class Update implements \Infinityloop\CoolBeans\Contract\Result
+class Update implements \CoolBeans\Contract\Result
 {
     use \Nette\SmartObject;
 

@@ -2,28 +2,28 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans;
+namespace CoolBeans;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
-use Infinityloop\CoolBeans\Bridge\Nette\ActiveRow;
-use Infinityloop\CoolBeans\Bridge\Nette\Selection;
+use CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Bridge\Nette\ActiveRow;
+use CoolBeans\Bridge\Nette\Selection;
 
-class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
+class Table implements \CoolBeans\Bridge\Nette\DataSource
 {
     use \Nette\SmartObject;
 
     protected string $tableName;
     protected ?\Nette\Database\Context $context = null;
-    protected ?\Infinityloop\CoolBeans\Contract\ContextFactory $contextFactory = null;
+    protected ?\CoolBeans\Contract\ContextFactory $contextFactory = null;
 
     public function __construct(
         string $tableName, 
         ?\Nette\Database\Context $context = null, 
-        ?\Infinityloop\CoolBeans\Contract\ContextFactory $contextFactory = null
+        ?\CoolBeans\Contract\ContextFactory $contextFactory = null
     )
     {
         if ($context === null && $contextFactory === null) {
-            throw new \Infinityloop\CoolBeans\Exception\InvalidFunctionParameters('Either context or its factory must be provided.');
+            throw new \CoolBeans\Exception\InvalidFunctionParameters('Either context or its factory must be provided.');
         }
 
         $this->tableName = $tableName;
@@ -41,7 +41,7 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
         $row = $this->findAll()->wherePrimary($key->getValue())->fetch();
 
         if (!$row instanceof ActiveRow) {
-            throw new \Infinityloop\CoolBeans\Exception\RowNotFound('Row with key [' . $key->printValue() . '] not found in table [' . $this->getName() . '].');
+            throw new \CoolBeans\Exception\RowNotFound('Row with key [' . $key->printValue() . '] not found in table [' . $this->getName() . '].');
         }
 
         return $row;
@@ -59,7 +59,7 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
         return $this->findAll()->where($filter);
     }
 
-    public function insert(array $data) : \Infinityloop\CoolBeans\Result\Insert
+    public function insert(array $data) : \CoolBeans\Result\Insert
     {
         $row = $this->findAll()->insert($data);
 
@@ -67,10 +67,10 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
             throw new \Nette\InvalidStateException('Insert has failed.');
         }
 
-        return new \Infinityloop\CoolBeans\Result\Insert(PrimaryKey::create($row));
+        return new \CoolBeans\Result\Insert(PrimaryKey::create($row));
     }
 
-    public function insertMultiple(array $data) : \Infinityloop\CoolBeans\Result\InsertMultiple
+    public function insertMultiple(array $data) : \CoolBeans\Result\InsertMultiple
     {
         $insertedIds = [];
         
@@ -79,17 +79,17 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
             $insertedIds[] = $result->insertedId;
         }
         
-        return new \Infinityloop\CoolBeans\Result\InsertMultiple($insertedIds);
+        return new \CoolBeans\Result\InsertMultiple($insertedIds);
     }
 
-    public function update(PrimaryKey $key, array $data) : \Infinityloop\CoolBeans\Result\Update
+    public function update(PrimaryKey $key, array $data) : \CoolBeans\Result\Update
     {
         $changed = $this->getRow($key)->update($data);
 
-        return new \Infinityloop\CoolBeans\Result\Update($key, $changed);
+        return new \CoolBeans\Result\Update($key, $changed);
     }
 
-    public function updateByArray(array $filter, array $data) : \Infinityloop\CoolBeans\Result\UpdateByArray
+    public function updateByArray(array $filter, array $data) : \CoolBeans\Result\UpdateByArray
     {
         $updatedIds = [];
         $changedIds = [];
@@ -105,26 +105,26 @@ class Table implements \Infinityloop\CoolBeans\Bridge\Nette\DataSource
             }
         }
 
-        return new \Infinityloop\CoolBeans\Result\UpdateByArray($updatedIds, $changedIds);
+        return new \CoolBeans\Result\UpdateByArray($updatedIds, $changedIds);
     }
 
-    public function delete(PrimaryKey $key) : \Infinityloop\CoolBeans\Result\Delete
+    public function delete(PrimaryKey $key) : \CoolBeans\Result\Delete
     {
         $this->getRow($key)->delete();
 
-        return new \Infinityloop\CoolBeans\Result\Delete($key);
+        return new \CoolBeans\Result\Delete($key);
     }
 
-    public function deleteByArray(array $filter) : \Infinityloop\CoolBeans\Result\DeleteByArray
+    public function deleteByArray(array $filter) : \CoolBeans\Result\DeleteByArray
     {
         $selection = $this->findByArray($filter);
         $deletedIds = PrimaryKey::fromSelection($selection);
         $selection->delete();
 
-        return new \Infinityloop\CoolBeans\Result\DeleteByArray($deletedIds);
+        return new \CoolBeans\Result\DeleteByArray($deletedIds);
     }
     
-    public function upsert(?PrimaryKey $key, array $values) : \Infinityloop\CoolBeans\Contract\Result
+    public function upsert(?PrimaryKey $key, array $values) : \CoolBeans\Contract\Result
     {
         if ($key instanceof PrimaryKey) {
             return $this->update($key, $values);

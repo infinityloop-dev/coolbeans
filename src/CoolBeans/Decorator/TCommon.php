@@ -2,14 +2,14 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Decorator;
+namespace CoolBeans\Decorator;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
 /**
  * Trait TCommon
  * 
- * @property \Infinityloop\CoolBeans\Contract\DataSource $dataSource
+ * @property \CoolBeans\Contract\DataSource $dataSource
  */
 trait TCommon
 {
@@ -18,37 +18,37 @@ trait TCommon
         return $this->dataSource->getName();
     }
 
-    public function insert(array $data) : \Infinityloop\CoolBeans\Result\Insert
+    public function insert(array $data) : \CoolBeans\Result\Insert
     {
         return $this->dataSource->insert($data);
     }
 
-    public function insertMultiple(array $data) : \Infinityloop\CoolBeans\Result\InsertMultiple
+    public function insertMultiple(array $data) : \CoolBeans\Result\InsertMultiple
     {
         return $this->dataSource->insertMultiple($data);
     }
 
-    public function update(PrimaryKey $key, array $data) : \Infinityloop\CoolBeans\Result\Update
+    public function update(PrimaryKey $key, array $data) : \CoolBeans\Result\Update
     {
         return $this->dataSource->update($key, $data);
     }
 
-    public function updateByArray(array $filter, array $data) : \Infinityloop\CoolBeans\Result\UpdateByArray
+    public function updateByArray(array $filter, array $data) : \CoolBeans\Result\UpdateByArray
     {
         return $this->dataSource->updateByArray($filter, $data);
     }
 
-    public function delete(PrimaryKey $key) : \Infinityloop\CoolBeans\Result\Delete
+    public function delete(PrimaryKey $key) : \CoolBeans\Result\Delete
     {
         return $this->dataSource->delete($key);
     }
 
-    public function deleteByArray(array $filter) : \Infinityloop\CoolBeans\Result\DeleteByArray
+    public function deleteByArray(array $filter) : \CoolBeans\Result\DeleteByArray
     {
         return $this->dataSource->deleteByArray($filter);
     }
 
-    public function upsert(?PrimaryKey $key, array $values) : \Infinityloop\CoolBeans\Contract\Result
+    public function upsert(?PrimaryKey $key, array $values) : \CoolBeans\Contract\Result
     {
         return $this->dataSource->upsert($key, $values);
     }

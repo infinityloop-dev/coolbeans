@@ -2,11 +2,11 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans;
+namespace CoolBeans;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
-abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAggregate
+abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
 {
     use \Nette\SmartObject;
 
@@ -69,7 +69,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
             return $this->{$offset};
         }
 
-        throw new \Infinityloop\CoolBeans\Exception\InvalidColumn('Column [' . $offset . '] is not defined.');
+        throw new \CoolBeans\Exception\InvalidColumn('Column [' . $offset . '] is not defined.');
     }
 
     /**
@@ -91,7 +91,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
      */
     public function offsetSet($offset, $value) : void
     {
-        throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot set to Bean.');
+        throw new \CoolBeans\Exception\ForbiddenOperation('Cannot set to Bean.');
     }
 
     /**
@@ -99,7 +99,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
      */
     public function offsetUnset($offset) : void
     {
-        throw new \Infinityloop\CoolBeans\Exception\ForbiddenOperation('Cannot unset from Bean.');
+        throw new \CoolBeans\Exception\ForbiddenOperation('Cannot unset from Bean.');
     }
 
     /**
@@ -135,7 +135,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
         }
 
         if ($tableName !== \Infinityloop\Utils\CaseConverter::toSnakeCase($className)) {
-            throw new \Infinityloop\CoolBeans\Exception\InvalidTable('Provided ActiveRow table [' . $tableName . '] doesnt match [' . $className . '].');
+            throw new \CoolBeans\Exception\InvalidTable('Provided ActiveRow table [' . $tableName . '] doesnt match [' . $className . '].');
         }
     }
 
@@ -146,7 +146,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
     {
         foreach ($this->row->toArray() as $name => $value) {
             if (!$this->offsetExists($name)) {
-                throw new \Infinityloop\CoolBeans\Exception\MissingProperty('Property for column [' . $name . '] is not defined.');
+                throw new \CoolBeans\Exception\MissingProperty('Property for column [' . $name . '] is not defined.');
             }
         }
     }
@@ -162,7 +162,7 @@ abstract class Bean implements \Infinityloop\CoolBeans\Contract\Row, \IteratorAg
             $value = $this->row[$name];
 
             if (!$type instanceof \ReflectionType) {
-                throw new \Infinityloop\CoolBeans\Exception\MissingType('Property [' . $property->getName() . '] does not have type.');
+                throw new \CoolBeans\Exception\MissingType('Property [' . $property->getName() . '] does not have type.');
             }
 
             switch ($type->getName()) {

@@ -2,24 +2,24 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Decorator;
+namespace CoolBeans\Decorator;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
-final class History implements \Infinityloop\CoolBeans\Contract\DataSource
+final class History implements \CoolBeans\Contract\DataSource
 {
     use \Nette\SmartObject;
-    use \Infinityloop\CoolBeans\Decorator\TDecorator;
+    use \CoolBeans\Decorator\TDecorator;
 
     public const METADATA = ['id', 'active'];
 
-    protected \Infinityloop\CoolBeans\Contract\DataSource $historyDataSource;
+    protected \CoolBeans\Contract\DataSource $historyDataSource;
     protected array $additionalData;
     protected array $metadata;
 
     public function __construct(
-        \Infinityloop\CoolBeans\Contract\DataSource $dataSource,
-        \Infinityloop\CoolBeans\Contract\DataSource $historyDataSource,
+        \CoolBeans\Contract\DataSource $dataSource,
+        \CoolBeans\Contract\DataSource $historyDataSource,
         array $additionalData = [],
         array $metadata = self::METADATA
     )
@@ -30,7 +30,7 @@ final class History implements \Infinityloop\CoolBeans\Contract\DataSource
         $this->metadata = $metadata;
     }
 
-    public function update(PrimaryKey $key, array $data) : \Infinityloop\CoolBeans\Result\Update
+    public function update(PrimaryKey $key, array $data) : \CoolBeans\Result\Update
     {
         if ($this->isMetadataChange($data)) {
             return $this->dataSource->update($key, $data);
@@ -42,13 +42,13 @@ final class History implements \Infinityloop\CoolBeans\Contract\DataSource
         $result = $this->dataSource->update($key, $data);
 
         if (!$result->dataChanged) {
-            return new \Infinityloop\CoolBeans\Result\HistoryUpdate($key, false);
+            return new \CoolBeans\Result\HistoryUpdate($key, false);
         }
 
-        return new \Infinityloop\CoolBeans\Result\HistoryUpdate($key, true, $this->insertHistory($key, $historyData));
+        return new \CoolBeans\Result\HistoryUpdate($key, true, $this->insertHistory($key, $historyData));
     }
 
-    public function updateByArray(array $filter, array $data) : \Infinityloop\CoolBeans\Result\UpdateByArray
+    public function updateByArray(array $filter, array $data) : \CoolBeans\Result\UpdateByArray
     {
         if ($this->isMetadataChange($data)) {
             return $this->dataSource->updateByArray($filter, $data);
@@ -73,7 +73,7 @@ final class History implements \Infinityloop\CoolBeans\Contract\DataSource
             $historyIds[] = $this->insertHistory($key, $historyData);
         }
 
-        return new \Infinityloop\CoolBeans\Result\HistoryUpdateByArray($updatedIds, $changedIds, $historyIds);
+        return new \CoolBeans\Result\HistoryUpdateByArray($updatedIds, $changedIds, $historyIds);
     }
 
     private function isMetadataChange(array $data) : bool

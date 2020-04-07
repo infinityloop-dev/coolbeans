@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace Infinityloop\CoolBeans\Result;
+namespace CoolBeans\Result;
 
-use Infinityloop\CoolBeans\Contract\PrimaryKey;
+use CoolBeans\Contract\PrimaryKey;
 
 class HistoryUpdate extends Update
 {
