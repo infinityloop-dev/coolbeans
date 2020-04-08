@@ -44,14 +44,28 @@ final class PrimaryKeyTest extends \PHPUnit\Framework\TestCase
     {
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(10);
+        $activeRowMock->expects('getPrimary')->with(false)->andReturn(11);
+        $activeRowMock->expects('getPrimary')->with(false)->andReturn(12);
 
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('rewind')->withNoArgs();
         $selectionMock->expects('valid')->withNoArgs()->andReturnTrue();
         $selectionMock->expects('current')->withNoArgs()->andReturn($activeRowMock);
         $selectionMock->expects('next')->withNoArgs();
+        $selectionMock->expects('valid')->withNoArgs()->andReturnTrue();
+        $selectionMock->expects('current')->withNoArgs()->andReturn($activeRowMock);
+        $selectionMock->expects('next')->withNoArgs();
+        $selectionMock->expects('valid')->withNoArgs()->andReturnTrue();
+        $selectionMock->expects('current')->withNoArgs()->andReturn($activeRowMock);
+        $selectionMock->expects('next')->withNoArgs();
         $selectionMock->expects('valid')->withNoArgs()->andReturnFalse();
 
-        self::assertEquals([0 => new \CoolBeans\PrimaryKey\IntPrimaryKey(10)],\CoolBeans\Contract\PrimaryKey::fromSelection($selectionMock));
+        self::assertEquals([
+            0 => new \CoolBeans\PrimaryKey\IntPrimaryKey(10),
+            1 => new \CoolBeans\PrimaryKey\IntPrimaryKey(11),
+            2 => new \CoolBeans\PrimaryKey\IntPrimaryKey(12),
+        ],
+            \CoolBeans\Contract\PrimaryKey::fromSelection($selectionMock)
+        );
     }
 }

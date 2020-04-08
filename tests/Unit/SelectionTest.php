@@ -220,4 +220,9 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
         $selectionInstance->next();
     }
+
+    public function testCreateRowVisibility() : void
+    {
+        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Selection::class, 'createRow'))->isProtected());
+    }
 }

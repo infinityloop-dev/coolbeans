@@ -38,6 +38,6 @@ final class IntPrimaryKeyTest extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\CoolBeans\Exception\InvalidFunctionParameters::class);
 
-        new \CoolBeans\PrimaryKey\IntPrimaryKey(-1);
+        new \CoolBeans\PrimaryKey\IntPrimaryKey(0);
     }
 }

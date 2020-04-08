@@ -157,6 +157,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('offsetGet')->with('id')->andReturn($this->activeRowData['id']);
         $activeRowMock->expects('offsetGet')->with('active')->andReturn(true);
         $activeRowMock->expects('offsetGet')->with('ready')->andReturn();
+        $activeRowMock->expects('offsetGet')->with('activated')->andReturn(1);
+        $activeRowMock->expects('offsetGet')->with('inactive')->andReturn(0);
         $activeRowMock->expects('offsetGet')->with('json')->andReturn('{"id":"1"}');
 
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
@@ -165,14 +167,19 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
             public int $id;
             public bool $active = true;
             public bool $ready;
+            public bool $activated;
+            public bool $inactive;
             public \Infinityloop\Utils\Json $json;
         };
 
         self::assertEquals($this->activeRowData['id'], $beanInstance->offsetGet('id'));
         self::assertEquals(true, $beanInstance->offsetGet('active'));
         self::assertEquals(false, $beanInstance->offsetGet('ready'));
+        self::assertEquals(true, $beanInstance->offsetGet('activated'));
+        self::assertEquals(false, $beanInstance->offsetGet('inactive'));
         self::assertInstanceOf(\Infinityloop\Utils\Json::class, $beanInstance->offsetGet('json'));
         self::assertEquals(['id' => '1'], $beanInstance->offsetGet('json')->toArray());
+        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Bean::class, 'initiateProperties'))->isProtected());
     }
 
     public function testInitiatePropertiesPropertyWithoutType() : void

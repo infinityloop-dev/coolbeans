@@ -30,7 +30,11 @@ final class HistoryTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
         $historyInstance = new \CoolBeans\Decorator\History($dataSourceMock, $historyDataSourceMock, ['deleted' => 0]);
 
-        self::assertEquals(new \CoolBeans\Result\HistoryUpdate($primaryKey, true, $primaryKeyInsert),$historyInstance->update($primaryKey, $updateData));
+        $result = $historyInstance->update($primaryKey, $updateData);
+
+        self::assertEquals(new \CoolBeans\Result\HistoryUpdate($primaryKey, true, $primaryKeyInsert), $result);
+        self::assertEquals($primaryKey, $result->updatedId);
+        self::assertEquals(true, $result->dataChanged);
     }
 
     public function testUpdateWithoutDataChange() : void
@@ -106,7 +110,11 @@ final class HistoryTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
         $historyInstance = new \CoolBeans\Decorator\History($dataSourceMock, $historyDataSourceMock, ['deleted' => 0]);
 
-        self::assertEquals(new \CoolBeans\Result\HistoryUpdateByArray([$primaryKey], [$primaryKey], [$primaryKeyInsert]), $historyInstance->updateByArray($filter, $updateData));
+        $result = $historyInstance->updateByArray($filter, $updateData);
+
+        self::assertEquals(new \CoolBeans\Result\HistoryUpdateByArray([$primaryKey], [$primaryKey], [$primaryKeyInsert]), $result);
+        self::assertEquals([$primaryKey], $result->updatedIds);
+        self::assertEquals([$primaryKey], $result->changedIds);
     }
 
     public function testUpdateByArrayWithoutDataChange() : void

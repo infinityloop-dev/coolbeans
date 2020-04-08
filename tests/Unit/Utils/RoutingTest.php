@@ -11,13 +11,15 @@ final class RoutingTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $inputParameters = [
             'id' => 1,
             'data-id' => 2,
-            'dataId' => 3,
+            'dataId' => '3',
+            'shrek' => 4,
         ];
 
         $outputParameters = [
             'id' => new \CoolBeans\PrimaryKey\IntPrimaryKey(1),
             'data-id' => new \CoolBeans\PrimaryKey\IntPrimaryKey(2),
             'dataId' => new \CoolBeans\PrimaryKey\IntPrimaryKey(3),
+            'shrek' => 4,
         ];
 
         self::assertEquals($outputParameters, \CoolBeans\Utils\Routing::filterIn($inputParameters));
@@ -37,12 +39,14 @@ final class RoutingTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
             'id' => new \CoolBeans\PrimaryKey\IntPrimaryKey(1),
             'data-id' => new \CoolBeans\PrimaryKey\IntPrimaryKey(2),
             'dataId' => new \CoolBeans\PrimaryKey\IntPrimaryKey(3),
+            'shrek' => new \CoolBeans\PrimaryKey\IntPrimaryKey(4),
         ];
 
         $outputParameters = [
             'id' => 1,
             'data-id' => 2,
             'dataId' => 3,
+            'shrek' => new \CoolBeans\PrimaryKey\IntPrimaryKey(4),
         ];
 
         self::assertEquals($outputParameters, \CoolBeans\Utils\Routing::filterOut($inputParameters));
