@@ -27,7 +27,7 @@ final class TableTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         self::assertEquals('table_name', $tableInstance->getName());
     }
 
-    public function testGetRow() : void
+    /*public function testGetRow() : void
     {
         $primaryKey = new \CoolBeans\PrimaryKey\IntPrimaryKey(10);
 
@@ -46,5 +46,5 @@ final class TableTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $tableInstance = new class('table_name', null, $contextFactory) extends \CoolBeans\Table {};
 
         $tableInstance->getRow($primaryKey);
-    }
+    }*/
 }
