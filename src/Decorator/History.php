@@ -99,8 +99,6 @@ final class History implements \CoolBeans\Contract\DataSource
             $oldData[$column] = $value;
         }
 
-        $result = $this->historyDataSource->insert($oldData);
-
-        return $result->insertedId;
+        return $this->historyDataSource->insert($oldData)->insertedId;
     }
 }
