@@ -225,4 +225,36 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
     {
         self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Selection::class, 'createRow'))->isProtected());
     }
+
+    public function testValidateTableName() : void
+    {
+        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
+        $selectionMock->expects('getName')->withNoArgs()->andReturn('test');
+
+        $testSelectionInstance = new TestSelection($selectionMock);
+
+        $testSelectionInstance->callValidateTableName();
+    }
+
+    public function testValidateTableNameRelatedSyntax() : void
+    {
+        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
+        $selectionMock->expects('getName')->withNoArgs()->andReturn('user.test');
+
+        $testSelectionInstance = new TestSelection($selectionMock);
+
+        $testSelectionInstance->callValidateTableName();
+    }
+
+    public function testValidateTableNameIncorrectName() : void
+    {
+        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
+        $selectionMock->expects('getName')->withNoArgs()->andReturn('selection_table');
+
+        $testSelectionInstance = new TestSelection($selectionMock);
+
+        $this->expectException(\CoolBeans\Exception\InvalidTable::class);
+
+        $testSelectionInstance->callValidateTableName();
+    }
 }
