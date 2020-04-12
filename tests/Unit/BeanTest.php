@@ -262,10 +262,23 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $testBeanInstance->callValidateTableName();
     }
 
-    public function testValidateTableNameIncorrectName() : void
+    public function validateTableNameIncorrectNameDataProvider() : array
+    {
+        return [
+            ['TEST_BEAN'],
+            ['test_Bean'],
+            ['Test_bean'],
+            ['Test_Bean'],
+        ];
+    }
+
+    /**
+     * @dataProvider validateTableNameIncorrectNameDataProvider
+     */
+    public function testValidateTableNameIncorrectName(string $tableName) : void
     {
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
-        $selectionMock->expects('getName')->withNoArgs()->andReturn('invalid_table');
+        $selectionMock->expects('getName')->withNoArgs()->andReturn($tableName);
 
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
         $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);

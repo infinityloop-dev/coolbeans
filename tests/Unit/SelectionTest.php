@@ -246,6 +246,19 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $testSelectionInstance->callValidateTableName();
     }
 
+    public function validateTableNameIncorrectNameDataProvider() : array
+    {
+        return [
+            ['TEST'],
+            ['Test'],
+            ['TesT'],
+            ['tests'],
+        ];
+    }
+
+    /**
+     * @dataProvider validateTableNameIncorrectNameDataProvider
+     */
     public function testValidateTableNameIncorrectName() : void
     {
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
