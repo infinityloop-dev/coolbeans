@@ -11,6 +11,7 @@
         "perMutator": "build/per-mutator.md"
     },
     "tmpDir": "/tmp/infection",
+    "minMsi": 80,
     "minCoveredMsi": 90,
     "mutators": {
         "@default": true
