@@ -32,7 +32,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "CoolBeans\\Tests\\": "Tests/"
+      "CoolBeans\\Tests\\": "tests/"
     }
   }
 }
