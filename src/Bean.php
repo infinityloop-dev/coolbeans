@@ -176,6 +176,10 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
                     $this->{$name} = \Infinityloop\Utils\Json::fromString($value);
 
                     break;
+                case \Infinityloop\CoolBeans\PrimaryKey\IntPrimaryKey::class:
+                    $this->{$name} = new \Infinityloop\CoolBeans\PrimaryKey\IntPrimaryKey($value);
+
+                    break;
                 default:
                     $this->{$name} = $value;
 
