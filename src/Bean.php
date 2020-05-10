@@ -165,10 +165,14 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
                 throw new \CoolBeans\Exception\MissingType('Property [' . $property->getName() . '] does not have type.');
             }
             
-            if ($type->allowsNull() && $value === null) {
-                $this->{$name} = null;
+            if ($value === null) {
+                if ($type->allowsNull()) {
+                    $this->{$name} = null;
 
-                continue;
+                    continue;
+                }
+
+                throw new \CoolBeans\Exception\NonNullableType('Property [' . $property->getName() . '] does not have nullable type.');
             }
 
             switch ($type->getName()) {
