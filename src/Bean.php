@@ -164,6 +164,12 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
             if (!$type instanceof \ReflectionType) {
                 throw new \CoolBeans\Exception\MissingType('Property [' . $property->getName() . '] does not have type.');
             }
+            
+            if ($type->allowsNull() && $value === null) {
+                $this->{$name} = null;
+
+                continue;
+            }
 
             switch ($type->getName()) {
                 case 'bool':
