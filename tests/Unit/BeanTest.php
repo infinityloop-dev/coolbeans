@@ -160,16 +160,18 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('offsetGet')->with('activated')->andReturn(1);
         $activeRowMock->expects('offsetGet')->with('inactive')->andReturn(0);
         $activeRowMock->expects('offsetGet')->with('json')->andReturn('{"id":"1"}');
+        $activeRowMock->expects('offsetGet')->with('intPrimaryKey')->andReturn(10);
 
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
         $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {
             public int $id;
             public bool $active = true;
-            public bool $ready;
+            public ?bool $ready;
             public bool $activated;
             public bool $inactive;
             public \Infinityloop\Utils\Json $json;
+            public \CoolBeans\PrimaryKey\IntPrimaryKey $intPrimaryKey;
         };
 
         self::assertEquals($this->activeRowData['id'], $beanInstance->offsetGet('id'));
@@ -180,6 +182,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         self::assertInstanceOf(\Infinityloop\Utils\Json::class, $beanInstance->offsetGet('json'));
         self::assertEquals(['id' => '1'], $beanInstance->offsetGet('json')->toArray());
         self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Bean::class, 'initiateProperties'))->isProtected());
+        self::assertEquals(10, $beanInstance->offsetGet('intPrimaryKey')->getValue());
     }
 
     public function testInitiatePropertiesPropertyWithoutType() : void
@@ -193,6 +196,20 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
         new class($activeRowMock) extends \CoolBeans\Bean {
             public $id;
+        };
+    }
+
+    public function testInitiatePropertiesPropertyWithoutNullable() : void
+    {
+        $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
+        $activeRowMock->expects('offsetGet')->with('nulled')->andReturn(null);
+        $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
+
+        $this->expectException(\CoolBeans\Exception\NonNullableType::class);
+        $this->expectExceptionMessage('Property [nulled] does not have nullable type.');
+
+        new class($activeRowMock) extends \CoolBeans\Bean {
+            public bool $nulled;
         };
     }
 
