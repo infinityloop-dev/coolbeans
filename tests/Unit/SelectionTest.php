@@ -6,6 +6,11 @@ namespace CoolBeans\Tests\Unit;
 
 final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 {
+    public function setUp() : void
+    {
+        \CoolBeans\Config::$validateColumns = false;
+    }
+
     public function testGetTableName() : void
     {
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
