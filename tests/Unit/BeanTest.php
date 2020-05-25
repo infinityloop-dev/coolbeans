@@ -10,6 +10,12 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         'id' => 1
     ];
 
+    public function setUp() : void
+    {
+        \CoolBeans\Config::$validateColumns = false;
+        \CoolBeans\Config::$validateTableName = false;
+    }
+
     public function testGetTableName() : void
     {
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);

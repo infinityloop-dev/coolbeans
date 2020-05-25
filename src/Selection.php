@@ -18,7 +18,7 @@ abstract class Selection implements \CoolBeans\Contract\Selection
         $this->selection = $selection;
         $this->reflection =  new \ReflectionClass(static::class);
 
-         if (\App\Bootstrap::isDebugMode()) {
+         if (\CoolBeans\Config::$validateTableName) {
              $this->validateTableName();
          }
     }
