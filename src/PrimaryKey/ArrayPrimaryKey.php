@@ -32,6 +32,6 @@ final class ArrayPrimaryKey extends PrimaryKey
 
     public function equals(PrimaryKey $compare) : bool
     {
-        return $compare instanceof self && $this->getValue() === $compare->getValue() && $this->getName() === $compare->getName();
+        return $compare instanceof self && $this->getValue() === $compare->getValue();
     }
 }
