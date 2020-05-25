@@ -7,4 +7,5 @@ namespace CoolBeans;
 class Config
 {
     public static bool $validateColumns = true;
+    public static bool $validateTableName = true;
 }

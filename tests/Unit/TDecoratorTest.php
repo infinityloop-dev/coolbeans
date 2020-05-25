@@ -9,6 +9,7 @@ final class TDecoratorTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
     public function setUp() : void
     {
         \CoolBeans\Config::$validateColumns = false;
+        \CoolBeans\Config::$validateTableName = false;
     }
 
     public function testGetRow() : void
