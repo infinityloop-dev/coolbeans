@@ -20,7 +20,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
         $this->reflection = new \ReflectionClass(static::class);
         $this->primaryKey = PrimaryKey::create($this->row);
 
-        if (\App\Bootstrap::isDebugMode()) {
+        if (\CoolBeans\Config::$validateColumns) {
             $this->validateTableName();
             $this->validateMissingColumns();
         }
