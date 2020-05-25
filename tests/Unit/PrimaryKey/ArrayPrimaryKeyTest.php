@@ -33,4 +33,36 @@ final class ArrayPrimaryKeyTest extends \PHPUnit\Framework\TestCase
 
         self::assertEquals('name_column', $primaryKey->getName());
     }
+
+    /**
+     * @dataProvider equalsDataProvider
+     * @param \CoolBeans\Contract\PrimaryKey $key
+     * @param \CoolBeans\Contract\PrimaryKey $compare
+     * @param bool $expectedOutput
+     */
+    public function testEquals(\CoolBeans\Contract\PrimaryKey $key, \CoolBeans\Contract\PrimaryKey $compare, bool $expectedOutput) : void
+    {
+        self::assertEquals($expectedOutput, $key->equals($compare));
+    }
+
+    public function equalsDataProvider() : array
+    {
+        return [
+            [
+                new \CoolBeans\PrimaryKey\ArrayPrimaryKey(['id' => 12, 'active' => 1]),
+                new \CoolBeans\PrimaryKey\ArrayPrimaryKey(['id' => 12, 'active' => 1]),
+                true,
+            ],
+            [
+                new \CoolBeans\PrimaryKey\ArrayPrimaryKey(['id' => 12]),
+                new \CoolBeans\PrimaryKey\ArrayPrimaryKey(['id' => 12, 'active' => 1]),
+                false,
+            ],
+            [
+                new \CoolBeans\PrimaryKey\ArrayPrimaryKey(['id' => 12, 'active' => 1]),
+                new \CoolBeans\PrimaryKey\ArrayPrimaryKey(['active' => 1, 'id' => 12]),
+                false,
+            ],
+        ];
+    }
 }

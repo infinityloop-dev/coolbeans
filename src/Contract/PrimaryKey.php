@@ -14,6 +14,8 @@ abstract class PrimaryKey
 
     abstract public function getName() : string;
 
+    abstract public function equals(PrimaryKey $compare) : bool;
+
     public static function create(\Nette\Database\Table\ActiveRow $activeRow) : self
     {
         $primary = $activeRow->getPrimary(false);
