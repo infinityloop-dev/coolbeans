@@ -35,4 +35,9 @@ final class IntPrimaryKey extends PrimaryKey
     {
         return $this->name;
     }
+
+    public function equals(PrimaryKey $compare) : bool
+    {
+        return $compare instanceof self && $this->getValue() === $compare->getValue() && $this->getName() === $compare->getName();
+    }
 }

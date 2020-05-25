@@ -29,4 +29,9 @@ final class ArrayPrimaryKey extends PrimaryKey
     {
         return \implode('|', \array_keys($this->value));
     }
+
+    public function equals(PrimaryKey $compare) : bool
+    {
+        return $compare instanceof self && $this->getValue() === $compare->getValue();
+    }
 }
