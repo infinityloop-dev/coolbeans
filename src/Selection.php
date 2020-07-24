@@ -161,7 +161,9 @@ abstract class Selection implements \CoolBeans\Contract\Selection
      */
     public function count() : int
     {
-        return $this->selection->count('*');
+        return \is_int($this->selection->getSqlBuilder()->getLimit())
+            ? $this->selection->count()
+            : $this->selection->count('*');
     }
 
     /**
