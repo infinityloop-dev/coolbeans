@@ -21,7 +21,7 @@ abstract class PrimaryKey
         $primary = $activeRow->getPrimary(false);
 
         if (\is_int($primary)) {
-            return new \CoolBeans\PrimaryKey\IntPrimaryKey($primary);
+            return new \CoolBeans\PrimaryKey\IntPrimaryKey($primary, $activeRow->getTable()->getPrimary(false));
         }
 
         if (\is_array($primary)) {
