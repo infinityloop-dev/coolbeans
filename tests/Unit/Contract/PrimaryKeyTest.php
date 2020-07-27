@@ -8,8 +8,12 @@ final class PrimaryKeyTest extends \PHPUnit\Framework\TestCase
 {
     public function testCreateWithIntKey() : void
     {
+        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
+        $selectionMock->expects('getPrimary')->with(false)->andReturn('id');
+
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(10);
+        $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
 
         $primaryKey = \CoolBeans\Contract\PrimaryKey::create($activeRowMock);
 
@@ -42,10 +46,14 @@ final class PrimaryKeyTest extends \PHPUnit\Framework\TestCase
 
     public function testFromSelection() : void
     {
+        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
+        $selectionMock->expects('getPrimary')->times(3)->with(false)->andReturn('id');
+
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(10);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(11);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(12);
+        $activeRowMock->expects('getTable')->times(3)->withNoArgs()->andReturn($selectionMock);
 
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('rewind')->withNoArgs();
