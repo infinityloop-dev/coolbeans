@@ -142,10 +142,28 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         self::assertEquals([1 => 'Shrek'], $selectionInstance->fetchPairs('id', 'name'));
     }
 
-    public function testCount() : void
+    public function testCountNullLimit() : void
     {
+        $sqlBuilderMock = \Mockery::mock(\Nette\Database\Table\SqlBuilder::class);
+        $sqlBuilderMock->expects('getLimit')->withNoArgs()->andReturnNull();
+
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
+        $selectionMock->expects('getSqlBuilder')->withNoArgs()->andReturn($sqlBuilderMock);
         $selectionMock->expects('count')->with('*')->andReturn(5);
+
+        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+
+        self::assertEquals(5, $selectionInstance->count());
+    }
+
+    public function testCountIntLimit() : void
+    {
+        $sqlBuilderMock = \Mockery::mock(\Nette\Database\Table\SqlBuilder::class);
+        $sqlBuilderMock->expects('getLimit')->withNoArgs()->andReturn(1);
+
+        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
+        $selectionMock->expects('getSqlBuilder')->withNoArgs()->andReturn($sqlBuilderMock);
+        $selectionMock->expects('count')->withNoArgs()->andReturn(5);
 
         $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
 

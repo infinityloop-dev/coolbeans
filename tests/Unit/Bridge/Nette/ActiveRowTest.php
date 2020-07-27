@@ -19,7 +19,7 @@ final class ActiveRowTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
     public function testGetPrimaryKey() : void
     {
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
-        $selectionMock->expects('getPrimary')->with(false)->andReturn('id');
+        $selectionMock->expects('getPrimary')->twice()->with(false)->andReturn('id');
 
         $activeRowInstance = new class(['id' => 15], $selectionMock) extends \CoolBeans\Bridge\Nette\ActiveRow {};
 
