@@ -24,7 +24,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
             $this->validateMissingColumns();
         }
 
-        if(\CoolBeans\Config::$validateTableName){
+        if (\CoolBeans\Config::$validateTableName){
             $this->validateTableName();
         }
 
