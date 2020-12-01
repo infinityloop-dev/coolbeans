@@ -10,7 +10,7 @@ interface Selection extends \Iterator, \Countable
 
     public function fetch(); // : ?\CoolBeans\Contract\Row
 
-    public function where(string $column, ...$value); // : static
+    public function where(string $column, string|int|array ...$val); // : static
 
     public function count() : int;
 

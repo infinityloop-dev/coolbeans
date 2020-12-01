@@ -33,10 +33,8 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     /**
      * Function to pass select query.
-     *
-     * @return static
      */
-    public function select(string $select) : self
+    public function select(string $select) : static
     {
         $this->selection->select($select);
 
@@ -45,11 +43,8 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     /**
      * Function to pass where query.
-     *
-     * @param string|int|array $val
-     * @return static
      */
-    public function where(string $col, ...$val) : self
+    public function where(string $col, string|int|array ...$val) : static
     {
         $this->selection->where($col, ...$val);
 
@@ -58,11 +53,8 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     /**
      * Function to pass where query in single parameter.
-     *
-     * @param string|array $col
-     * @return static
      */
-    public function whereOne($col) : self
+    public function whereOne(array|string $col) : static
     {
         $this->selection->where($col);
 
@@ -71,11 +63,8 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     /**
      * Function to pass whereOr query.
-     *
-     * @param array $cond
-     * @return static
      */
-    public function whereOr(array $cond) : self
+    public function whereOr(array $cond) : static
     {
         $this->selection->whereOr($cond);
 
@@ -84,10 +73,8 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     /**
      * Function to pass group query.
-     *
-     * @return static
      */
-    public function group(string $group) : self
+    public function group(string $group) : static
     {
         $this->selection->group($group);
 
@@ -96,10 +83,8 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     /**
      * Function to pass order query.
-     *
-     * @return static
      */
-    public function order(string $order) : self
+    public function order(string $order) : static
     {
         $this->selection->order($order);
 
@@ -108,10 +93,8 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     /**
      * Function to pass limit query.
-     *
-     * @return static
      */
-    public function limit(int $limit, ?int $offset = null) : self
+    public function limit(int $limit, ?int $offset = null) : static
     {
         $this->selection->limit($limit, $offset);
 
@@ -120,10 +103,8 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     /**
      * Function to pass alias query.
-     *
-     * @return static
      */
-    public function alias(string $tableChain, string $alias) : self
+    public function alias(string $tableChain, string $alias) : static
     {
         $this->selection->alias($tableChain, $alias);
 
@@ -195,7 +176,7 @@ abstract class Selection implements \CoolBeans\Contract\Selection
     /**
      * Iterator interface method.
      */
-    public function key() : int
+    public function key() : int|string
     {
         return $this->selection->key();
     }
