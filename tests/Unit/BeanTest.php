@@ -186,7 +186,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         self::assertEquals(true, $beanInstance->offsetGet('activated'));
         self::assertEquals(false, $beanInstance->offsetGet('inactive'));
         self::assertInstanceOf(\Infinityloop\Utils\Json::class, $beanInstance->offsetGet('json'));
-        self::assertEquals(['id' => '1'], $beanInstance->offsetGet('json')->toArray());
+        self::assertEquals('{"id":"1"}', $beanInstance->offsetGet('json')->toString());
         self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Bean::class, 'initiateProperties'))->isProtected());
         self::assertEquals(10, $beanInstance->offsetGet('intPrimaryKey')->getValue());
     }
