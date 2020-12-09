@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit\Bridge\Nette;
 
@@ -61,12 +61,13 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $contextMock->expects('getConventions')->withNoArgs()->andReturn($conventionsMock);
         $contextMock->expects('getStructure')->withNoArgs()->andReturn($structureMock);
 
-        $selection = new class($contextMock, $conventionsMock, 'table_name') extends \CoolBeans\Bridge\Nette\Selection {
-            public function callCreateRow(array $row) : \CoolBeans\Bridge\Nette\ActiveRow {
+        $selection = new class ($contextMock, $conventionsMock, 'table_name') extends \CoolBeans\Bridge\Nette\Selection {
+            public function callCreateRow(array $row) : \CoolBeans\Bridge\Nette\ActiveRow
+            {
                 return $this->createRow($row);
             }
         };
 
-        self::assertEquals(new \CoolBeans\PrimaryKey\IntPrimaryKey(1),$selection->callCreateRow(['id' => 1, 'active' => 1])->getPrimaryKey());
+        self::assertEquals(new \CoolBeans\PrimaryKey\IntPrimaryKey(1), $selection->callCreateRow(['id' => 1, 'active' => 1])->getPrimaryKey());
     }
 }

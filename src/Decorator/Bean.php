@@ -4,16 +4,16 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Decorator;
 
-use CoolBeans\Contract\PrimaryKey;
+use \CoolBeans\Contract\PrimaryKey;
 
 final class Bean implements \CoolBeans\DataSource
 {
     use \Nette\SmartObject;
     use \CoolBeans\Decorator\TCommon;
 
-    protected \CoolBeans\Contract\DataSource $dataSource;
-    protected string $rowClass;
-    protected string $selectionClass;
+    private \CoolBeans\Contract\DataSource $dataSource;
+    private string $rowClass;
+    private string $selectionClass;
 
     public function __construct(\CoolBeans\Contract\DataSource $dataSource, string $rowClass, string $selectionClass)
     {
@@ -45,7 +45,7 @@ final class Bean implements \CoolBeans\DataSource
     /**
      * Function to create according ActiveRow wrapper
      */
-    protected function createRow(\CoolBeans\Contract\Row $row) : \CoolBeans\Bean
+    private function createRow(\CoolBeans\Contract\Row $row) : \CoolBeans\Bean
     {
         return new $this->rowClass($row);
     }
@@ -53,7 +53,7 @@ final class Bean implements \CoolBeans\DataSource
     /**
      * Function to create according Selection wrapper
      */
-    protected function createSelection(\CoolBeans\Contract\Selection $sel) : \CoolBeans\Selection
+    private function createSelection(\CoolBeans\Contract\Selection $sel) : \CoolBeans\Selection
     {
         return new $this->selectionClass($sel);
     }

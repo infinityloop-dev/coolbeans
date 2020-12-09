@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Decorator;
 
-use CoolBeans\Contract\PrimaryKey;
+use \CoolBeans\Contract\PrimaryKey;
 
 final class Active implements \CoolBeans\Contract\DataSource
 {

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit\Decorator;
 
@@ -15,7 +15,7 @@ final class TDecoratorTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('getRow')->with($primaryKey)->andReturn($activeRowMock);
 
-        $decoratorInstance = new class($dataSourceMock) {
+        $decoratorInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TDecorator;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -33,7 +33,7 @@ final class TDecoratorTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('findAll')->withNoArgs()->andReturn($selectionMock);
-        $decoratorInstance = new class($dataSourceMock) {
+        $decoratorInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TDecorator;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -51,7 +51,7 @@ final class TDecoratorTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('findByArray')->with(['active' => 0])->andReturn($selectionMock);
-        $decoratorInstance = new class($dataSourceMock) {
+        $decoratorInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TDecorator;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)

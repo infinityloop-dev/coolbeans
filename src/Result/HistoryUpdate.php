@@ -4,9 +4,9 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Result;
 
-use CoolBeans\Contract\PrimaryKey;
+use \CoolBeans\Contract\PrimaryKey;
 
-class HistoryUpdate extends Update
+class HistoryUpdate extends \CoolBeans\Result\Update
 {
     public ?PrimaryKey $historyId;
 

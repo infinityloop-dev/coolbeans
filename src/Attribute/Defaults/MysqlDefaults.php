@@ -8,6 +8,6 @@ class MysqlDefaults
 {
     use \Nette\StaticClass;
 
-    const CURRENT_TIMESTAMP = 'CURRENT_TIMETAMP()';
-    const NOW = 'NOW()';
+    public const CURRENT_TIMESTAMP = 'CURRENT_TIMETAMP()';
+    public const NOW = 'NOW()';
 }

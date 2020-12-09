@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit;
 
@@ -17,7 +17,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('getName')->withNoArgs()->andReturn('table_name');
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertEquals('table_name', $selectionInstance->getTableName());
     }
@@ -27,7 +28,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('select')->with('*');
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertInstanceOf(\CoolBeans\Selection::class, $selectionInstance->select('*'));
     }
@@ -37,7 +39,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('where')->with('active', 1);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertInstanceOf(\CoolBeans\Selection::class, $selectionInstance->where('active', 1));
     }
@@ -47,7 +50,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('where')->with(['active' => 1]);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertInstanceOf(\CoolBeans\Selection::class, $selectionInstance->whereOne(['active' => 1]));
     }
@@ -57,7 +61,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('whereOr')->with(['active' => 1, 'name' => 'Shrek']);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertInstanceOf(\CoolBeans\Selection::class, $selectionInstance->whereOr(['active' => 1, 'name' => 'Shrek']));
     }
@@ -67,7 +72,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('group')->with('active');
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertInstanceOf(\CoolBeans\Selection::class, $selectionInstance->group('active'));
     }
@@ -77,7 +83,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('order')->with('active');
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertInstanceOf(\CoolBeans\Selection::class, $selectionInstance->order('active'));
     }
@@ -87,7 +94,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('limit')->with(5, null);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertInstanceOf(\CoolBeans\Selection::class, $selectionInstance->limit(5));
     }
@@ -97,7 +105,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('alias')->with('user', 'u');
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertInstanceOf(\CoolBeans\Selection::class, $selectionInstance->alias('user', 'u'));
     }
@@ -110,11 +119,11 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('fetch')->withNoArgs()->andReturn($activeRowMock);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
             protected const ROW_CLASS = TestBean::class;
         };
 
-        self::assertEquals(new TestBean($activeRowMock), $selectionInstance->fetch());
+        self::assertEquals(new \CoolBeans\Tests\Unit\TestBean($activeRowMock), $selectionInstance->fetch());
     }
 
     public function testFetchAll() : void
@@ -125,11 +134,11 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('fetch')->withNoArgs()->andReturn($activeRowMock);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
             protected const ROW_CLASS = TestBean::class;
         };
 
-        self::assertEquals(new TestBean($activeRowMock), $selectionInstance->fetch());
+        self::assertEquals(new \CoolBeans\Tests\Unit\TestBean($activeRowMock), $selectionInstance->fetch());
     }
 
     public function testFetchPairs() : void
@@ -137,7 +146,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('fetchPairs')->with('id', 'name')->andReturn([1 => 'Shrek']);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertEquals([1 => 'Shrek'], $selectionInstance->fetchPairs('id', 'name'));
     }
@@ -151,7 +161,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock->expects('getSqlBuilder')->withNoArgs()->andReturn($sqlBuilderMock);
         $selectionMock->expects('count')->with('*')->andReturn(5);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertEquals(5, $selectionInstance->count());
     }
@@ -165,27 +176,19 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock->expects('getSqlBuilder')->withNoArgs()->andReturn($sqlBuilderMock);
         $selectionMock->expects('count')->withNoArgs()->andReturn(5);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertEquals(5, $selectionInstance->count());
     }
-
-    /*public function testClone() : void
-    {
-        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
-        //$selectionMock->expects('count')->with('*')->andReturn(5);
-
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
-
-        self::assertEquals($selectionInstance, $selectionInstance->clone());
-    }*/
 
     public function testRewind() : void
     {
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('rewind')->withNoArgs();
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         $selectionInstance->rewind();
     }
@@ -195,7 +198,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('valid')->withNoArgs()->andReturn(true);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertEquals(true, $selectionInstance->valid());
     }
@@ -205,7 +209,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('key')->withNoArgs()->andReturn(5);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertEquals(5, $selectionInstance->key());
     }
@@ -218,11 +223,11 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('current')->withNoArgs()->andReturn($activeRowMock);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
             protected const ROW_CLASS = TestBean::class;
         };
 
-        self::assertEquals(new TestBean($activeRowMock), $selectionInstance->current());
+        self::assertEquals(new \CoolBeans\Tests\Unit\TestBean($activeRowMock), $selectionInstance->current());
     }
 
     public function testCurrentNullSelection() : void
@@ -230,7 +235,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('current')->withNoArgs()->andReturn(null);
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         self::assertEquals(null, $selectionInstance->current());
     }
@@ -240,7 +246,8 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('next')->withNoArgs();
 
-        $selectionInstance = new class($selectionMock) extends \CoolBeans\Selection {};
+        $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
+        };
 
         $selectionInstance->next();
     }
@@ -255,7 +262,7 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('getName')->withNoArgs()->andReturn('test');
 
-        $testSelectionInstance = new TestSelection($selectionMock);
+        $testSelectionInstance = new \CoolBeans\Tests\Unit\TestSelection($selectionMock);
 
         $testSelectionInstance->callValidateTableName();
     }
@@ -265,7 +272,7 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('getName')->withNoArgs()->andReturn('user.test');
 
-        $testSelectionInstance = new TestSelection($selectionMock);
+        $testSelectionInstance = new \CoolBeans\Tests\Unit\TestSelection($selectionMock);
 
         $testSelectionInstance->callValidateTableName();
     }
@@ -288,7 +295,7 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
         $selectionMock->expects('getName')->withNoArgs()->andReturn('selection_table');
 
-        $testSelectionInstance = new TestSelection($selectionMock);
+        $testSelectionInstance = new \CoolBeans\Tests\Unit\TestSelection($selectionMock);
 
         $this->expectException(\CoolBeans\Exception\InvalidTable::class);
 

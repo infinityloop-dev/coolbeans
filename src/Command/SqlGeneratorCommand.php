@@ -14,6 +14,40 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         parent::__construct(self::$defaultName);
     }
 
+    public function generateSqlForBean(string $className) : string
+    {
+        $bean = new \ReflectionClass($className);
+
+        $toReturn = 'CREATE TABLE `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName()) . '`(' . \PHP_EOL;
+        $foreignKeys = '';
+        $data = [];
+
+        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            if (!$property->getType() instanceof \ReflectionType) {
+                continue;
+            }
+
+            $data[] = [
+                'name' => $this->getPropertyName($property),
+                'dataType' => $this->getDataType($property),
+                'notNull' => $this->getNotNull($property),
+                'default' => $this->getDefault($property),
+            ];
+
+            $foreignKeys .= $this->getForeignKey($property);
+        }
+
+        $toReturn .= $this->buildTable($data);
+
+        $toReturn .= ($foreignKeys === '' ? '' : \PHP_EOL) . $foreignKeys;
+
+        $toReturn .= ')' . \PHP_EOL;
+        $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
+        $toReturn .= self::INDENTATION . 'COLLATE `utf8mb4_general_ci`;';
+
+        return $toReturn;
+    }
+
     protected function configure() : void
     {
         $this->setName(self::$defaultName);
@@ -50,40 +84,6 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         }
 
         return 0;
-    }
-
-    public function generateSqlForBean(string $className) : string
-    {
-        $bean = new \ReflectionClass($className);
-
-        $toReturn = 'CREATE TABLE `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName()) . '`(' . \PHP_EOL;
-        $foreignKeys = '';
-        $data = [];
-
-        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if (!$property->getType() instanceof \ReflectionType) {
-                continue;
-            }
-
-            $data[] = [
-                'name' => $this->getPropertyName($property),
-                'dataType' => $this->getDataType($property),
-                'notNull' => $this->getNotNull($property),
-                'default' => $this->getDefault($property),
-            ];
-
-            $foreignKeys .= $this->getForeignKey($property);
-        }
-
-        $toReturn .= $this->buildTable($data);
-
-        $toReturn .= ($foreignKeys === '' ? '' : \PHP_EOL) . $foreignKeys;
-
-        $toReturn .= ')' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'COLLATE `utf8mb4_general_ci`;';
-
-        return $toReturn;
     }
 
     private function buildTable(array $data) : string
@@ -154,7 +154,9 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
 
     private function getNotNull(\ReflectionProperty $property) : string
     {
-        return $property->getType()->allowsNull() === false ? 'NOT NULL' : '        ';
+        return $property->getType()->allowsNull() === false
+            ? 'NOT NULL'
+            : '        ';
     }
 
     private function getDataType(\ReflectionProperty $property) : string
@@ -162,10 +164,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         $type = $property->getType();
         $typeOverride = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
 
-        if (\count($typeOverride) === 1) {
-            $dataType = $typeOverride[0]->getArguments()[0];
-        } else {
-            $dataType = match ($type->getName()) {
+        return \count($typeOverride) === 1 ? $typeOverride[0]->getArguments()[0] : match $type->getName() {
                 'string', \Infinityloop\Utils\Json::class => 'VARCHAR(255)',
                 'int' => 'INT(11)',
                 'float' => 'FLOAT(11)',
@@ -173,9 +172,6 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
                 \CoolBeans\PrimaryKey\IntPrimaryKey::class => 'INT(11) UNSIGNED',
                 'DateTime', \Nette\Utils\DateTime::class => 'DATETIME',
             };
-        }
-
-        return $dataType;
     }
 
     private function getPropertyName(\ReflectionProperty $property) : string
@@ -190,6 +186,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         }
 
         $tableName = \str_replace('_id', '', $property->getName());
+
         return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $tableName . '`(`id`),' . \PHP_EOL;
     }
 
@@ -199,12 +196,12 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         $robotLoader->addDirectory(__DIR__ . $destination);
         $robotLoader->rebuild();
 
-        $foundClasses = array_keys($robotLoader->getIndexedClasses());
+        $foundClasses = \array_keys($robotLoader->getIndexedClasses());
 
         $beans = [];
 
         foreach ($foundClasses as $class) {
-            if(!\is_subclass_of($class, \CoolBeans\Bean::class)) {
+            if (!\is_subclass_of($class, \CoolBeans\Bean::class)) {
                 continue;
             }
 

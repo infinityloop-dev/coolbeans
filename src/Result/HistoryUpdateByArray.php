@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Result;
 
-class HistoryUpdateByArray extends UpdateByArray
+class HistoryUpdateByArray extends \CoolBeans\Result\UpdateByArray
 {
     public array $historyIds;
 

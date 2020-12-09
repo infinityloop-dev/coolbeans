@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Bridge\Nette;
 
-use CoolBeans\Contract\PrimaryKey;
+use \CoolBeans\Contract\PrimaryKey;
 
 interface DataSource extends \CoolBeans\Contract\DataSource
 {

@@ -4,11 +4,9 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Decorator;
 
-use CoolBeans\Contract\PrimaryKey;
-
 /**
  * Trait TCommon
- * 
+ *
  * @property \CoolBeans\Contract\DataSource $dataSource
  */
 trait TCommon
@@ -28,7 +26,7 @@ trait TCommon
         return $this->dataSource->insertMultiple($data);
     }
 
-    public function update(PrimaryKey $key, array $data) : \CoolBeans\Result\Update
+    public function update(\CoolBeans\Contract\PrimaryKey $key, array $data) : \CoolBeans\Result\Update
     {
         return $this->dataSource->update($key, $data);
     }
@@ -38,7 +36,7 @@ trait TCommon
         return $this->dataSource->updateByArray($filter, $data);
     }
 
-    public function delete(PrimaryKey $key) : \CoolBeans\Result\Delete
+    public function delete(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Result\Delete
     {
         return $this->dataSource->delete($key);
     }
@@ -48,7 +46,7 @@ trait TCommon
         return $this->dataSource->deleteByArray($filter);
     }
 
-    public function upsert(?PrimaryKey $key, array $values) : \CoolBeans\Contract\Result
+    public function upsert(?\CoolBeans\Contract\PrimaryKey $key, array $values) : \CoolBeans\Contract\Result
     {
         return $this->dataSource->upsert($key, $values);
     }

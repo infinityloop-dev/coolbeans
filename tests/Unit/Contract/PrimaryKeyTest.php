@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit\Contract;
 
@@ -68,12 +68,13 @@ final class PrimaryKeyTest extends \PHPUnit\Framework\TestCase
         $selectionMock->expects('next')->withNoArgs();
         $selectionMock->expects('valid')->withNoArgs()->andReturnFalse();
 
-        self::assertEquals([
-            0 => new \CoolBeans\PrimaryKey\IntPrimaryKey(10),
-            1 => new \CoolBeans\PrimaryKey\IntPrimaryKey(11),
-            2 => new \CoolBeans\PrimaryKey\IntPrimaryKey(12),
-        ],
-            \CoolBeans\Contract\PrimaryKey::fromSelection($selectionMock)
+        self::assertEquals(
+            [
+                0 => new \CoolBeans\PrimaryKey\IntPrimaryKey(10),
+                1 => new \CoolBeans\PrimaryKey\IntPrimaryKey(11),
+                2 => new \CoolBeans\PrimaryKey\IntPrimaryKey(12),
+            ],
+            \CoolBeans\Contract\PrimaryKey::fromSelection($selectionMock),
         );
     }
 }
