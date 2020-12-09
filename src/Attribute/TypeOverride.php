@@ -7,7 +7,9 @@ namespace CoolBeans\Attribute;
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class TypeOverride
 {
-    public function __construct(public string $type)
+    public function __construct(
+        public string $type
+    )
     {
 
     }

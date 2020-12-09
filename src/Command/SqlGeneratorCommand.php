@@ -18,7 +18,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
     {
         $this->setName(self::$defaultName);
         $this->setDescription('Converts Beans into SQL.');
-        $this->addArgument('destination', \Symfony\Component\Console\Input\InputArgument::REQUIRED, 'Path to folder');
+        $this->addArgument('source', \Symfony\Component\Console\Input\InputArgument::REQUIRED, 'Path to folder');
         $this->addArgument('output', \Symfony\Component\Console\Input\InputArgument::OPTIONAL, 'Output file path');
     }
 
@@ -28,11 +28,17 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
     ) : int
     {
         $converted = '';
-        $destination = $input->getArgument('destination');
+        $destination = $input->getArgument('source');
         $beans = $this->getBeans($destination);
 
-        foreach ($beans as $bean) {
+        $lastBean = \array_key_last($beans);
+
+        foreach ($beans as $key => $bean) {
             $converted .= $this->generateSqlForBean($bean);
+
+            if ($lastBean !== $key) {
+                $converted .= \PHP_EOL . \PHP_EOL;
+            }
         }
 
         $outputFile = $input->getArgument('output');
@@ -46,7 +52,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         return 0;
     }
 
-    public function generateSqlForBean($className) : string
+    public function generateSqlForBean(string $className) : string
     {
         $bean = new \ReflectionClass($className);
 
@@ -59,7 +65,13 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
                 continue;
             }
 
-            $data[] = $this->getData($property);
+            $data[] = [
+                'name' => $this->getPropertyName($property),
+                'dataType' => $this->getDataType($property),
+                'notNull' => $this->getNotNull($property),
+                'default' => $this->getDefault($property),
+            ];
+
             $foreignKeys .= $this->getForeignKey($property);
         }
 
@@ -69,7 +81,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
 
         $toReturn .= ')' . \PHP_EOL;
         $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'COLLATE `utf8mb4_general_ci`;' . \PHP_EOL . \PHP_EOL;
+        $toReturn .= self::INDENTATION . 'COLLATE `utf8mb4_general_ci`;';
 
         return $toReturn;
     }
@@ -81,35 +93,18 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         $toReturn = '';
 
         foreach ($data as $row) {
-            $nameLength = \mb_strlen($row['name']);
-            $dataTypeLength = \mb_strlen($row['dataType']);
-            $toReturn .= self::INDENTATION . $row['name'] . \str_repeat(' ', $longestNameLength - $nameLength + 1);
-            $toReturn .= $this->buildDataType($row, $longestDataTypeLength, $dataTypeLength);
-            $toReturn .= $row['notNull'] === true ? ' NOT NULL' : '';
-            $toReturn .= $row['default'];
-            $toReturn .= $this->buildAutoIncrement($row['name']);
-            $toReturn .= ',' . \PHP_EOL;
+            $nameLength = \strlen($row['name']);
+            $dataTypeLength = \strlen($row['dataType']);
+            $toReturn .= self::INDENTATION
+                . $row['name'] . \str_repeat(' ', $longestNameLength - $nameLength + 1)
+                . $row['dataType'] . \str_repeat(' ', $longestDataTypeLength - $dataTypeLength + 1)
+                . $row['notNull']
+                . $row['default'];
+
+            $toReturn = \rtrim($toReturn) . ',' . \PHP_EOL;
         }
 
         return $toReturn;
-    }
-
-    private function buildAutoIncrement(string $name) : string
-    {
-        return $name === '`id`' ? ' AUTOINCREMENT' : '';
-    }
-
-    private function buildDataType(array $row, int $longestDataTypeLenght, int $dataTypeLenght) : string
-    {
-        if ($row['notNull'] === false && $row['default'] === '') {
-            return $row['dataType'];
-        }
-
-        if ($row['notNull'] === false && $row['default'] !== '') {
-            return $row['dataType'] . \str_repeat(' ', $longestDataTypeLenght - $dataTypeLenght + 9);
-        }
-
-        return $row['dataType'] . \str_repeat(' ', $longestDataTypeLenght - $dataTypeLenght);
     }
 
     private function getLongestByType(array $data, string $type) : int
@@ -127,20 +122,14 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         return $maxLength;
     }
 
-    private function getData(\ReflectionProperty $property) : array
-    {
-        return [
-            'name' => $this->getPropertyName($property),
-            'dataType' => $this->getDataType($property),
-            'notNull' => $this->isNotNull($property),
-            'default' => $this->getDefault($property),
-        ];
-    }
-
     private function getDefault(\ReflectionProperty $property) : string
     {
+        if ($property->getName() === 'id') {
+            return ' AUTOINCREMENT';
+        }
+
         $type = $property->getType();
-        $defaultValueAttribute = $property->getAttributes(\CoolBeans\Attribute\FunctionDefaultValue::class);
+        $defaultValueAttribute = $property->getAttributes(\CoolBeans\Attribute\DefaultValue::class);
 
         if (!$property->hasDefaultValue() && \count($defaultValueAttribute) === 0) {
             return '';
@@ -163,9 +152,9 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         return ' DEFAULT "' . $defaultValue . '"';
     }
 
-    private function isNotNull(\ReflectionProperty $property) : bool
+    private function getNotNull(\ReflectionProperty $property) : string
     {
-        return !$property->getType()->allowsNull();
+        return $property->getType()->allowsNull() === false ? 'NOT NULL' : '        ';
     }
 
     private function getDataType(\ReflectionProperty $property) : string
