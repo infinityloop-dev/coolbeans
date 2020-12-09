@@ -164,7 +164,9 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         $type = $property->getType();
         $typeOverride = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
 
-        return \count($typeOverride) === 1 ? $typeOverride[0]->getArguments()[0] : match $type->getName() {
+        return \count($typeOverride) === 1
+            ? $typeOverride[0]->getArguments()[0]
+            : match ($type->getName()) {
                 'string', \Infinityloop\Utils\Json::class => 'VARCHAR(255)',
                 'int' => 'INT(11)',
                 'float' => 'FLOAT(11)',

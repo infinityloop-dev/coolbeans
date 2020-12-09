@@ -45,7 +45,7 @@ final class Bean implements \CoolBeans\DataSource
     /**
      * Function to create according ActiveRow wrapper
      */
-    private function createRow(\CoolBeans\Contract\Row $row) : \CoolBeans\Bean
+    protected function createRow(\CoolBeans\Contract\Row $row) : \CoolBeans\Bean
     {
         return new $this->rowClass($row);
     }
@@ -53,7 +53,7 @@ final class Bean implements \CoolBeans\DataSource
     /**
      * Function to create according Selection wrapper
      */
-    private function createSelection(\CoolBeans\Contract\Selection $sel) : \CoolBeans\Selection
+    protected function createSelection(\CoolBeans\Contract\Selection $sel) : \CoolBeans\Selection
     {
         return new $this->selectionClass($sel);
     }

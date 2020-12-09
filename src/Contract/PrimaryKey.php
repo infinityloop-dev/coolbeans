@@ -23,7 +23,7 @@ abstract class PrimaryKey
         throw new \CoolBeans\Exception\MissingPrimaryKey('Table [' . $activeRow->getTable()->getName() . '] has no primary key.');
     }
 
-    abstract public function getValue() : void;
+    abstract public function getValue() : int|array;
 
     abstract public function printValue() : string;
 
