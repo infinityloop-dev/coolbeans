@@ -23,7 +23,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         $data = [];
 
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if (!$property->getType() instanceof \ReflectionType) {
+            if (!$property->getType() instanceof \ReflectionNamedType) {
                 continue;
             }
 
@@ -130,6 +130,8 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         }
 
         $type = $property->getType();
+        \assert($type instanceof \ReflectionNamedType);
+
         $defaultValueAttribute = $property->getAttributes(\CoolBeans\Attribute\DefaultValue::class);
 
         if (!$property->hasDefaultValue() && \count($defaultValueAttribute) === 0) {
@@ -163,6 +165,8 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
     private function getDataType(\ReflectionProperty $property) : string
     {
         $type = $property->getType();
+        \assert($type instanceof \ReflectionNamedType);
+
         $typeOverride = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
 
         return \count($typeOverride) === 1
@@ -184,7 +188,10 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
 
     private function getForeignKey(\ReflectionProperty $property) : string
     {
-        if ($property->getType()->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class || $property->getName() === 'id') {
+        $type = $property->getType();
+        \assert($type instanceof \ReflectionNamedType);
+
+        if ($type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class || $property->getName() === 'id') {
             return '';
         }
 

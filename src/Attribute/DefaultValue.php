@@ -11,6 +11,5 @@ class DefaultValue
         public string $defaultValue
     )
     {
-
     }
 }

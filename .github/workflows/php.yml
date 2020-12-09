@@ -27,7 +27,7 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
-    - name: Mutation tests
+    - name: Tests
       run: composer run-script phpunit
 
   mutation:
@@ -50,7 +50,7 @@ jobs:
       - name: Install dependencies
         run: composer install --prefer-dist --no-progress --no-suggest
 
-      - name: Tests
+      - name: Mutation tests
         run: composer run-script infection
 
   phpstan:

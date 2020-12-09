@@ -129,7 +129,7 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
         return $this->insert($values);
     }
 
-    public function transaction(callable $function)
+    public function transaction(callable $function) : mixed
     {
         $inTransaction = $this->getContext()->getConnection()->getPdo()->inTransaction();
 

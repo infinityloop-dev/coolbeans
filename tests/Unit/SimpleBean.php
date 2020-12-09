@@ -1,9 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit;
 
+//@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
+//@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
 class SimpleBean extends \CoolBeans\Bean
 {
     private int $col1;

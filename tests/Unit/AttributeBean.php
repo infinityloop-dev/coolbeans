@@ -1,9 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit;
 
+//@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
+//@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
 class AttributeBean extends \CoolBeans\Bean
 {
     #[\CoolBeans\Attribute\DefaultValue(\CoolBeans\Attribute\Defaults\MysqlDefaults::NOW)]

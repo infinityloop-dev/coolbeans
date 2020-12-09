@@ -11,6 +11,5 @@ class TypeOverride
         public string $type
     )
     {
-
     }
 }

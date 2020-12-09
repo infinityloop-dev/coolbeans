@@ -89,11 +89,11 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
     public function testCreateRowVisibility() : void
     {
-        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Decorator\Bean::class, 'createRow'))->isProtected());
+        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Decorator\Bean::class, 'createRow'))->isPrivate());
     }
 
     public function testCreateSelectionVisibility() : void
     {
-        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Decorator\Bean::class, 'createSelection'))->isProtected());
+        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Decorator\Bean::class, 'createSelection'))->isPrivate());
     }
 }
