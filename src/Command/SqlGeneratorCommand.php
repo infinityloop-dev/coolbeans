@@ -52,7 +52,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
     {
         $bean = new \ReflectionClass($className);
 
-        $toReturn = 'CREATE TABLE `'. \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName()) .'`(' . \PHP_EOL;
+        $toReturn = 'CREATE TABLE `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName()) . '`(' . \PHP_EOL;
         $foreignKeys = '';
         $data = [];
 
@@ -162,14 +162,12 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
             return ' DEFAULT ' . ($defaultValue === true ? '1' : '0');
         }
 
-        return ' DEFAULT "'. $defaultValue .'"';
+        return ' DEFAULT "' . $defaultValue . '"';
     }
 
     private function isNotNull(\ReflectionProperty $property) : bool
     {
-        $type = $property->getType();
-
-        return !$type->allowsNull();
+        return !$property->getType()->allowsNull();
     }
 
     private function getDataType(\ReflectionProperty $property) : string
@@ -205,7 +203,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         }
 
         $tableName = \str_replace('_id', '', $property->getName());
-        return self::INDENTATION . 'FOREIGN KEY (`'. $property->getName() .'`) REFERENCES `'. $tableName .'`(`id`),' . \PHP_EOL;
+        return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $tableName . '`(`id`),' . \PHP_EOL;
     }
 
     private function getBeans(string $destination) : array
