@@ -27,8 +27,14 @@ jobs:
     - name: Install dependencies
       run: composer install --prefer-dist --no-progress --no-suggest
 
+    - name: Codestyle
+      run: composer run-script codestyle
+
     - name: Tests
       run: composer run-script phpunit
 
     - name: Mutation tests
       run: composer run-script infection
+
+    - name: PHPStan
+      run: composer run-script phpstan
