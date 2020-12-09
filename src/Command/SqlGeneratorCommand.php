@@ -64,6 +64,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         $converted = '';
         $destination = $input->getArgument('source');
         $beans = $this->getBeans($destination);
+        \asort($beans);
 
         $lastBean = \array_key_last($beans);
 
