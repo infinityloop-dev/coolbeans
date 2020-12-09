@@ -14,40 +14,6 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         parent::__construct(self::$defaultName);
     }
 
-    public function generateSqlForBean(string $className) : string
-    {
-        $bean = new \ReflectionClass($className);
-
-        $toReturn = 'CREATE TABLE `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName()) . '`(' . \PHP_EOL;
-        $foreignKeys = '';
-        $data = [];
-
-        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if (!$property->getType() instanceof \ReflectionNamedType) {
-                continue;
-            }
-
-            $data[] = [
-                'name' => $this->getPropertyName($property),
-                'dataType' => $this->getDataType($property),
-                'notNull' => $this->getNotNull($property),
-                'default' => $this->getDefault($property),
-            ];
-
-            $foreignKeys .= $this->getForeignKey($property);
-        }
-
-        $toReturn .= $this->buildTable($data);
-
-        $toReturn .= ($foreignKeys === '' ? '' : \PHP_EOL) . $foreignKeys;
-
-        $toReturn .= ')' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'COLLATE `utf8mb4_general_ci`;';
-
-        return $toReturn;
-    }
-
     protected function configure() : void
     {
         $this->setName(self::$defaultName);
@@ -85,6 +51,40 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         }
 
         return 0;
+    }
+
+    private function generateSqlForBean(string $className) : string
+    {
+        $bean = new \ReflectionClass($className);
+
+        $toReturn = 'CREATE TABLE `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName()) . '`(' . \PHP_EOL;
+        $foreignKeys = '';
+        $data = [];
+
+        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            if (!$property->getType() instanceof \ReflectionNamedType) {
+                continue;
+            }
+
+            $data[] = [
+                'name' => $this->getPropertyName($property),
+                'dataType' => $this->getDataType($property),
+                'notNull' => $this->getNotNull($property),
+                'default' => $this->getDefault($property),
+            ];
+
+            $foreignKeys .= $this->getForeignKey($property);
+        }
+
+        $toReturn .= $this->buildTable($data);
+
+        $toReturn .= ($foreignKeys === '' ? '' : \PHP_EOL) . $foreignKeys;
+
+        $toReturn .= ')' . \PHP_EOL;
+        $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
+        $toReturn .= self::INDENTATION . 'COLLATE `utf8mb4_general_ci`;';
+
+        return $toReturn;
     }
 
     private function buildTable(array $data) : string

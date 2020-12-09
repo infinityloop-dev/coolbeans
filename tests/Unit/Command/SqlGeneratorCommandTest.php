@@ -51,14 +51,26 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
 
         $command = $application->find('sqlGenerator');
         $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
-        $commandTester->execute([
+        $result = $commandTester->execute([
             'command' => 'sqlGenerator',
             'source' => '/../../tests/',
         ]);
 
+        self::assertSame(0, $result);
         self::assertSame(
             $expected,
             $commandTester->getDisplay(),
         );
+    }
+
+    public function testSettings() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+
+        self::assertSame('Converts Beans into SQL.', $command->getDescription());
+        self::assertSame('sqlGenerator', $command->getName());
     }
 }
