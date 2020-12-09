@@ -6,7 +6,7 @@ namespace CoolBeans\Tests\Unit;
 
 //@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
 //@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
-class AttributeBean extends \CoolBeans\Bean
+final class AttributeBean extends \CoolBeans\Bean
 {
     #[\CoolBeans\Attribute\DefaultValue(\CoolBeans\Attribute\Defaults\MysqlDefaults::NOW)]
     #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\MysqlTypes::DATE)]
@@ -19,6 +19,8 @@ class AttributeBean extends \CoolBeans\Bean
     public \Nette\Utils\DateTime $col3;
     #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\MysqlTypes::BIGINT)]
     public int $col4;
-    #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\MysqlTypes::INT)]
+    #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\MysqlTypes::INT, 44)]
     public float $col5 = 1;
+    #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\MysqlTypes::DECIMAL, 1, 3)]
+    public float $col6 = 1;
 }

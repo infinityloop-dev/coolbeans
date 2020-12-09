@@ -6,7 +6,7 @@ namespace CoolBeans\Tests\Unit;
 
 //@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
 //@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
-class SimpleBean extends \CoolBeans\Bean
+final class SimpleBean extends \CoolBeans\Bean
 {
     private int $col1;
     protected string $col2 = 'default';

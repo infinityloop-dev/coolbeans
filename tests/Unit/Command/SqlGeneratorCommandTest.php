@@ -17,10 +17,11 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
     {
         $expected = <<<'EOL'
         CREATE TABLE `attribute_bean`(
-            `col2` DATE   NOT NULL DEFAULT NOW(),
-            `col3` TIME   NOT NULL DEFAULT NOW(),
-            `col4` BIGINT NOT NULL,
-            `col5` INT    NOT NULL DEFAULT "1",
+            `col2` DATE         NOT NULL DEFAULT NOW(),
+            `col3` TIME         NOT NULL DEFAULT NOW(),
+            `col4` BIGINT       NOT NULL,
+            `col5` INT(44)      NOT NULL DEFAULT "1",
+            `col6` DECIMAL(1,3) NOT NULL DEFAULT "1",
         )
             CHARSET = `utf8mb4`
             COLLATE `utf8mb4_general_ci`;

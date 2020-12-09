@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Command;
 
-class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
+final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
 {
     private const INDENTATION = '    ';
     public static $defaultName = 'sqlGenerator';
@@ -77,9 +77,7 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
         }
 
         $toReturn .= $this->buildTable($data);
-
         $toReturn .= ($foreignKeys === '' ? '' : \PHP_EOL) . $foreignKeys;
-
         $toReturn .= ')' . \PHP_EOL;
         $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
         $toReturn .= self::INDENTATION . 'COLLATE `utf8mb4_general_ci`;';
@@ -169,15 +167,17 @@ class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
 
         $typeOverride = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
 
-        return \count($typeOverride) === 1
-            ? $typeOverride[0]->getArguments()[0]
+        return \count($typeOverride) >= 1
+            ? $typeOverride[0]->newInstance()->getType()
             : match ($type->getName()) {
-                'string', \Infinityloop\Utils\Json::class => 'VARCHAR(255)',
+                'string' => 'VARCHAR(255)',
+                \Infinityloop\Utils\Json::class => 'JSON',
                 'int' => 'INT(11)',
-                'float' => 'FLOAT(11)',
+                'float' => 'DOUBLE(11)',
                 'bool' => 'TINYINT(1)',
                 \CoolBeans\PrimaryKey\IntPrimaryKey::class => 'INT(11) UNSIGNED',
-                'DateTime', \Nette\Utils\DateTime::class => 'DATETIME',
+                \DateTime::class, \Nette\Utils\DateTime::class => 'DATETIME',
+                default => throw new \CoolBeans\Exception\DataTypeNotSupported('Data type ' . $type->getName() . ' is not supported.'),
             };
     }
 

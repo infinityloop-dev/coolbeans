@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Attribute\Defaults;
 
-class MysqlDefaults
+final class MysqlDefaults
 {
     use \Nette\StaticClass;
 
