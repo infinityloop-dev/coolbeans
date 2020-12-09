@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Command;
 
-use Symfony\Component\Console\Input\InputArgument;
-
 class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Command
 {
     private const INDENTATION = '    ';
