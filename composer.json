@@ -14,7 +14,9 @@
     "php": ">=8.0",
     "infinityloop-dev/utils": "^2.1",
     "nette/utils": "^3.0",
-    "nette/database": "^3.0"
+    "nette/database": "^3.0",
+    "contributte/console": "^0.5.0",
+    "nette/robot-loader": "^3.3"
   },
   "scripts": {
     "phpunit": "phpunit tests",
