@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit\Decorator;
 
@@ -25,7 +25,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $beanInstance = new \CoolBeans\Decorator\Bean(
             $dataSourceMock,
             \CoolBeans\Tests\Unit\TestBean::class,
-            \CoolBeans\Tests\Unit\TestSelection::class
+            \CoolBeans\Tests\Unit\TestSelection::class,
         );
 
         $beanInstance->getRow($primaryKey);
@@ -41,7 +41,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $beanInstance = new \CoolBeans\Decorator\Bean(
             $dataSourceMock,
             \CoolBeans\Tests\Unit\TestBean::class,
-            \CoolBeans\Tests\Unit\TestSelection::class
+            \CoolBeans\Tests\Unit\TestSelection::class,
         );
 
         $beanInstance->findAll();
@@ -59,7 +59,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $beanInstance = new \CoolBeans\Decorator\Bean(
             $dataSourceMock,
             \CoolBeans\Tests\Unit\TestBean::class,
-            \CoolBeans\Tests\Unit\TestSelection::class
+            \CoolBeans\Tests\Unit\TestSelection::class,
         );
 
         $beanInstance->findByArray($filter);
@@ -72,7 +72,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         new \CoolBeans\Decorator\Bean(
             \Mockery::mock(\CoolBeans\Contract\DataSource::class),
             \CoolBeans\Bean::class,
-            \CoolBeans\Tests\Unit\TestSelection::class
+            \CoolBeans\Tests\Unit\TestSelection::class,
         );
     }
 
@@ -83,17 +83,17 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         new \CoolBeans\Decorator\Bean(
             \Mockery::mock(\CoolBeans\Contract\DataSource::class),
             \CoolBeans\Tests\Unit\TestBean::class,
-            \CoolBeans\Bean::class
+            \CoolBeans\Bean::class,
         );
     }
 
     public function testCreateRowVisibility() : void
     {
-        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Decorator\Bean::class, 'createRow'))->isProtected());
+        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Decorator\Bean::class, 'createRow'))->isPrivate());
     }
 
     public function testCreateSelectionVisibility() : void
     {
-        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Decorator\Bean::class, 'createSelection'))->isProtected());
+        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Decorator\Bean::class, 'createSelection'))->isPrivate());
     }
 }

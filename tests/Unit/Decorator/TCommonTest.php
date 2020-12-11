@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit\Decorator;
 
@@ -11,7 +11,7 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('getName')->withNoArgs()->andReturn('name');
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -32,7 +32,7 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('insert')->with($data)->andReturn($insert);
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -50,13 +50,13 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
         $insertMultiple = new \CoolBeans\Result\InsertMultiple([
             new \CoolBeans\PrimaryKey\IntPrimaryKey(1),
-            new \CoolBeans\PrimaryKey\IntPrimaryKey(2)
+            new \CoolBeans\PrimaryKey\IntPrimaryKey(2),
         ]);
 
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('insertMultiple')->with($data)->andReturn($insertMultiple);
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -78,7 +78,7 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('update')->with($primaryKey, $data)->andReturn($update);
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -101,7 +101,7 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('updateByArray')->with($filter, $data)->andReturn($update);
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -122,7 +122,7 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('delete')->with($primaryKey)->andReturn($delete);
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -144,7 +144,7 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('DeleteByArray')->with($filter)->andReturn($delete);
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -165,7 +165,7 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('upsert')->with(null, $data)->andReturn($insert);
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)
@@ -179,14 +179,13 @@ final class TCommonTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
     public function testTransaction() : void
     {
-        $callable = function() : void {
-
+        $callable = static function() : void {
         };
 
         $dataSourceMock = \Mockery::mock(\CoolBeans\Contract\DataSource::class);
         $dataSourceMock->expects('transaction')->with($callable);
 
-        $commonInstance = new class($dataSourceMock) {
+        $commonInstance = new class ($dataSourceMock) {
             use \CoolBeans\Decorator\TCommon;
 
             public function __construct(\CoolBeans\Contract\DataSource $dataSource)

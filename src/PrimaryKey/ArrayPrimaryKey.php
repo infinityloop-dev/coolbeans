@@ -4,9 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\PrimaryKey;
 
-use CoolBeans\Contract\PrimaryKey;
-
-final class ArrayPrimaryKey extends PrimaryKey
+final class ArrayPrimaryKey extends \CoolBeans\Contract\PrimaryKey
 {
     private array $value;
 
@@ -19,8 +17,8 @@ final class ArrayPrimaryKey extends PrimaryKey
     {
         return $this->value;
     }
-    
-    public function printValue(): string
+
+    public function printValue() : string
     {
         return \implode('|', $this->value);
     }
@@ -30,7 +28,7 @@ final class ArrayPrimaryKey extends PrimaryKey
         return \implode('|', \array_keys($this->value));
     }
 
-    public function equals(PrimaryKey $compare) : bool
+    public function equals(\CoolBeans\Contract\PrimaryKey $compare) : bool
     {
         return $compare instanceof self && $this->getValue() === $compare->getValue();
     }

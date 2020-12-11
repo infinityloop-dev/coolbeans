@@ -11,7 +11,7 @@ class Delete implements \CoolBeans\Contract\Result
     use \Nette\SmartObject;
 
     public PrimaryKey $deletedId;
-    
+
     public function __construct(PrimaryKey $deletedId)
     {
         $this->deletedId = $deletedId;

@@ -4,9 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\PrimaryKey;
 
-use CoolBeans\Contract\PrimaryKey;
-
-final class IntPrimaryKey extends PrimaryKey
+final class IntPrimaryKey extends \CoolBeans\Contract\PrimaryKey
 {
     private int $value;
     private string $name;
@@ -25,7 +23,7 @@ final class IntPrimaryKey extends PrimaryKey
     {
         return $this->value;
     }
-    
+
     public function printValue() : string
     {
         return (string) $this->value;
@@ -36,7 +34,7 @@ final class IntPrimaryKey extends PrimaryKey
         return $this->name;
     }
 
-    public function equals(PrimaryKey $compare) : bool
+    public function equals(\CoolBeans\Contract\PrimaryKey $compare) : bool
     {
         return $compare instanceof self && $this->getValue() === $compare->getValue() && $this->getName() === $compare->getName();
     }

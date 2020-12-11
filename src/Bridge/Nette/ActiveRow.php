@@ -8,12 +8,12 @@ class ActiveRow extends \Nette\Database\Table\ActiveRow implements \CoolBeans\Co
 {
     protected ?\CoolBeans\Contract\PrimaryKey $primaryKey = null;
 
-    public function getTableName(): string
+    public function getTableName() : string
     {
         return $this->getTable()->getName();
     }
 
-    public function getPrimaryKey(): \CoolBeans\Contract\PrimaryKey
+    public function getPrimaryKey() : \CoolBeans\Contract\PrimaryKey
     {
         if (!$this->primaryKey instanceof \CoolBeans\Contract\PrimaryKey) {
             $this->primaryKey = \CoolBeans\Contract\PrimaryKey::create($this);

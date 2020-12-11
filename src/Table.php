@@ -4,10 +4,6 @@ declare(strict_types = 1);
 
 namespace CoolBeans;
 
-use CoolBeans\Contract\PrimaryKey;
-use CoolBeans\Bridge\Nette\ActiveRow;
-use CoolBeans\Bridge\Nette\Selection;
-
 class Table implements \CoolBeans\Bridge\Nette\DataSource
 {
     use \Nette\SmartObject;
@@ -17,8 +13,8 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
     protected ?\CoolBeans\Contract\ContextFactory $contextFactory = null;
 
     public function __construct(
-        string $tableName, 
-        ?\Nette\Database\Context $context = null, 
+        string $tableName,
+        ?\Nette\Database\Context $context = null,
         ?\CoolBeans\Contract\ContextFactory $contextFactory = null
     )
     {
@@ -36,25 +32,25 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
         return $this->tableName;
     }
 
-    public function getRow(PrimaryKey $key) : ActiveRow
+    public function getRow(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Bridge\Nette\ActiveRow
     {
         $row = $this->findAll()->wherePrimary($key->getValue())->fetch();
 
-        if (!$row instanceof ActiveRow) {
+        if (!$row instanceof \CoolBeans\Bridge\Nette\ActiveRow) {
             throw new \CoolBeans\Exception\RowNotFound('Row with key [' . $key->printValue() . '] not found in table [' . $this->getName() . '].');
         }
 
         return $row;
     }
 
-    public function findAll() : Selection
+    public function findAll() : \CoolBeans\Bridge\Nette\Selection
     {
         $cache = \array_values((array) $this->getContext())[3];
 
-        return new Selection($this->getContext(), $this->getContext()->getConventions(), $this->getName(), $cache);
+        return new \CoolBeans\Bridge\Nette\Selection($this->getContext(), $this->getContext()->getConventions(), $this->getName(), $cache);
     }
 
-    public function findByArray(array $filter) : Selection
+    public function findByArray(array $filter) : \CoolBeans\Bridge\Nette\Selection
     {
         return $this->findAll()->where($filter);
     }
@@ -67,22 +63,22 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
             throw new \Nette\InvalidStateException('Insert has failed.');
         }
 
-        return new \CoolBeans\Result\Insert(PrimaryKey::create($row));
+        return new \CoolBeans\Result\Insert(\CoolBeans\Contract\PrimaryKey::create($row));
     }
 
     public function insertMultiple(array $data) : \CoolBeans\Result\InsertMultiple
     {
         $insertedIds = [];
-        
+
         foreach ($data as $toInsert) {
             $result = $this->insert($toInsert);
             $insertedIds[] = $result->insertedId;
         }
-        
+
         return new \CoolBeans\Result\InsertMultiple($insertedIds);
     }
 
-    public function update(PrimaryKey $key, array $data) : \CoolBeans\Result\Update
+    public function update(\CoolBeans\Contract\PrimaryKey $key, array $data) : \CoolBeans\Result\Update
     {
         $changed = $this->getRow($key)->update($data);
 
@@ -95,7 +91,7 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
         $changedIds = [];
 
         foreach ($this->findByArray($filter) as $row) {
-            $key = PrimaryKey::create($row);
+            $key = \CoolBeans\Contract\PrimaryKey::create($row);
             $updatedIds[] = $key;
 
             $changed = $row->update($data);
@@ -108,7 +104,7 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
         return new \CoolBeans\Result\UpdateByArray($updatedIds, $changedIds);
     }
 
-    public function delete(PrimaryKey $key) : \CoolBeans\Result\Delete
+    public function delete(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Result\Delete
     {
         $this->getRow($key)->delete();
 
@@ -118,22 +114,22 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
     public function deleteByArray(array $filter) : \CoolBeans\Result\DeleteByArray
     {
         $selection = $this->findByArray($filter);
-        $deletedIds = PrimaryKey::fromSelection($selection);
+        $deletedIds = \CoolBeans\Contract\PrimaryKey::fromSelection($selection);
         $selection->delete();
 
         return new \CoolBeans\Result\DeleteByArray($deletedIds);
     }
-    
-    public function upsert(?PrimaryKey $key, array $values) : \CoolBeans\Contract\Result
+
+    public function upsert(?\CoolBeans\Contract\PrimaryKey $key, array $values) : \CoolBeans\Contract\Result
     {
-        if ($key instanceof PrimaryKey) {
+        if ($key instanceof \CoolBeans\Contract\PrimaryKey) {
             return $this->update($key, $values);
         }
 
         return $this->insert($values);
     }
 
-    public function transaction(callable $function)
+    public function transaction(callable $function) : mixed
     {
         $inTransaction = $this->getContext()->getConnection()->getPdo()->inTransaction();
 

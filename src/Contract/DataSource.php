@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Contract;
 
-use CoolBeans\Contract\PrimaryKey;
-
 interface DataSource
 {
     /**
@@ -16,7 +14,7 @@ interface DataSource
     /**
      * Returns row from table by its id.
      */
-    public function getRow(PrimaryKey $key) : \CoolBeans\Contract\Row;
+    public function getRow(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Contract\Row;
 
     /**
      * Returns selection of all entries.
@@ -42,7 +40,7 @@ interface DataSource
     /**
      * Updates row.
      */
-    public function update(PrimaryKey $key, array $data) : \CoolBeans\Result\Update;
+    public function update(\CoolBeans\Contract\PrimaryKey $key, array $data) : \CoolBeans\Result\Update;
 
     /**
      * Updates selection of entries found by associative array.
@@ -53,7 +51,7 @@ interface DataSource
     /**
      * Deletes row
      */
-    public function delete(PrimaryKey $key) : \CoolBeans\Result\Delete;
+    public function delete(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Result\Delete;
 
     /**
      * Deletes selection of entries found by associative array.
@@ -64,7 +62,7 @@ interface DataSource
     /**
      * Inserts data if no key provided, updates otherwise.
      */
-    public function upsert(?PrimaryKey $key, array $values) : \CoolBeans\Contract\Result;
+    public function upsert(?\CoolBeans\Contract\PrimaryKey $key, array $values) : \CoolBeans\Contract\Result;
 
     /**
      * Executes function enclosed in PDO transaction.

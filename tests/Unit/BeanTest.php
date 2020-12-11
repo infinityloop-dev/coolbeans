@@ -1,13 +1,13 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit;
 
 final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 {
     private $activeRowData = [
-        'id' => 1
+        'id' => 1,
     ];
 
     public function setUp() : void
@@ -25,7 +25,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
         $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {};
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+        };
 
         self::assertEquals('table_name', $beanInstance->getTableName());
     }
@@ -36,7 +37,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
         $activeRowMock->expects('toArray')->withNoArgs()->andReturn($this->activeRowData);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {};
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+        };
         self::assertEquals($this->activeRowData, $beanInstance->toArray());
     }
 
@@ -46,7 +48,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
         $activeRowMock->expects('offsetGet')->with('id')->once()->andReturn($this->activeRowData['id']);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
             public int $id;
         };
 
@@ -56,18 +58,38 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
     public function testGetIterator() : void
     {
         $iteratorInstance = new class implements \Iterator {
-            public function rewind() { return false; }
-            public function current() { return false; }
-            public function key() { return false; }
-            public function next() { return false; }
-            public function valid() { return false; }
+            public function rewind() : bool
+            {
+                return false;
+            }
+
+            public function current() : bool
+            {
+                return false;
+            }
+
+            public function key() : bool
+            {
+                return false;
+            }
+
+            public function next() : bool
+            {
+                return false;
+            }
+
+            public function valid() : bool
+            {
+                return false;
+            }
         };
 
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
         $activeRowMock->expects('getIterator')->withNoArgs()->andReturn($iteratorInstance);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean { };
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+        };
 
         $beanInstance->getIterator();
     }
@@ -78,7 +100,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
         $activeRowMock->expects('offsetGet')->with('id')->once()->andReturn($this->activeRowData['id']);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
             public int $id;
         };
         self::assertEquals($this->activeRowData['id'], $beanInstance->offsetGet('id'));
@@ -89,7 +111,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean { };
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+        };
 
         $this->expectException(\CoolBeans\Exception\InvalidColumn::class);
         $this->expectExceptionMessage('Column [id] is not defined.');
@@ -102,7 +125,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean { };
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+        };
 
         $this->expectException(\CoolBeans\Exception\ForbiddenOperation::class);
         $this->expectExceptionMessage('Cannot set to Bean.');
@@ -115,7 +139,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean { };
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+        };
 
         $this->expectException(\CoolBeans\Exception\ForbiddenOperation::class);
         $this->expectExceptionMessage('Cannot unset from Bean.');
@@ -129,8 +154,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
         $activeRowMock->expects('ref')->with('table', null)->andReturnSelf();
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {
-            public function callRef(string $table, ?string $throughColumn = null)
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+            public function callRef(string $table, ?string $throughColumn = null) : void
             {
                 $this->ref($table, $throughColumn);
             }
@@ -147,8 +172,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
         $activeRowMock->expects('related')->with('table', null)->andReturn($groupedSelectionMock);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {
-            public function callRelated(string $table, ?string $throughColumn = null)
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+            public function callRelated(string $table, ?string $throughColumn = null) : void
             {
                 $this->related($table, $throughColumn);
             }
@@ -170,7 +195,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
             public int $id;
             public bool $active = true;
             public ?bool $ready;
@@ -200,7 +225,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $this->expectException(\CoolBeans\Exception\MissingType::class);
         $this->expectExceptionMessage('Property [id] does not have type.');
 
-        new class($activeRowMock) extends \CoolBeans\Bean {
+        new class ($activeRowMock) extends \CoolBeans\Bean {
             public $id;
         };
     }
@@ -214,7 +239,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $this->expectException(\CoolBeans\Exception\NonNullableType::class);
         $this->expectExceptionMessage('Property [nulled] does not have nullable type.');
 
-        new class($activeRowMock) extends \CoolBeans\Bean {
+        new class ($activeRowMock) extends \CoolBeans\Bean {
             public bool $nulled;
         };
     }
@@ -226,10 +251,10 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('toArray')->withNoArgs()->andReturn($this->activeRowData);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
             public int $id;
 
-            public function callValidateMissingColumns()
+            public function callValidateMissingColumns() : void
             {
                 $this->validateMissingColumns();
             }
@@ -244,8 +269,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('toArray')->withNoArgs()->andReturn($this->activeRowData);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $beanInstance = new class($activeRowMock) extends \CoolBeans\Bean {
-            public function callValidateMissingColumns()
+        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
+            public function callValidateMissingColumns() : void
             {
                 $this->validateMissingColumns();
             }
@@ -266,7 +291,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $testBeanInstance = new TestBean($activeRowMock);
+        $testBeanInstance = new \CoolBeans\Tests\Unit\TestBean($activeRowMock);
 
         $testBeanInstance->callValidateTableName();
     }
@@ -280,7 +305,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $testBeanInstance = new TestBean($activeRowMock);
+        $testBeanInstance = new \CoolBeans\Tests\Unit\TestBean($activeRowMock);
 
         $testBeanInstance->callValidateTableName();
     }
@@ -307,7 +332,7 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
-        $testBeanInstance = new TestBean($activeRowMock);
+        $testBeanInstance = new \CoolBeans\Tests\Unit\TestBean($activeRowMock);
 
         $this->expectException(\CoolBeans\Exception\InvalidTable::class);
 

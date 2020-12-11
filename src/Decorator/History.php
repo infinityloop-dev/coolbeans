@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Decorator;
 
-use CoolBeans\Contract\PrimaryKey;
+use \CoolBeans\Contract\PrimaryKey;
 
 final class History implements \CoolBeans\Contract\DataSource
 {
@@ -13,9 +13,9 @@ final class History implements \CoolBeans\Contract\DataSource
 
     public const METADATA = ['id', 'active'];
 
-    protected \CoolBeans\Contract\DataSource $historyDataSource;
-    protected array $additionalData;
-    protected array $metadata;
+    private \CoolBeans\Contract\DataSource $historyDataSource;
+    private array $additionalData;
+    private array $metadata;
 
     public function __construct(
         \CoolBeans\Contract\DataSource $dataSource,

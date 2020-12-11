@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans;
 
-use CoolBeans\Contract\PrimaryKey;
+use \CoolBeans\Contract\PrimaryKey;
 
 abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
 {
@@ -24,7 +24,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
             $this->validateMissingColumns();
         }
 
-        if (\CoolBeans\Config::$validateTableName){
+        if (\CoolBeans\Config::$validateTableName) {
             $this->validateTableName();
         }
 
@@ -66,7 +66,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     /**
      * Array access interface method.
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset) : mixed
     {
         if ($this->offsetExists($offset)) {
             return $this->{$offset};
@@ -164,10 +164,10 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
             $type = $property->getType();
             $value = $this->row[$name];
 
-            if (!$type instanceof \ReflectionType) {
+            if (!$type instanceof \ReflectionNamedType) {
                 throw new \CoolBeans\Exception\MissingType('Property [' . $property->getName() . '] does not have type.');
             }
-            
+
             if ($value === null) {
                 if ($type->allowsNull()) {
                     $this->{$name} = null;

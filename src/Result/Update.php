@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Result;
 
-use CoolBeans\Contract\PrimaryKey;
+use \CoolBeans\Contract\PrimaryKey;
 
 class Update implements \CoolBeans\Contract\Result
 {
@@ -12,7 +12,7 @@ class Update implements \CoolBeans\Contract\Result
 
     public PrimaryKey $updatedId;
     public bool $dataChanged;
-    
+
     public function __construct(PrimaryKey $updatedId, bool $dataChanged)
     {
         $this->updatedId = $updatedId;
