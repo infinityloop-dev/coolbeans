@@ -36,6 +36,8 @@ final class IntPrimaryKey extends \CoolBeans\Contract\PrimaryKey
 
     public function equals(\CoolBeans\Contract\PrimaryKey $compare) : bool
     {
-        return $compare instanceof self && $this->getValue() === $compare->getValue() && $this->getName() === $compare->getName();
+        return $compare instanceof self 
+            && $this->getValue() === $compare->getValue() 
+            && $this->getName() === $compare->getName();
     }
 }
