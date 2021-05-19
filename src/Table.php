@@ -9,12 +9,12 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
     use \Nette\SmartObject;
 
     protected string $tableName;
-    protected ?\Nette\Database\Context $context = null;
+    protected ?\Nette\Database\Explorer $context = null;
     protected ?\CoolBeans\Contract\ContextFactory $contextFactory = null;
 
     public function __construct(
         string $tableName,
-        ?\Nette\Database\Context $context = null,
+        ?\Nette\Database\Explorer $context = null,
         ?\CoolBeans\Contract\ContextFactory $contextFactory = null
     )
     {
@@ -162,9 +162,9 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
         return $this->getContext()->getStructure()->getColumns($this->tableName);
     }
 
-    protected function getContext() : \Nette\Database\Context
+    protected function getContext() : \Nette\Database\Explorer
     {
-        if (!$this->context instanceof \Nette\Database\Context) {
+        if (!$this->context instanceof \Nette\Database\Explorer) {
             $this->context = $this->contextFactory->create();
         }
 
