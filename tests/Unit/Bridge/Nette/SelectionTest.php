@@ -8,16 +8,16 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 {
     public function testGetTableName() : void
     {
-        $supplementalDriverMock = \Mockery::mock(\Nette\Database\ISupplementalDriver::class);
+        $supplementalDriverMock = \Mockery::mock(\Nette\Database\Driver::class);
         $supplementalDriverMock->expects('delimite')->with('table_name')->andReturn('delimited');
 
         $structureMock = \Mockery::mock(\Nette\Database\IStructure::class);
 
-        $conventionsMock = \Mockery::mock(\Nette\Database\IConventions::class);
+        $conventionsMock = \Mockery::mock(\Nette\Database\Conventions::class);
         $conventionsMock->expects('getPrimary')->with('table_name')->andReturn('id');
 
-        $contextMock = \Mockery::mock(\Nette\Database\Context::class);
-        $contextMock->expects('getConnection->getSupplementalDriver')->withNoArgs()->andReturn($supplementalDriverMock);
+        $contextMock = \Mockery::mock(\Nette\Database\Explorer::class);
+        $contextMock->expects('getConnection->getDriver')->withNoArgs()->andReturn($supplementalDriverMock);
         $contextMock->expects('getConventions')->withNoArgs()->andReturn($conventionsMock);
         $contextMock->expects('getStructure')->withNoArgs()->andReturn($structureMock);
 
@@ -28,16 +28,16 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
     public function testCurrent() : void
     {
-        $supplementalDriverMock = \Mockery::mock(\Nette\Database\ISupplementalDriver::class);
+        $supplementalDriverMock = \Mockery::mock(\Nette\Database\Driver::class);
         $supplementalDriverMock->expects('delimite')->with('table_name')->andReturn('delimited');
 
         $structureMock = \Mockery::mock(\Nette\Database\IStructure::class);
 
-        $conventionsMock = \Mockery::mock(\Nette\Database\IConventions::class);
+        $conventionsMock = \Mockery::mock(\Nette\Database\Conventions::class);
         $conventionsMock->expects('getPrimary')->with('table_name')->andReturn('id');
 
-        $contextMock = \Mockery::mock(\Nette\Database\Context::class);
-        $contextMock->expects('getConnection->getSupplementalDriver')->withNoArgs()->andReturn($supplementalDriverMock);
+        $contextMock = \Mockery::mock(\Nette\Database\Explorer::class);
+        $contextMock->expects('getConnection->getDriver')->withNoArgs()->andReturn($supplementalDriverMock);
         $contextMock->expects('getConventions')->withNoArgs()->andReturn($conventionsMock);
         $contextMock->expects('getStructure')->withNoArgs()->andReturn($structureMock);
 
@@ -48,16 +48,16 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
 
     public function testCreateRow() : void
     {
-        $supplementalDriverMock = \Mockery::mock(\Nette\Database\ISupplementalDriver::class);
+        $supplementalDriverMock = \Mockery::mock(\Nette\Database\Driver::class);
         $supplementalDriverMock->expects('delimite')->with('table_name')->andReturn('delimited');
 
         $structureMock = \Mockery::mock(\Nette\Database\IStructure::class);
 
-        $conventionsMock = \Mockery::mock(\Nette\Database\IConventions::class);
+        $conventionsMock = \Mockery::mock(\Nette\Database\Conventions::class);
         $conventionsMock->expects('getPrimary')->with('table_name')->andReturn('id');
 
-        $contextMock = \Mockery::mock(\Nette\Database\Context::class);
-        $contextMock->expects('getConnection->getSupplementalDriver')->withNoArgs()->andReturn($supplementalDriverMock);
+        $contextMock = \Mockery::mock(\Nette\Database\Explorer::class);
+        $contextMock->expects('getConnection->getDriver')->withNoArgs()->andReturn($supplementalDriverMock);
         $contextMock->expects('getConventions')->withNoArgs()->andReturn($conventionsMock);
         $contextMock->expects('getStructure')->withNoArgs()->andReturn($structureMock);
 
