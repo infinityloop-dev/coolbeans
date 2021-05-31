@@ -120,7 +120,7 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock->expects('fetch')->withNoArgs()->andReturn($activeRowMock);
 
         $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
-            protected const ROW_CLASS = TestBean::class;
+            protected const ROW_CLASS = \CoolBeans\Tests\Unit\TestBean::class;
         };
 
         self::assertEquals(new \CoolBeans\Tests\Unit\TestBean($activeRowMock), $selectionInstance->fetch());
@@ -135,7 +135,7 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock->expects('fetch')->withNoArgs()->andReturn($activeRowMock);
 
         $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
-            protected const ROW_CLASS = TestBean::class;
+            protected const ROW_CLASS = \CoolBeans\Tests\Unit\TestBean::class;
         };
 
         self::assertEquals(new \CoolBeans\Tests\Unit\TestBean($activeRowMock), $selectionInstance->fetch());
@@ -224,7 +224,7 @@ final class SelectionTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         $selectionMock->expects('current')->withNoArgs()->andReturn($activeRowMock);
 
         $selectionInstance = new class ($selectionMock) extends \CoolBeans\Selection {
-            protected const ROW_CLASS = TestBean::class;
+            protected const ROW_CLASS = \CoolBeans\Tests\Unit\TestBean::class;
         };
 
         self::assertEquals(new \CoolBeans\Tests\Unit\TestBean($activeRowMock), $selectionInstance->current());

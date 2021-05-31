@@ -2,11 +2,11 @@
 
 declare(strict_types = 1);
 
-namespace CoolBeans\Tests\Unit;
+namespace CoolBeans\Tests\Unit\TestBean;
 
 //@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
 //@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
-final class SimpleBean extends \CoolBeans\Bean
+final class SimpleBean2 extends \CoolBeans\Bean
 {
     private int $col1;
     protected string $col2 = 'default';
@@ -15,7 +15,6 @@ final class SimpleBean extends \CoolBeans\Bean
     public ?string $col4;
     public ?string $col5 = null;
     public ?string $col6 = 'default';
-    public \CoolBeans\PrimaryKey\IntPrimaryKey $col7_id;
     public \DateTime $col8;
     public \Nette\Utils\DateTime $col9;
 }
