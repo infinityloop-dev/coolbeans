@@ -215,6 +215,17 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 continue;
             }
 
+            $bean = new \ReflectionClass($class);
+
+            if ($bean->isAbstract()) {
+                continue;
+            }
+
+            if (\count($bean->getProperties(\ReflectionProperty::IS_PUBLIC)) === 0) {
+                throw new \CoolBeans\Exception\BeanWithoutPublicProperty('Bean ' . $bean->getShortName() . ' has no public property.');
+            }
+
+
             $beans[] = $class;
         }
 
