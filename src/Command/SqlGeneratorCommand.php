@@ -57,12 +57,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
     {
         $bean = new \ReflectionClass($className);
 
-        if ($bean->isAbstract()) {
-            return '';
-        }
-
         if (\count($bean->getProperties(\ReflectionProperty::IS_PUBLIC)) === 0) {
-            throw new \Coolbeans\Exception\BeanWithoutPublicProperty('Bean ' . $bean->getShortName() . ' has no public property.');
+            throw new \CoolBeans\Exception\BeanWithoutPublicProperty('Bean ' . $bean->getShortName() . ' has no public property.');
         }
 
         $toReturn = 'CREATE TABLE `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName()) . '`(' . \PHP_EOL;
@@ -222,6 +218,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             if (!\is_subclass_of($class, \CoolBeans\Bean::class)) {
                 continue;
             }
+
+            if ((new \ReflectionClass($class))->isAbstract()) {
+                continue;
+            }
+
 
             $beans[] = $class;
         }

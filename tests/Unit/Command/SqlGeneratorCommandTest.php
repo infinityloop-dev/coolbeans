@@ -40,11 +40,6 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         )
             CHARSET = `utf8mb4`
             COLLATE `utf8mb4_general_ci`;
-
-        CREATE TABLE `test_bean`(
-        )
-            CHARSET = `utf8mb4`
-            COLLATE `utf8mb4_general_ci`;
         EOL;
 
         $application = new \Symfony\Component\Console\Application();
@@ -52,6 +47,10 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
 
         $command = $application->find('sqlGenerator');
         $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\BeanWithoutPublicProperty::class);
+        $this->expectExceptionMessage('Bean TestBean has no public property.');
+
         $result = $commandTester->execute([
             'command' => 'sqlGenerator',
             'source' => '/../../tests/',
