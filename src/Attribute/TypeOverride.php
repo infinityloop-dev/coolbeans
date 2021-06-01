@@ -11,7 +11,7 @@ final class TypeOverride
 
     public function __construct(
         public string $type,
-        int ...$lengthArgs
+        int ...$lengthArgs,
     )
     {
         $this->lengthArgs = $lengthArgs;

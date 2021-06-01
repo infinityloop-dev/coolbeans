@@ -8,10 +8,9 @@ class InsertMultiple implements \CoolBeans\Contract\Result
 {
     use \Nette\SmartObject;
 
-    public array $insertedIds;
-
-    public function __construct(array $insertedIds)
+    public function __construct(
+        public array $insertedIds,
+    )
     {
-        $this->insertedIds = $insertedIds;
     }
 }

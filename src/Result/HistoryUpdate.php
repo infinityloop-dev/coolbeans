@@ -4,15 +4,14 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Result;
 
-use \CoolBeans\Contract\PrimaryKey;
-
 class HistoryUpdate extends \CoolBeans\Result\Update
 {
-    public ?PrimaryKey $historyId;
-
-    public function __construct(PrimaryKey $updatedId, bool $dataChanged, ?PrimaryKey $historyId = null)
+    public function __construct(
+        \CoolBeans\Contract\PrimaryKey $updatedId,
+        bool $dataChanged,
+        public ?\CoolBeans\Contract\PrimaryKey $historyId = null,
+    )
     {
         parent::__construct($updatedId, $dataChanged);
-        $this->historyId = $historyId;
     }
 }

@@ -4,30 +4,24 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Decorator;
 
-use \CoolBeans\Contract\PrimaryKey;
-
 final class Bean implements \CoolBeans\DataSource
 {
     use \Nette\SmartObject;
     use \CoolBeans\Decorator\TCommon;
 
-    private \CoolBeans\Contract\DataSource $dataSource;
-    private string $rowClass;
-    private string $selectionClass;
-
-    public function __construct(\CoolBeans\Contract\DataSource $dataSource, string $rowClass, string $selectionClass)
+    public function __construct(
+        private \CoolBeans\Contract\DataSource $dataSource,
+        private string $rowClass,
+        private string $selectionClass,
+    )
     {
         if (!\is_subclass_of($rowClass, \CoolBeans\Bean::class) ||
             !\is_subclass_of($selectionClass, \CoolBeans\Selection::class)) {
             throw new \CoolBeans\Exception\InvalidFunctionParameters('Bean decorator can transform only to Bean instance.');
         }
-
-        $this->dataSource = $dataSource;
-        $this->rowClass = $rowClass;
-        $this->selectionClass = $selectionClass;
     }
 
-    public function getRow(PrimaryKey $entryId) : \CoolBeans\Bean
+    public function getRow(\CoolBeans\Contract\PrimaryKey $entryId) : \CoolBeans\Bean
     {
         return $this->createRow($this->dataSource->getRow($entryId));
     }

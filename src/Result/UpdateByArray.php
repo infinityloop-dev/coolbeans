@@ -8,12 +8,10 @@ class UpdateByArray implements \CoolBeans\Contract\Result
 {
     use \Nette\SmartObject;
 
-    public array $updatedIds;
-    public array $changedIds;
-
-    public function __construct(array $updatedIds, array $changedIds)
+    public function __construct(
+        public array $updatedIds,
+        public array $changedIds,
+    )
     {
-        $this->updatedIds = $updatedIds;
-        $this->changedIds = $changedIds;
     }
 }

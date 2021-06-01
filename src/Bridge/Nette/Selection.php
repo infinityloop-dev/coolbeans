@@ -6,6 +6,21 @@ namespace CoolBeans\Bridge\Nette;
 
 class Selection extends \Nette\Database\Table\Selection implements \CoolBeans\Contract\Selection
 {
+    public function where($condition, ...$params) : static
+    {
+        return parent::where($condition, ...$params);
+    }
+
+    public function fetch() : ?\CoolBeans\Bridge\Nette\ActiveRow
+    {
+        return parent::fetch();
+    }
+
+    public function key() : string|int
+    {
+        return parent::key();
+    }
+
     public function getTableName() : string
     {
         return $this->getName();
@@ -13,9 +28,8 @@ class Selection extends \Nette\Database\Table\Selection implements \CoolBeans\Co
 
     public function current() : ?\CoolBeans\Bridge\Nette\ActiveRow
     {
-        return ($key = \current($this->keys)) !== false
-            ? $this->data[$key]
-            : null;
+        return parent::current()
+            ?: null;
     }
 
     protected function createRow(array $row) : \CoolBeans\Bridge\Nette\ActiveRow

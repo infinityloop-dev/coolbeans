@@ -8,6 +8,8 @@ namespace CoolBeans\Attribute;
 final class DefaultValue
 {
     public function __construct(
-        public string $defaultValue
-    ) {}
+        public string $defaultValue,
+    )
+    {
+    }
 }

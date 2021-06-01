@@ -4,21 +4,19 @@ declare(strict_types = 1);
 
 namespace CoolBeans;
 
-use \CoolBeans\Contract\PrimaryKey;
-
 abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
 {
     use \Nette\SmartObject;
 
-    protected \Nette\Database\Table\ActiveRow $row;
     protected \ReflectionClass $reflection;
-    protected PrimaryKey $primaryKey;
+    protected \CoolBeans\Contract\PrimaryKey $primaryKey;
 
-    public function __construct(\Nette\Database\Table\ActiveRow $row)
+    public function __construct(
+        protected \Nette\Database\Table\ActiveRow $row,
+    )
     {
-        $this->row = $row;
         $this->reflection = new \ReflectionClass(static::class);
-        $this->primaryKey = PrimaryKey::create($this->row);
+        $this->primaryKey = \CoolBeans\Contract\PrimaryKey::create($this->row);
 
         if (\CoolBeans\Config::$validateColumns) {
             $this->validateMissingColumns();
@@ -50,7 +48,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     /**
      * Returns primary key object.
      */
-    public function getPrimaryKey() : PrimaryKey
+    public function getPrimaryKey() : \CoolBeans\Contract\PrimaryKey
     {
         return $this->primaryKey;
     }
@@ -84,7 +82,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
             $property = $this->reflection->getProperty($offset);
 
             return $property->isPublic();
-        } catch (\ReflectionException $e) {
+        } catch (\ReflectionException) {
             return false;
         }
     }

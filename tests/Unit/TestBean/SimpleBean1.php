@@ -6,6 +6,7 @@ namespace CoolBeans\Tests\Unit\TestBean;
 
 //@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
 //@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
+//@phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 final class SimpleBean1 extends \CoolBeans\Bean
 {
     private int $col1;

@@ -8,10 +8,9 @@ class DeleteByArray implements \CoolBeans\Contract\Result
 {
     use \Nette\SmartObject;
 
-    public array $deletedIds;
-
-    public function __construct(array $deletedIds)
+    public function __construct(
+        public array $deletedIds,
+    )
     {
-        $this->deletedIds = $deletedIds;
     }
 }
