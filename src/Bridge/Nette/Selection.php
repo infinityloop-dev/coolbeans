@@ -28,9 +28,8 @@ class Selection extends \Nette\Database\Table\Selection implements \CoolBeans\Co
 
     public function current() : ?\CoolBeans\Bridge\Nette\ActiveRow
     {
-        return ($key = \current($this->keys)) !== false
-            ? $this->data[$key]
-            : null;
+        return parent::current()
+            ?: null;
     }
 
     protected function createRow(array $row) : \CoolBeans\Bridge\Nette\ActiveRow
