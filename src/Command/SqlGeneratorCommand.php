@@ -89,18 +89,18 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             }
         }
 
-        $toReturn .= $this->buildTable($data, \count($foreignKeys) === 0 && \count($unique) === 0 && $classUnique === null);
-        $toReturn .= $this->printClassUnique($classUnique, \count($foreignKeys) === 0 && \count($unique) === 0);
-        $toReturn .= $this->printUnique($unique, \count($foreignKeys) === 0);
-        $toReturn .= $this->printForeignKey($foreignKeys);
-        $toReturn .= ')' . \PHP_EOL;
+        $toReturn .= $this->buildTable($data);
+        $toReturn .= $this->printSection($classUnique);
+        $toReturn .= $this->printSection($unique);
+        $toReturn .= $this->printSection($foreignKeys);
+        $toReturn .= \PHP_EOL . ')' . \PHP_EOL;
         $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'COLLATE `utf8mb4_general_ci`;';
+        $toReturn .= self::INDENTATION . 'COLLATE = `utf8mb4_general_ci`;';
 
         return $toReturn;
     }
 
-    private function buildTable(array $data, bool $isLast) : string
+    private function buildTable(array $data) : string
     {
         $longestNameLength = $this->getLongestByType($data, 'name');
         $longestDataTypeLength = $this->getLongestByType($data, 'dataType');
@@ -116,8 +116,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 . $row['notNull']
                 . $row['default'];
 
-            $toReturn = $isLast && $lastRow === $key
-                ? \rtrim($toReturn) . \PHP_EOL
+            $toReturn = $lastRow === $key
+                ? \rtrim($toReturn)
                 : \rtrim($toReturn) . ',' . \PHP_EOL;
         }
 
@@ -204,41 +204,31 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return '`' . $property->getName() . '`';
     }
 
-    private function getClassUnique(\ReflectionClass $bean) : ?string
+    private function getClassUnique(\ReflectionClass $bean) : array
     {
         if (\count($bean->getAttributes(\CoolBeans\Attribute\ClassUniqueConstraint::class)) === 0) {
-            return null;
+            return [];
         }
 
         $this->validateClassUniqueConstraintDuplication($bean);
+
+        $declaredColumns = [];
+
+        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            $declaredColumns[$property->getName()] = true;
+        }
 
         $constrains = [];
 
         foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassUniqueConstraint::class) as $uniqueColumnAttribute) {
             $uniqueColumns = $uniqueColumnAttribute->newInstance()->columns;
 
-            if (\count($uniqueColumns) < 2) {
-                throw new \CoolBeans\Exception\InvalidClassUniqueConstraintColumnCount(
-                    'ClassUniqueConstraint expects at least two column names',
-                );
-            }
-
             $columns = [];
 
             foreach ($uniqueColumns as $uniqueColumn) {
-                $isValid = false;
-
-                foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-                    if ($property->getName() === $uniqueColumn) {
-                        $isValid = true;
-
-                        break;
-                    }
-                }
-
-                if (!$isValid) {
+                if (!\array_key_exists($uniqueColumn, $declaredColumns)) {
                     throw new \CoolBeans\Exception\ClassUniqueConstraintUndefinedProperty(
-                        'Property with name ' . $uniqueColumn . ' given in ClassUniqueConstraint is not defined.',
+                        'Property with name "' . $uniqueColumn . '" given in ClassUniqueConstraint is not defined.',
                     );
                 }
 
@@ -249,24 +239,23 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 . '_' . \implode('_', $uniqueColumns) . '` UNIQUE (' . \implode(',', $columns) . ')';
         }
 
-        if (\count($constrains) === 1) {
-            return $constrains[0];
-        }
-
-        return \implode(',' . \PHP_EOL, $constrains);
+        return $constrains;
     }
 
     private function validateClassUniqueConstraintDuplication(\ReflectionClass $bean) : void
     {
-        $toValidate = [];
+        $constraints = [];
 
         foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassUniqueConstraint::class) as $uniqueColumnAttribute) {
-            $toValidate[] = $uniqueColumnAttribute->newInstance()->columns;
+            $columns = $uniqueColumnAttribute->newInstance()->columns;
+            \sort($columns, \SORT_STRING);
+
+            $constraints[] = $columns;
         }
 
-        foreach ($toValidate as $key => $item) {
-            foreach ($toValidate as $key2 => $toCompare) {
-                if ($key !== $key2 && $item === $toCompare) {
+        foreach ($constraints as $key => $columns) {
+            foreach ($constraints as $key2 => $columns2) {
+                if ($key !== $key2 && $columns === $columns2) {
                     throw new \CoolBeans\Exception\ClassUniqueConstraintDuplicateColumns(
                         'Found duplicate columns defined in ClassUniqueConstraint attribute.',
                     );
@@ -282,46 +271,13 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             : null;
     }
 
-    private function printForeignKey(array $foreignKeys) : string
+    private function printSection(array $data) : string
     {
-        if (\count($foreignKeys) === 0) {
+        if (\count($data) === 0) {
             return '';
         }
 
-        if (\count($foreignKeys) === 1) {
-            return \PHP_EOL . $foreignKeys[0] . \PHP_EOL;
-        }
-
-        return \PHP_EOL . \implode(',' . \PHP_EOL, $foreignKeys);
-    }
-
-    private function printClassUnique(?string $unique, bool $isLast) : string
-    {
-        if ($unique === null) {
-            return '';
-        }
-
-        return \PHP_EOL . $unique . ($isLast
-            ? '' . \PHP_EOL
-            : ',' . \PHP_EOL);
-    }
-
-    private function printUnique(array $unique, bool $isLast) : string
-    {
-        if (\count($unique) === 0) {
-            return '';
-        }
-
-        if (\count($unique) === 1) {
-            return \PHP_EOL . $unique[0] . ($isLast
-                    ? ''
-                    : ','
-                ) . \PHP_EOL;
-        }
-
-        return \PHP_EOL . \implode(',' . \PHP_EOL, $unique) . ($isLast
-            ? ''
-            : ',' . \PHP_EOL);
+        return ',' . \PHP_EOL . \PHP_EOL . \implode(',' . \PHP_EOL, $data);
     }
 
     private function getForeignKey(\ReflectionProperty $property) : ?string

@@ -34,7 +34,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             FOREIGN KEY (`col7_id`) REFERENCES `col7`(`id`)
         )
             CHARSET = `utf8mb4`
-            COLLATE `utf8mb4_general_ci`;
+            COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_1`(
             `id`      INT(11) UNSIGNED NOT NULL AUTOINCREMENT,
@@ -49,7 +49,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             FOREIGN KEY (`col7_id`) REFERENCES `col7`(`id`)
         )
             CHARSET = `utf8mb4`
-            COLLATE `utf8mb4_general_ci`;
+            COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_2`(
             `id`   INT(11) UNSIGNED NOT NULL AUTOINCREMENT,
@@ -61,7 +61,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col9` DATETIME         NOT NULL
         )
             CHARSET = `utf8mb4`
-            COLLATE `utf8mb4_general_ci`;
+            COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_attribute`(
             `id`   INT(11) UNSIGNED NOT NULL AUTOINCREMENT,
@@ -75,7 +75,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             CONSTRAINT `unique_simple_bean_attribute_col3` UNIQUE (`col3`)
         )
             CHARSET = `utf8mb4`
-            COLLATE `utf8mb4_general_ci`;
+            COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_class_attribute`(
             `id`   INT(11) UNSIGNED NOT NULL AUTOINCREMENT,
@@ -89,7 +89,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             CONSTRAINT `unique_simple_bean_class_attribute_col4_col5` UNIQUE (`col4`,`col5`)
         )
             CHARSET = `utf8mb4`
-            COLLATE `utf8mb4_general_ci`;
+            COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_class_attribute_2`(
             `id`   INT(11) UNSIGNED NOT NULL AUTOINCREMENT,
@@ -104,7 +104,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             CONSTRAINT `unique_simple_bean_class_attribute_2_col4_col6` UNIQUE (`col4`,`col6`)
         )
             CHARSET = `utf8mb4`
-            COLLATE `utf8mb4_general_ci`;
+            COLLATE = `utf8mb4_general_ci`;
         EOL;
 
         $application = new \Symfony\Component\Console\Application();
@@ -134,5 +134,56 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
 
         self::assertSame('Converts Beans into SQL.', $command->getDescription());
         self::assertSame('sqlGenerator', $command->getName());
+    }
+
+    public function testDuplicateColumns() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\ClassUniqueConstraintDuplicateColumns::class);
+        $this->expectExceptionMessage('Found duplicate columns defined in ClassUniqueConstraint attribute.');
+
+        $commandTester->execute([
+            'command' => 'sqlGenerator',
+            'source' => '/../../tests/Unit/InvalidBean/DuplicateColumns/',
+        ]);
+    }
+
+    public function testUndefinedProperty() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\ClassUniqueConstraintUndefinedProperty::class);
+        $this->expectExceptionMessage('Property with name "invalid" given in ClassUniqueConstraint is not defined.');
+
+        $commandTester->execute([
+            'command' => 'sqlGenerator',
+            'source' => '/../../tests/Unit/InvalidBean/UndefinedProperty/',
+        ]);
+    }
+
+    public function testColumnCount() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\InvalidClassUniqueConstraintColumnCount::class);
+        $this->expectExceptionMessage('ClassUniqueConstraint expects at least two column names.');
+
+        $commandTester->execute([
+            'command' => 'sqlGenerator',
+            'source' => '/../../tests/Unit/InvalidBean/ColumnCount/',
+        ]);
     }
 }
