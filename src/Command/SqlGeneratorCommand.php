@@ -104,24 +104,20 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
     {
         $longestNameLength = $this->getLongestByType($data, 'name');
         $longestDataTypeLength = $this->getLongestByType($data, 'dataType');
-        $toReturn = '';
-        $lastRow = \array_key_last($data);
+        $toReturn = [];
 
-        foreach ($data as $key => $row) {
+        foreach ($data as $row) {
             $nameLength = \strlen($row['name']);
             $dataTypeLength = \strlen($row['dataType']);
-            $toReturn .= self::INDENTATION
+            $toReturn[] = \rtrim(self::INDENTATION
                 . $row['name'] . \str_repeat(' ', $longestNameLength - $nameLength + 1)
                 . $row['dataType'] . \str_repeat(' ', $longestDataTypeLength - $dataTypeLength + 1)
                 . $row['notNull']
-                . $row['default'];
-
-            $toReturn = $lastRow === $key
-                ? \rtrim($toReturn)
-                : \rtrim($toReturn) . ',' . \PHP_EOL;
+                . $row['default']
+            );
         }
 
-        return $toReturn;
+        return \implode(',' . \PHP_EOL, $toReturn);
     }
 
     private function getLongestByType(array $data, string $type) : int
