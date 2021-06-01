@@ -4,8 +4,6 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Decorator;
 
-use \CoolBeans\Contract\PrimaryKey;
-
 final class Active implements \CoolBeans\Contract\DataSource
 {
     use \Nette\SmartObject;
@@ -16,7 +14,7 @@ final class Active implements \CoolBeans\Contract\DataSource
         $this->dataSource = $dataSource;
     }
 
-    public function getRow(PrimaryKey $key) : \CoolBeans\Contract\Row
+    public function getRow(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Contract\Row
     {
         $row = $this->dataSource->getRow($key);
 
@@ -39,7 +37,7 @@ final class Active implements \CoolBeans\Contract\DataSource
             ->where($this->getName() . '.active >= ?', 0);
     }
 
-    public function delete(PrimaryKey $key) : \CoolBeans\Result\Delete
+    public function delete(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Result\Delete
     {
         $this->dataSource->update($key, ['active' => -1]);
 

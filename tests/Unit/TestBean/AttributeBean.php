@@ -6,6 +6,7 @@ namespace CoolBeans\Tests\Unit\TestBean;
 
 //@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
 //@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
+//@phpcs:disable Squiz.NamingConventions.ValidVariableName.MemberNotCamelCaps
 #[\CoolBeans\Attribute\ClassUniqueConstraint(['col2', 'col3'])]
 #[\CoolBeans\Attribute\ClassUniqueConstraint(['col4', 'col5', 'col6'])]
 final class AttributeBean extends \CoolBeans\Bean

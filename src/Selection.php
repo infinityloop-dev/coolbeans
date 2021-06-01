@@ -13,14 +13,14 @@ abstract class Selection implements \CoolBeans\Contract\Selection
     protected \ReflectionClass $reflection;
 
     final public function __construct(
-        protected \Nette\Database\Table\Selection $selection
+        protected \Nette\Database\Table\Selection $selection,
     )
     {
         $this->reflection = new \ReflectionClass(static::class);
 
-         if (\CoolBeans\Config::$validateTableName) {
-             $this->validateTableName();
-         }
+        if (\CoolBeans\Config::$validateTableName) {
+            $this->validateTableName();
+        }
     }
 
     /**

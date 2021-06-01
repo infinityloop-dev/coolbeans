@@ -6,11 +6,12 @@ namespace CoolBeans\Result;
 
 class HistoryUpdateByArray extends \CoolBeans\Result\UpdateByArray
 {
-    public array $historyIds;
-
-    public function __construct(array $updatedIds, array $changedIds, array $historyIds)
+    public function __construct(
+        array $updatedIds,
+        array $changedIds,
+        public array $historyIds,
+    )
     {
         parent::__construct($updatedIds, $changedIds);
-        $this->historyIds = $historyIds;
     }
 }

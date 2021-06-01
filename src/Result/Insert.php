@@ -8,10 +8,9 @@ class Insert implements \CoolBeans\Contract\Result
 {
     use \Nette\SmartObject;
 
-    public \CoolBeans\Contract\PrimaryKey $insertedId;
-
-    public function __construct(\CoolBeans\Contract\PrimaryKey $insertedId)
+    public function __construct(
+        public \CoolBeans\Contract\PrimaryKey $insertedId,
+    )
     {
-        $this->insertedId = $insertedId;
     }
 }

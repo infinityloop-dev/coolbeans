@@ -32,7 +32,7 @@
     "mockery/mockery": "^1.4",
     "infection/infection": "^0.20",
     "phpstan/phpstan": "^0.12",
-    "infinityloop-dev/coding-standard": "^0.1"
+    "infinityloop-dev/coding-standard": "^0.2"
   },
   "autoload": {
     "psr-4": {

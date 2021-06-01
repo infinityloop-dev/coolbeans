@@ -4,15 +4,13 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Bridge\Nette;
 
-use \CoolBeans\Contract\PrimaryKey;
-
 trait TDecorator
 {
     use \CoolBeans\Decorator\TCommon;
 
     protected \CoolBeans\Bridge\Nette\DataSource $dataSource;
 
-    public function getRow(PrimaryKey $key) : \CoolBeans\Bridge\Nette\ActiveRow
+    public function getRow(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Bridge\Nette\ActiveRow
     {
         return $this->dataSource->getRow($key);
     }

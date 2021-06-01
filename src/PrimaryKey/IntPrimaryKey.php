@@ -7,16 +7,17 @@ namespace CoolBeans\PrimaryKey;
 final class IntPrimaryKey extends \CoolBeans\Contract\PrimaryKey
 {
     private int $value;
-    private string $name;
 
-    public function __construct(int $key, string $name = 'id')
+    public function __construct(
+        int $key,
+        private string $name = 'id',
+    )
     {
         if ($key <= 0) {
             throw new \CoolBeans\Exception\InvalidFunctionParameters('Primary key must be positive integer.');
         }
 
         $this->value = $key;
-        $this->name = $name;
     }
 
     public function getValue() : int
@@ -36,8 +37,8 @@ final class IntPrimaryKey extends \CoolBeans\Contract\PrimaryKey
 
     public function equals(\CoolBeans\Contract\PrimaryKey $compare) : bool
     {
-        return $compare instanceof self 
-            && $this->getValue() === $compare->getValue() 
+        return $compare instanceof self
+            && $this->getValue() === $compare->getValue()
             && $this->getName() === $compare->getName();
     }
 }

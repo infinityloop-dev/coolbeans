@@ -6,5 +6,5 @@ namespace CoolBeans\Contract;
 
 interface ContextFactory
 {
-    public function create() : \Nette\Database\Context;
+    public function create() : \Nette\Database\Explorer;
 }

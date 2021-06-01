@@ -24,7 +24,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
     protected function execute(
         \Symfony\Component\Console\Input\InputInterface $input,
-        \Symfony\Component\Console\Output\OutputInterface $output
+        \Symfony\Component\Console\Output\OutputInterface $output,
     ) : int
     {
         $converted = '';
@@ -113,8 +113,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 . $row['name'] . \str_repeat(' ', $longestNameLength - $nameLength + 1)
                 . $row['dataType'] . \str_repeat(' ', $longestDataTypeLength - $dataTypeLength + 1)
                 . $row['notNull']
-                . $row['default']
-            );
+                . $row['default']);
         }
 
         return \implode(',' . \PHP_EOL, $toReturn);
@@ -314,7 +313,6 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             if (\count($bean->getProperties(\ReflectionProperty::IS_PUBLIC)) === 0) {
                 throw new \CoolBeans\Exception\BeanWithoutPublicProperty('Bean ' . $bean->getShortName() . ' has no public property.');
             }
-
 
             $beans[] = $class;
         }

@@ -67,5 +67,5 @@ interface DataSource
     /**
      * Executes function enclosed in PDO transaction.
      */
-    public function transaction(callable $function);
+    public function transaction(callable $function) : mixed;
 }

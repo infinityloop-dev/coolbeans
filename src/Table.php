@@ -8,23 +8,15 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
 {
     use \Nette\SmartObject;
 
-    protected string $tableName;
-    protected ?\Nette\Database\Explorer $context = null;
-    protected ?\CoolBeans\Contract\ContextFactory $contextFactory = null;
-
     public function __construct(
-        string $tableName,
-        ?\Nette\Database\Explorer $context = null,
-        ?\CoolBeans\Contract\ContextFactory $contextFactory = null
+        protected string $tableName,
+        protected ?\Nette\Database\Explorer $context = null,
+        protected ?\CoolBeans\Contract\ContextFactory $contextFactory = null,
     )
     {
         if ($context === null && $contextFactory === null) {
             throw new \CoolBeans\Exception\InvalidFunctionParameters('Either context or its factory must be provided.');
         }
-
-        $this->tableName = $tableName;
-        $this->context = $context;
-        $this->contextFactory = $contextFactory;
     }
 
     public function getName() : string

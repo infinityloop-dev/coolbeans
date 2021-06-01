@@ -4,15 +4,13 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Decorator;
 
-use \CoolBeans\Contract\PrimaryKey;
-
 trait TDecorator
 {
     use \CoolBeans\Decorator\TCommon;
 
     protected \CoolBeans\Contract\DataSource $dataSource;
 
-    public function getRow(PrimaryKey $key) : \CoolBeans\Contract\Row
+    public function getRow(\CoolBeans\Contract\PrimaryKey $key) : \CoolBeans\Contract\Row
     {
         return $this->dataSource->getRow($key);
     }
