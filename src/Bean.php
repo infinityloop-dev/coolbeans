@@ -11,7 +11,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     protected \ReflectionClass $reflection;
     protected \CoolBeans\Contract\PrimaryKey $primaryKey;
 
-    final public function __construct(
+    public function __construct(
         protected \Nette\Database\Table\ActiveRow $row,
     )
     {
