@@ -115,7 +115,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
 
         $result = $commandTester->execute([
             'command' => 'sqlGenerator',
-            'source' => '/../../tests/Unit/TestBean/',
+            'source' => __DIR__ . '/../TestBean/',
         ]);
 
         self::assertSame(0, $result);
@@ -149,7 +149,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
 
         $commandTester->execute([
             'command' => 'sqlGenerator',
-            'source' => '/../../tests/Unit/InvalidBean/DuplicateColumns/',
+            'source' => __DIR__ . '/../InvalidBean/DuplicateColumns/',
         ]);
     }
 
@@ -166,7 +166,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
 
         $commandTester->execute([
             'command' => 'sqlGenerator',
-            'source' => '/../../tests/Unit/InvalidBean/UndefinedProperty/',
+            'source' => __DIR__ . '/../InvalidBean/UndefinedProperty/',
         ]);
     }
 
@@ -183,7 +183,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
 
         $commandTester->execute([
             'command' => 'sqlGenerator',
-            'source' => '/../../tests/Unit/InvalidBean/ColumnCount/',
+            'source' => __DIR__ . '/../InvalidBean/ColumnCount/',
         ]);
     }
 }
