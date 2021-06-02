@@ -292,7 +292,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
     private function getBeans(string $destination) : array
     {
         $robotLoader = new \Nette\Loaders\RobotLoader();
-        $robotLoader->addDirectory(__DIR__ . $destination);
+        $robotLoader->addDirectory($destination);
         $robotLoader->rebuild();
 
         $foundClasses = \array_keys($robotLoader->getIndexedClasses());
