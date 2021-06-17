@@ -19,4 +19,6 @@ final class SimpleBean1 extends \CoolBeans\Bean
     public \CoolBeans\PrimaryKey\IntPrimaryKey $col7_id;
     public \DateTime $col8;
     public \Nette\Utils\DateTime $col9;
+    public int $col10 = 5;
+    public float $col11 = 0.005;
 }

@@ -75,6 +75,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 'dataType' => $this->getDataType($property),
                 'notNull' => $this->getNotNull($property),
                 'default' => $this->getDefault($property),
+                'comment' => $this->getComment($property),
             ];
 
             $foreignKey = $this->getForeignKey($property);
@@ -95,7 +96,9 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $toReturn .= $this->printSection($foreignKeys);
         $toReturn .= \PHP_EOL . ')' . \PHP_EOL;
         $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'COLLATE = `utf8mb4_general_ci`;';
+        $toReturn .= self::INDENTATION . 'COLLATE = `utf8mb4_general_ci`';
+        $toReturn .= $this->getTableComment($bean);
+        $toReturn .= ';';
 
         return $toReturn;
     }
@@ -113,7 +116,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 . $row['name'] . \str_repeat(' ', $longestNameLength - $nameLength + 1)
                 . $row['dataType'] . \str_repeat(' ', $longestDataTypeLength - $dataTypeLength + 1)
                 . $row['notNull']
-                . $row['default']);
+                . $row['default']
+                . $row['comment']);
         }
 
         return \implode(',' . \PHP_EOL, $toReturn);
@@ -134,16 +138,43 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return $maxLength;
     }
 
+    private function getComment(\ReflectionProperty $property) : string
+    {
+        $commentAttribute = $property->getAttributes(\CoolBeans\Attribute\Comment::class);
+
+        if (\count($commentAttribute) === 0) {
+            return '';
+        }
+
+        return ' COMMENT \'' . $commentAttribute[0]->newInstance()->comment . '\'';
+    }
+
+    private function getTableComment(\ReflectionClass $bean) : string
+    {
+        $commentAttribute = $bean->getAttributes(\CoolBeans\Attribute\Comment::class);
+
+        if (\count($commentAttribute) === 0) {
+            return '';
+        }
+
+        return \PHP_EOL . self::INDENTATION . 'COMMENT = \'' . $commentAttribute[0]->newInstance()->comment . '\'';
+    }
+
     private function getDefault(\ReflectionProperty $property) : string
     {
         if ($property->getName() === 'id') {
-            return ' AUTOINCREMENT';
+            return ' AUTO_INCREMENT';
         }
 
         $type = $property->getType();
         \assert($type instanceof \ReflectionNamedType);
 
         $defaultValueAttribute = $property->getAttributes(\CoolBeans\Attribute\DefaultValue::class);
+        $typeOverrideAttribute = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
+
+        $propertyType = \count($typeOverrideAttribute) > 0
+            ? \strtolower($typeOverrideAttribute[0]->newInstance()->type)
+            : $type->getName();
 
         if (!$property->hasDefaultValue() && \count($defaultValueAttribute) === 0) {
             return '';
@@ -159,11 +190,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             return ' DEFAULT NULL';
         }
 
-        if ($type->getName() === 'bool') {
-            return ' DEFAULT ' . ($defaultValue === true ? '1' : '0');
-        }
-
-        return ' DEFAULT "' . $defaultValue . '"';
+        return match ($propertyType) {
+            'bool' => ' DEFAULT ' . ($defaultValue === true ? '1' : '0'),
+            'int', 'float' => ' DEFAULT ' . $defaultValue,
+            default => ' DEFAULT \'' . $defaultValue . '\'',
+        };
     }
 
     private function getNotNull(\ReflectionProperty $property) : string
@@ -186,7 +217,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 'string' => 'VARCHAR(255)',
                 \Infinityloop\Utils\Json::class => 'JSON',
                 'int' => 'INT(11)',
-                'float' => 'DOUBLE(11)',
+                'float' => 'DOUBLE',
                 'bool' => 'TINYINT(1)',
                 \CoolBeans\PrimaryKey\IntPrimaryKey::class => 'INT(11) UNSIGNED',
                 \DateTime::class, \Nette\Utils\DateTime::class => 'DATETIME',
@@ -284,9 +315,19 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             return null;
         }
 
-        $tableName = \str_replace('_id', '', $property->getName());
+        $foreignKeyAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKey::class);
 
-        return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $tableName . '`(`id`)';
+        if (\count($foreignKeyAttribute) > 0) {
+            $foreignKey = $foreignKeyAttribute[0]->newInstance();
+
+            $table = $foreignKey->table;
+            $column = $foreignKey->column;
+        } else {
+            $table = \str_replace('_id', '', $property->getName());
+            $column = 'id';
+        }
+
+        return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $table . '`(`' . $column . '`)';
     }
 
     private function getBeans(string $destination) : array
