@@ -23,6 +23,6 @@ final class TypeOverride
             return $this->type;
         }
 
-        return $this->type . '(' . \implode(',', $this->lengthArgs) . ')';
+        return $this->type . '(' . \implode(', ', $this->lengthArgs) . ')';
     }
 }
