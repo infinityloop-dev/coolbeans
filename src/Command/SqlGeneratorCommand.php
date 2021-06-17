@@ -146,7 +146,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             return '';
         }
 
-        return ' COMMENT \''. $commentAttribute[0]->newInstance()->comment .'\'';
+        return ' COMMENT \'' . $commentAttribute[0]->newInstance()->comment . '\'';
     }
 
     private function getTableComment(\ReflectionClass $bean) : string
@@ -157,7 +157,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             return '';
         }
 
-        return \PHP_EOL . self::INDENTATION . 'COMMENT = \''. $commentAttribute[0]->newInstance()->comment .'\'';
+        return \PHP_EOL . self::INDENTATION . 'COMMENT = \'' . $commentAttribute[0]->newInstance()->comment . '\'';
     }
 
     private function getDefault(\ReflectionProperty $property) : string
@@ -172,11 +172,9 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $defaultValueAttribute = $property->getAttributes(\CoolBeans\Attribute\DefaultValue::class);
         $typeOverrideAttribute = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
 
-        if (\count($typeOverrideAttribute) > 0) {
-            $propertyType = \strtolower($typeOverrideAttribute[0]->newInstance()->type);
-        } else {
-            $propertyType = $type->getName();
-        }
+        $propertyType = \count($typeOverrideAttribute) > 0
+            ? \strtolower($typeOverrideAttribute[0]->newInstance()->type)
+            : $type->getName();
 
         if (!$property->hasDefaultValue() && \count($defaultValueAttribute) === 0) {
             return '';
