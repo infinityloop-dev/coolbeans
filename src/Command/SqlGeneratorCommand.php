@@ -190,15 +190,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             return ' DEFAULT NULL';
         }
 
-        if ($propertyType === 'bool') {
-            return ' DEFAULT ' . ($defaultValue === true ? '1' : '0');
-        }
-
-        if ($propertyType === 'int') {
-            return ' DEFAULT ' . $defaultValue;
-        }
-
-        return ' DEFAULT \'' . $defaultValue . '\'';
+        return match ($propertyType) {
+            'bool' => ' DEFAULT ' . ($defaultValue === true ? '1' : '0'),
+            'int', 'float' => ' DEFAULT ' . $defaultValue,
+            default => ' DEFAULT \'' . $defaultValue . '\'',
+        };
     }
 
     private function getNotNull(\ReflectionProperty $property) : string
@@ -221,7 +217,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 'string' => 'VARCHAR(255)',
                 \Infinityloop\Utils\Json::class => 'JSON',
                 'int' => 'INT(11)',
-                'float' => 'DOUBLE(11)',
+                'float' => 'DOUBLE',
                 'bool' => 'TINYINT(1)',
                 \CoolBeans\PrimaryKey\IntPrimaryKey::class => 'INT(11) UNSIGNED',
                 \DateTime::class, \Nette\Utils\DateTime::class => 'DATETIME',

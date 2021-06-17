@@ -52,6 +52,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col8`    DATETIME         NOT NULL,
             `col9`    DATETIME         NOT NULL,
             `col10`   INT(11)          NOT NULL DEFAULT 5,
+            `col11`   DOUBLE(11)       NOT NULL DEFAULT 0.005,
 
             FOREIGN KEY (`col7_id`) REFERENCES `col7`(`id`)
         )
