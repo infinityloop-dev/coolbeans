@@ -163,7 +163,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
     private function getDefault(\ReflectionProperty $property) : string
     {
         if ($property->getName() === 'id') {
-            return ' AUTO_INCREMENT';
+            return ' AUTO_INCREMENT PRIMARY KEY';
         }
 
         $type = $property->getType();
