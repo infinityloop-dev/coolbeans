@@ -43,7 +43,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             COMMENT = 'Some random comment';
 
         CREATE TABLE `simple_bean_1`(
-            `id`      INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `id`      INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `col3`    VARCHAR(255)     NOT NULL,
             `col4`    VARCHAR(255),
             `col5`    VARCHAR(255)              DEFAULT NULL,
@@ -60,7 +60,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_2`(
-            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `col3` VARCHAR(255)     NOT NULL,
             `col4` VARCHAR(255),
             `col5` VARCHAR(255)              DEFAULT NULL,
@@ -72,7 +72,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_attribute`(
-            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `col3` VARCHAR(255)     NOT NULL,
             `col4` VARCHAR(255),
             `col5` VARCHAR(255)              DEFAULT NULL,
@@ -86,7 +86,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_class_attribute`(
-            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `col3` VARCHAR(255)     NOT NULL,
             `col4` VARCHAR(255),
             `col5` VARCHAR(255)              DEFAULT NULL,
@@ -100,7 +100,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             COLLATE = `utf8mb4_general_ci`;
 
         CREATE TABLE `simple_bean_class_attribute_2`(
-            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
+            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
             `col3` VARCHAR(255)     NOT NULL,
             `col4` VARCHAR(255),
             `col5` VARCHAR(255)              DEFAULT NULL,
