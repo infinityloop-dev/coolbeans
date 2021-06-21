@@ -25,14 +25,14 @@ final class TableSorter
         }
 
         while (\count($dependencies) !== 0) {
-            $finished = true;
+            $tableOutputted = false;
 
             foreach ($dependencies as $className => $dependency) {
                 if (\count($dependency) > 0) {
                     continue;
                 }
 
-                $finished = false;
+                $tableOutputted = true;
                 $output[] = $className;
 
                 unset($dependencies[$className]);
@@ -47,7 +47,7 @@ final class TableSorter
                 }
             }
 
-            if ($finished && \count($dependencies) > 0) {
+            if (!$tableOutputted) {
                 throw new \Exception('Cycle detected');
             }
         }
@@ -67,7 +67,7 @@ final class TableSorter
             $type = $property->getType();
             \assert($type instanceof \ReflectionNamedType);
 
-            if ($type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class || $property->getName() === 'id') {
+            if ($type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class || !\str_ends_with($property->getName(), '_id')) {
                 continue;
             }
 
@@ -81,15 +81,17 @@ final class TableSorter
                 }
 
                 $toReturn[] = $foreignKey->table;
-            } else {
-                $tableName = \str_replace('_id', '', $property->getName());
 
-                if ($tableName === \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())) {
-                    continue;
-                }
-
-                $toReturn[] = \str_replace('_id', '', $property->getName());
+                continue;
             }
+
+            $tableName = \str_replace('_id', '', $property->getName());
+
+            if ($tableName === \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())) {
+                continue;
+            }
+
+            $toReturn[] = \str_replace('_id', '', $property->getName());
         }
 
         return $toReturn;
