@@ -30,11 +30,14 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $converted = '';
         $destination = $input->getArgument('source');
         $beans = $this->getBeans($destination);
-        \asort($beans);
 
-        $lastBean = \array_key_last($beans);
+        $sorter = new \CoolBeans\Utils\TableSorter($beans);
 
-        foreach ($beans as $key => $bean) {
+        $sortedBeans = $sorter->sort();
+
+        $lastBean = \array_key_last($sortedBeans);
+
+        foreach ($sortedBeans as $key => $bean) {
             $converted .= $this->generateSqlForBean($bean);
 
             if ($lastBean !== $key) {

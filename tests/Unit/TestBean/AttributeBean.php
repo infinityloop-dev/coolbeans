@@ -38,14 +38,14 @@ final class AttributeBean extends \CoolBeans\Bean
     #[\CoolBeans\Attribute\Index(\CoolBeans\Attribute\Types\MysqlOrder::ASC)]
     public float $col6 = 1.005;
     #[\CoolBeans\Attribute\ForeignKeyConstraint(null, null)]
-    public \CoolBeans\PrimaryKey\IntPrimaryKey $col7_id;
+    public \CoolBeans\PrimaryKey\IntPrimaryKey $simple_bean_2_id;
     #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\MysqlType::DOUBLE, 16, 2)]
     #[\CoolBeans\Attribute\Index(\CoolBeans\Attribute\Types\MysqlOrder::DESC)]
     public float $col8;
-    #[\CoolBeans\Attribute\ForeignKey('test_table', 'test_column')]
+    #[\CoolBeans\Attribute\ForeignKey('simple_bean_2', 'id')]
     #[\CoolBeans\Attribute\ForeignKeyConstraint(null, MysqlForeignKeyConstraintType::RESTRICT)]
     public \CoolBeans\PrimaryKey\IntPrimaryKey $col9_id;
-    #[\CoolBeans\Attribute\ForeignKey('test_table')]
+    #[\CoolBeans\Attribute\ForeignKey('simple_bean_2')]
     #[\CoolBeans\Attribute\ForeignKeyConstraint(MysqlForeignKeyConstraintType::RESTRICT, MysqlForeignKeyConstraintType::RESTRICT)]
     public \CoolBeans\PrimaryKey\IntPrimaryKey $col10_id;
 }

@@ -16,7 +16,7 @@ final class SimpleBean1 extends \CoolBeans\Bean
     public ?string $col4;
     public ?string $col5 = null;
     public ?string $col6 = 'default';
-    public \CoolBeans\PrimaryKey\IntPrimaryKey $col7_id;
+    public \CoolBeans\PrimaryKey\IntPrimaryKey $simple_bean_2_id;
     public \DateTime $col8;
     public \Nette\Utils\DateTime $col9;
     public int $col10 = 5;
