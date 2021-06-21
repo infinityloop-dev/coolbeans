@@ -27,6 +27,11 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col9_id`  INT(11) UNSIGNED NOT NULL,
             `col10_id` INT(11) UNSIGNED NOT NULL,
 
+            INDEX `attribute_bean_col5_index` (`col5`),
+            INDEX `attribute_bean_col6_index` (`col6` ASC),
+            INDEX `attribute_bean_col8_index` (`col8` DESC),
+            INDEX `attribute_bean_col4_col5_col6_index` (`col4`,`col5` DESC,`col6` ASC),
+
             CONSTRAINT `unique_attribute_bean_col2_col3` UNIQUE (`col2`,`col3`),
             CONSTRAINT `unique_attribute_bean_col4_col5_col6` UNIQUE (`col4`,`col5`,`col6`),
 
