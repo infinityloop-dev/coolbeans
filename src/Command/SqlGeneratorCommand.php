@@ -316,6 +316,21 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
 
         $foreignKeyAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKey::class);
+        $foreignKeyConstraintAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKeyConstraint::class);
+
+        $foreignKeyConstraintResult = '';
+
+        if (\count($foreignKeyConstraintAttribute) > 0) {
+            $foreignKeyConstraint = $foreignKeyConstraintAttribute[0]->newInstance();
+
+            if ($foreignKeyConstraint->onUpdate !== null) {
+                $foreignKeyConstraintResult .= ' ON UPDATE ' . $foreignKeyConstraint->onUpdate;
+            }
+
+            if ($foreignKeyConstraint->onDelete !== null) {
+                $foreignKeyConstraintResult .= ' ON DELETE ' . $foreignKeyConstraint->onDelete;
+            }
+        }
 
         if (\count($foreignKeyAttribute) > 0) {
             $foreignKey = $foreignKeyAttribute[0]->newInstance();
@@ -327,7 +342,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             $column = 'id';
         }
 
-        return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $table . '`(`' . $column . '`)';
+        return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $table . '`(`' . $column . '`)'
+            . $foreignKeyConstraintResult;
     }
 
     private function getBeans(string $destination) : array

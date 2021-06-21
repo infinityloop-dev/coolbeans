@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Attribute\Types;
 
-final class MysqlTypes
+final class MysqlType
 {
     use \Nette\StaticClass;
 
