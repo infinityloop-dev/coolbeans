@@ -35,8 +35,8 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             CONSTRAINT `unique_attribute_bean_col6` UNIQUE (`col6`),
 
             FOREIGN KEY (`col7_id`) REFERENCES `col7`(`id`),
-            FOREIGN KEY (`col9_id`) REFERENCES `test_table`(`test_column`),
-            FOREIGN KEY (`col10_id`) REFERENCES `test_table`(`id`)
+            FOREIGN KEY (`col9_id`) REFERENCES `test_table`(`test_column`) ON DELETE RESTRICT,
+            FOREIGN KEY (`col10_id`) REFERENCES `test_table`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`
