@@ -73,29 +73,28 @@ final class TableSorter
                 continue;
             }
 
-            $foreignKeyAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKey::class);
-
-            if (\count($foreignKeyAttribute) > 0) {
-                $foreignKey = $foreignKeyAttribute[0]->newInstance();
-
-                if (\strtolower($foreignKey->table) === \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())) {
-                    continue;
-                }
-
-                $toReturn[] = $foreignKey->table;
-
-                continue;
-            }
-
-            $tableName = \str_replace('_id', '', $property->getName());
+            $foreignKeyTarget = $this->getForeignKeyDependency($property);
 
             if ($tableName === \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())) {
                 continue;
             }
 
-            $toReturn[] = \str_replace('_id', '', $property->getName());
+            $toReturn[] = $foreignKeyTarget;
         }
 
         return $toReturn;
+    }
+
+    private function getForeignKeyDependency(\ReflectionProperty $property) : string
+    {
+        $foreignKeyAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKey::class);
+
+        if (\count($foreignKeyAttribute) > 0) {
+            $foreignKey = $foreignKeyAttribute[0]->newInstance();
+
+            return $foreignKey->table;
+        }
+
+        return \substr($property->getName(), 0, -3);
     }
 }
