@@ -75,8 +75,8 @@ final class TableSorter
 
             $foreignKeyTarget = $this->getForeignKeyDependency($property);
 
-            if ($tableName === \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())) {
-                continue;
+            if ($foreignKeyTarget === \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())) {
+                continue; // self dependency
             }
 
             $toReturn[] = $foreignKeyTarget;
