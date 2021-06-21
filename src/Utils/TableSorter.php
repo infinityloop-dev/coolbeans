@@ -16,6 +16,8 @@ final class TableSorter
 
     public function sort() : array
     {
+        \asort($this->beans);
+
         $dependencies = [];
         $output = [];
 
