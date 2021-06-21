@@ -64,6 +64,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $data = [];
 
         $classUnique = $this->getClassUnique($bean);
+        $classIndex = $this->getClassIndex($bean);
 
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             if (!$property->getType() instanceof \ReflectionNamedType) {
@@ -91,6 +92,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
 
         $toReturn .= $this->buildTable($data);
+        $toReturn .= $this->printSection($classIndex);
         $toReturn .= $this->printSection($classUnique);
         $toReturn .= $this->printSection($unique);
         $toReturn .= $this->printSection($foreignKeys);
@@ -266,6 +268,55 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
 
         return $constrains;
+    }
+    
+    private function getClassIndex(\ReflectionClass $bean) : array
+    {
+        if (\count($bean->getAttributes(\CoolBeans\Attribute\ClassIndex::class)) === 0) {
+            return [];
+        }
+
+        $declaredColumns = [];
+        $indexes = [];
+
+        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            $declaredColumns[$property->getName()] = true;
+
+            if (\count($property->getAttributes(\CoolBeans\Attribute\Index::class)) > 0) {
+                $index = $property->getAttributes(\CoolBeans\Attribute\Index::class)[0]->newInstance();
+
+                $indexes[] = self::INDENTATION . 'INDEX `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
+                    . '_' . $property->getName() . '_index` (`' . $property->getName() . '`' . ($index->order === null
+                        ? ''
+                        : ' ' . $index->order
+                    ) .')';
+            }
+        }
+
+        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassIndex::class) as $indexAttribute) {
+            $indexColumns = $indexAttribute->newInstance()->columns;
+            $indexOrders = $indexAttribute->newInstance()->orders;
+
+            $columns = [];
+            $i = 0;
+            foreach ($indexColumns as $indexColumn) {
+                if (!\array_key_exists($indexColumn, $declaredColumns)) {
+                    throw new \CoolBeans\Exception\ClassUniqueConstraintUndefinedProperty(
+                        'Property with name "' . $indexColumn . '" given in ClassIndex is not defined.',
+                    );
+                }
+
+                $columns[] = '`' . $indexColumn . '`' . (isset($indexOrders[$i]) && $indexOrders[$i] !== null
+                    ? ' ' . $indexOrders[$i]
+                    : '');
+                $i++;
+            }
+
+            $indexes[] = self::INDENTATION . 'INDEX `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
+                . '_' . \implode('_', $indexColumns) . '_index` (' . \implode(',', $columns) . ')';
+        }
+
+        return $indexes;
     }
 
     private function validateClassUniqueConstraintDuplication(\ReflectionClass $bean) : void
