@@ -46,6 +46,6 @@ final class AttributeBean extends \CoolBeans\Bean
     #[\CoolBeans\Attribute\ForeignKeyConstraint(null, MysqlForeignKeyConstraintType::RESTRICT)]
     public \CoolBeans\PrimaryKey\IntPrimaryKey $col9_id;
     #[\CoolBeans\Attribute\ForeignKey('test_table')]
-    #[\CoolBeans\Attribute\ForeignKeyConstraint(MysqlForeignKeyConstraintType::RESTRICT,MysqlForeignKeyConstraintType::RESTRICT)]
+    #[\CoolBeans\Attribute\ForeignKeyConstraint(MysqlForeignKeyConstraintType::RESTRICT, MysqlForeignKeyConstraintType::RESTRICT)]
     public \CoolBeans\PrimaryKey\IntPrimaryKey $col10_id;
 }

@@ -8,7 +8,7 @@ namespace CoolBeans\Attribute;
 final class Index
 {
     public function __construct(
-        public ?string $order = null
+        public ?string $order = null,
     )
     {
     }

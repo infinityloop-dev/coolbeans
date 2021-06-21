@@ -269,7 +269,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
         return $constrains;
     }
-    
+
     private function getClassIndex(\ReflectionClass $bean) : array
     {
         if (\count($bean->getAttributes(\CoolBeans\Attribute\ClassIndex::class)) === 0) {
@@ -282,15 +282,17 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             $declaredColumns[$property->getName()] = true;
 
-            if (\count($property->getAttributes(\CoolBeans\Attribute\Index::class)) > 0) {
-                $index = $property->getAttributes(\CoolBeans\Attribute\Index::class)[0]->newInstance();
-
-                $indexes[] = self::INDENTATION . 'INDEX `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
-                    . '_' . $property->getName() . '_index` (`' . $property->getName() . '`' . ($index->order === null
-                        ? ''
-                        : ' ' . $index->order
-                    ) .')';
+            if (\count($property->getAttributes(\CoolBeans\Attribute\Index::class)) === 0) {
+                continue;
             }
+
+            $index = $property->getAttributes(\CoolBeans\Attribute\Index::class)[0]->newInstance();
+
+            $indexes[] = self::INDENTATION . 'INDEX `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
+                . '_' . $property->getName() . '_index` (`' . $property->getName() . '`' . ($index->order === null
+                    ? ''
+                    : ' ' . $index->order
+                ) . ')';
         }
 
         foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassIndex::class) as $indexAttribute) {
@@ -299,6 +301,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
             $columns = [];
             $i = 0;
+
             foreach ($indexColumns as $indexColumn) {
                 if (!\array_key_exists($indexColumn, $declaredColumns)) {
                     throw new \CoolBeans\Exception\ClassUniqueConstraintUndefinedProperty(
