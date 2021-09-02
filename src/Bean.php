@@ -104,6 +104,15 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     }
 
     /**
+     * Reload row from database.
+     */
+    public function refresh() : void
+    {
+        $this->row = $this->row->getTable()->get($this->primaryKey->getValue());
+        $this->initiateProperties();
+    }
+
+    /**
      * Selects referenced row from $table where <referencedRowPrimary> = $throughColumn
      */
     protected function ref(string $table, ?string $throughColumn = null) : ?\Nette\Database\Table\ActiveRow
@@ -176,26 +185,14 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
                 throw new \CoolBeans\Exception\NonNullableType('Property [' . $property->getName() . '] does not have nullable type.');
             }
 
-            switch ($type->getName()) {
-                case 'bool':
-                    $this->{$name} = \is_bool($value)
-                        ? $value
-                        : $value === 1;
-
-                    break;
-                case \Infinityloop\Utils\Json::class:
-                    $this->{$name} = \Infinityloop\Utils\Json::fromString($value);
-
-                    break;
-                case \CoolBeans\PrimaryKey\IntPrimaryKey::class:
-                    $this->{$name} = new \CoolBeans\PrimaryKey\IntPrimaryKey($value);
-
-                    break;
-                default:
-                    $this->{$name} = $value;
-
-                    break;
-            }
+            $this->{$name} = match ($type->getName()) {
+                default => $value,
+                'bool' => \is_bool($value)
+                    ? $value
+                    : $value === 1,
+                \Infinityloop\Utils\Json::class => \Infinityloop\Utils\Json::fromString($value),
+                \CoolBeans\PrimaryKey\IntPrimaryKey::class => new \CoolBeans\PrimaryKey\IntPrimaryKey($value),
+            };
         }
     }
 }
