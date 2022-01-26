@@ -186,12 +186,15 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
             }
 
             $this->{$name} = match ($type->getName()) {
-                default => $value,
+                'int', 'string', 'float', \Nette\Utils\DateTime::class => $value,
+                \Infinityloop\Utils\Json::class => \Infinityloop\Utils\Json::fromString($value),
+                \CoolBeans\PrimaryKey\IntPrimaryKey::class => new \CoolBeans\PrimaryKey\IntPrimaryKey($value),
                 'bool' => \is_bool($value)
                     ? $value
                     : $value === 1,
-                \Infinityloop\Utils\Json::class => \Infinityloop\Utils\Json::fromString($value),
-                \CoolBeans\PrimaryKey\IntPrimaryKey::class => new \CoolBeans\PrimaryKey\IntPrimaryKey($value),
+                default => \is_subclass_of($type, \BackedEnum::class)
+                    ? $type::from($value)
+                    : $value,
             };
         }
     }
