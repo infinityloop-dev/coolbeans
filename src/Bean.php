@@ -167,13 +167,15 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     protected function initiateProperties() : void
     {
         foreach ($this->reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            $name = $property->getName();
             $type = $property->getType();
-            $value = $this->row[$name];
 
             if (!$type instanceof \ReflectionNamedType) {
                 throw new \CoolBeans\Exception\MissingType('Property [' . $property->getName() . '] does not have type.');
             }
+
+            $name = $property->getName();
+            $typeName = $type->getName();
+            $value = $this->row[$name];
 
             if ($value === null) {
                 if ($type->allowsNull()) {
@@ -185,15 +187,15 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
                 throw new \CoolBeans\Exception\NonNullableType('Property [' . $property->getName() . '] does not have nullable type.');
             }
 
-            $this->{$name} = match ($type->getName()) {
+            $this->{$name} = match ($typeName) {
                 'int', 'string', 'float', \Nette\Utils\DateTime::class => $value,
                 \Infinityloop\Utils\Json::class => \Infinityloop\Utils\Json::fromString($value),
                 \CoolBeans\PrimaryKey\IntPrimaryKey::class => new \CoolBeans\PrimaryKey\IntPrimaryKey($value),
                 'bool' => \is_bool($value)
                     ? $value
                     : $value === 1,
-                default => \is_subclass_of($type, \BackedEnum::class)
-                    ? $type::from($value)
+                default => \is_subclass_of($typeName, \BackedEnum::class)
+                    ? $typeName::from($value)
                     : $value,
             };
         }
