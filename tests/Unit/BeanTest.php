@@ -219,7 +219,6 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
     public function testInitiatePropertiesPropertyWithoutType() : void
     {
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
-        $activeRowMock->expects('offsetGet')->with('id')->andReturn($this->activeRowData['id']);
         $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
 
         $this->expectException(\CoolBeans\Exception\MissingType::class);
