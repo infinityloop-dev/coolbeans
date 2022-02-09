@@ -171,6 +171,16 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             return ' AUTO_INCREMENT PRIMARY KEY';
         }
 
+        if (!$property->getType()->isBuiltin()) {
+            $instance = new \ReflectionClass($property->getType()->getName());
+
+            if ($instance->isEnum()) {
+                return $property->hasDefaultValue()
+                    ? ' DEFAULT \'' . $property->getDefaultValue()->value . '\''
+                    : '';
+            }
+        }
+
         $type = $property->getType();
         \assert($type instanceof \ReflectionNamedType);
 
@@ -209,12 +219,56 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             : '        ';
     }
 
+    private function isBuiltInEnum(\ReflectionProperty $property) : bool
+    {
+        if (!$property->getType()->isBuiltin()) {
+            $instance = new \ReflectionClass($property->getType()->getName());
+
+            if ($instance->isEnum()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function getBuildInEnum(\ReflectionProperty $property) : \ReflectionEnum
+    {
+        return new \ReflectionEnum($property->getType()->getName());
+    }
+
     private function getDataType(\ReflectionProperty $property) : string
     {
         $type = $property->getType();
         \assert($type instanceof \ReflectionNamedType);
 
         $typeOverride = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
+
+        if ($this->isBuiltInEnum($property) && \count($typeOverride) === 0) {
+            $enum = $this->getBuildInEnum($property);
+
+            if ((string) $enum->getBackingType() === 'string') {
+                $options = [];
+
+                foreach ($enum->getCases() as $case) {
+                    $options[] = $case->getBackingValue();
+                }
+
+                return 'ENUM(\'' . \implode('\',\'', $options) .'\')';
+            }
+
+            $longestOption = 0;
+
+            foreach ($enum->getCases() as $case) {
+                $length = \mb_strlen((string) $case->getBackingValue());
+
+                if ($length > $longestOption) {
+                    $longestOption = $length;
+                }
+            }
+
+            return 'TINYINT(' . $longestOption . ')';
+        }
 
         return \count($typeOverride) >= 1
             ? $typeOverride[0]->newInstance()->getType()

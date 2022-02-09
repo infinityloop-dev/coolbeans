@@ -103,16 +103,19 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             COMMENT = 'Some random comment';
         
         CREATE TABLE `simple_bean_1`(
-            `id`               INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-            `col3`             VARCHAR(255)     NOT NULL,
+            `id`               INT(11) UNSIGNED        NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `col3`             VARCHAR(255)            NOT NULL,
             `col4`             VARCHAR(255),
-            `col5`             VARCHAR(255)              DEFAULT NULL,
-            `col6`             VARCHAR(255)              DEFAULT 'default',
-            `simple_bean_2_id` INT(11) UNSIGNED NOT NULL,
-            `col8`             DATETIME         NOT NULL,
-            `col9`             DATETIME         NOT NULL,
-            `col10`            INT(11)          NOT NULL DEFAULT 5,
-            `col11`            DOUBLE           NOT NULL DEFAULT 0.005,
+            `col5`             VARCHAR(255)                     DEFAULT NULL,
+            `col6`             VARCHAR(255)                     DEFAULT 'default',
+            `simple_bean_2_id` INT(11) UNSIGNED        NOT NULL,
+            `col8`             DATETIME                NOT NULL,
+            `col9`             DATETIME                NOT NULL,
+            `col10`            INT(11)                 NOT NULL DEFAULT 5,
+            `col11`            DOUBLE                  NOT NULL DEFAULT 0.005,
+            `col12`            ENUM('abc','bca','xyz') NOT NULL DEFAULT 'abc',
+            `col13`            TINYINT(7)              NOT NULL DEFAULT '22',
+            `col14`            VARCHAR(64)             NOT NULL DEFAULT 'abc',
         
             FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`)
         )

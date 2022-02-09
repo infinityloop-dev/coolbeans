@@ -21,4 +21,8 @@ final class SimpleBean1 extends \CoolBeans\Bean
     public \Nette\Utils\DateTime $col9;
     public int $col10 = 5;
     public float $col11 = 0.005;
+    public SimpleEnum $col12 = SimpleEnum::ABC;
+    public SimpleEnum2 $col13 = SimpleEnum2::BCA;
+    #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\MysqlType::VARCHAR, 64)]
+    public SimpleEnum $col14 = SimpleEnum::ABC;
 }
