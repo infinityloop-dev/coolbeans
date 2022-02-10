@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Attribute\Types;
 
-interface IMysqlForeignKeyConstraintType
+interface IForeignKeyConstraintType
 {
     public static function getDefault() : string;
 }

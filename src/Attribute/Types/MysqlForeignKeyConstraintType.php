@@ -4,7 +4,7 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Attribute\Types;
 
-final class MysqlForeignKeyConstraintType implements IMysqlForeignKeyConstraintType
+final class MysqlForeignKeyConstraintType implements IForeignKeyConstraintType
 {
     use \Nette\StaticClass;
 
