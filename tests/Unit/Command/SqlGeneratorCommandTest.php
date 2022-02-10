@@ -117,7 +117,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col13`            TINYINT(7)              NOT NULL DEFAULT '22',
             `col14`            VARCHAR(64)             NOT NULL DEFAULT 'abc',
         
-            FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`)
+            FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`;

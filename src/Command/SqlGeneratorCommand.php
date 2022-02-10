@@ -463,6 +463,9 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             if ($foreignKeyConstraint->onDelete !== null) {
                 $foreignKeyConstraintResult .= ' ON DELETE ' . $foreignKeyConstraint->onDelete;
             }
+        } else {
+            $foreignKeyConstraintResult .= ' ON UPDATE ' . \CoolBeans\Attribute\Types\MysqlForeignKeyConstraintType::getDefault();
+            $foreignKeyConstraintResult .= ' ON DELETE ' . \CoolBeans\Attribute\Types\MysqlForeignKeyConstraintType::getDefault();
         }
 
         if (\count($foreignKeyAttribute) > 0) {
