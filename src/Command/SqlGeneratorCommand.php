@@ -276,7 +276,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                     $options[] = $case->getBackingValue();
                 }
 
-                return 'ENUM(\'' . \implode('\',\'', $options) .'\')';
+                return 'ENUM(\'' . \implode('\',\'', $options) . '\')';
             }
 
             $longestOption = 0;
