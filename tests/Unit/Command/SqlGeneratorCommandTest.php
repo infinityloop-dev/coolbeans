@@ -53,8 +53,8 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         
             CONSTRAINT `unique_simple_bean_class_attribute_col4_col5` UNIQUE (`col4`,`col5`)
         )
-            CHARSET = `utf8mb4`
-            COLLATE = `utf8mb4_general_ci`;
+            CHARSET = `cz_charset`
+            COLLATE = `cz_collation`;
         
         CREATE TABLE `simple_bean_class_attribute_2`(
             `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,

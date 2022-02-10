@@ -100,8 +100,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $toReturn .= $this->printSection($unique);
         $toReturn .= $this->printSection($foreignKeys);
         $toReturn .= \PHP_EOL . ')' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'COLLATE = `utf8mb4_general_ci`';
+        $toReturn .= self::INDENTATION . $this->getTableCharset($bean) . \PHP_EOL;
+        $toReturn .= self::INDENTATION . $this->getTableCollation($bean);
         $toReturn .= $this->getTableComment($bean);
         $toReturn .= ';';
 
@@ -163,6 +163,28 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
 
         return \PHP_EOL . self::INDENTATION . 'COMMENT = \'' . $commentAttribute[0]->newInstance()->comment . '\'';
+    }
+
+    private function getTableCharset(\ReflectionClass $bean) : string
+    {
+        $charsetAttribute = $bean->getAttributes(\CoolBeans\Attribute\Charset::class);
+
+        if (\count($charsetAttribute) === 0) {
+            return 'CHARSET = `utf8mb4`';
+        }
+
+        return 'CHARSET = `' . $charsetAttribute[0]->newInstance()->charset . '`';
+    }
+
+    private function getTableCollation(\ReflectionClass $bean) : string
+    {
+        $collationAttribute = $bean->getAttributes(\CoolBeans\Attribute\Collation::class);
+
+        if (\count($collationAttribute) === 0) {
+            return 'COLLATE = `utf8mb4_general_ci`';
+        }
+
+        return 'COLLATE = `' . $collationAttribute[0]->newInstance()->collation . '`';
     }
 
     private function getDefault(\ReflectionProperty $property) : string
