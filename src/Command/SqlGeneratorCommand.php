@@ -210,15 +210,15 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $typeOverrideAttribute = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
 
         $propertyType = \count($typeOverrideAttribute) > 0
-            ? \strtolower($typeOverrideAttribute[0]->newInstance()->type)
+            ? \strtolower($typeOverrideAttribute[0]->newInstance()->type->value)
             : $type->getName();
 
         if (!$property->hasDefaultValue() && \count($defaultValueAttribute) === 0) {
             return '';
         }
 
-        if (\count($defaultValueAttribute) === 1) {
-            return ' DEFAULT ' . $defaultValueAttribute[0]->getArguments()[0];
+        if (\count($defaultValueAttribute) > 0) {
+            return ' DEFAULT ' . $defaultValueAttribute[0]->getArguments()[0]->value;
         }
 
         $defaultValue = $property->getDefaultValue();
@@ -370,7 +370,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             $indexes[] = self::INDENTATION . 'INDEX `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
                 . '_' . $property->getName() . '_index` (`' . $property->getName() . '`' . ($index->order === null
                     ? ''
-                    : ' ' . $index->order
+                    : ' ' . $index->order->value
                 ) . ')';
         }
 
@@ -389,7 +389,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 }
 
                 $columns[] = '`' . $indexColumn . '`' . (isset($indexOrders[$i]) && $indexOrders[$i] !== null
-                    ? ' ' . $indexOrders[$i]
+                    ? ' ' . $indexOrders[$i]->value
                     : '');
                 $i++;
             }
@@ -457,15 +457,15 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             $foreignKeyConstraint = $foreignKeyConstraintAttribute[0]->newInstance();
 
             if ($foreignKeyConstraint->onUpdate !== null) {
-                $foreignKeyConstraintResult .= ' ON UPDATE ' . $foreignKeyConstraint->onUpdate;
+                $foreignKeyConstraintResult .= ' ON UPDATE ' . $foreignKeyConstraint->onUpdate->value;
             }
 
             if ($foreignKeyConstraint->onDelete !== null) {
-                $foreignKeyConstraintResult .= ' ON DELETE ' . $foreignKeyConstraint->onDelete;
+                $foreignKeyConstraintResult .= ' ON DELETE ' . $foreignKeyConstraint->onDelete->value;
             }
         } else {
-            $foreignKeyConstraintResult .= ' ON UPDATE ' . \CoolBeans\Attribute\Types\MysqlForeignKeyConstraintType::getDefault();
-            $foreignKeyConstraintResult .= ' ON DELETE ' . \CoolBeans\Attribute\Types\MysqlForeignKeyConstraintType::getDefault();
+            $foreignKeyConstraintResult .= ' ON UPDATE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
+            $foreignKeyConstraintResult .= ' ON DELETE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
         }
 
         if (\count($foreignKeyAttribute) > 0) {

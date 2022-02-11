@@ -23,6 +23,6 @@ final class SimpleBean1 extends \CoolBeans\Bean
     public float $col11 = 0.005;
     public SimpleEnum $col12 = SimpleEnum::ABC;
     public SimpleEnum2 $col13 = SimpleEnum2::BCA;
-    #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\MysqlType::VARCHAR, 64)]
+    #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\ColumnType::VARCHAR, 64)]
     public SimpleEnum $col14 = SimpleEnum::ABC;
 }

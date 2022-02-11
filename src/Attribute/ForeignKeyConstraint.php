@@ -8,8 +8,8 @@ namespace CoolBeans\Attribute;
 final class ForeignKeyConstraint
 {
     public function __construct(
-        public ?string $onUpdate = null,
-        public ?string $onDelete = null,
+        public ?\CoolBeans\Attribute\Types\ForeignKeyConstraintType $onUpdate = null,
+        public ?\CoolBeans\Attribute\Types\ForeignKeyConstraintType $onDelete = null,
     )
     {
     }
