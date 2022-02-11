@@ -188,7 +188,8 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
             }
 
             $this->{$name} = match ($typeName) {
-                'int', 'string', 'float', \Nette\Utils\DateTime::class => $value,
+                'int', 'string', \Nette\Utils\DateTime::class => $value,
+                'float' => (float) $value, // converts decimal to float, lossy conversion - only do this if you know what you are doing
                 \Infinityloop\Utils\Json::class => \Infinityloop\Utils\Json::fromString($value),
                 \CoolBeans\PrimaryKey\IntPrimaryKey::class => new \CoolBeans\PrimaryKey\IntPrimaryKey($value),
                 'bool' => \is_bool($value)
