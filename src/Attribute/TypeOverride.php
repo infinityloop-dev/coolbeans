@@ -10,7 +10,7 @@ final class TypeOverride
     public array $lengthArgs;
 
     public function __construct(
-        public string $type,
+        public \CoolBeans\Attribute\Types\ColumnType $type,
         int ...$lengthArgs,
     )
     {
@@ -20,9 +20,9 @@ final class TypeOverride
     public function getType() : string
     {
         if (\count($this->lengthArgs) === 0) {
-            return $this->type;
+            return $this->type->value;
         }
 
-        return $this->type . '(' . \implode(', ', $this->lengthArgs) . ')';
+        return $this->type->value . '(' . \implode(', ', $this->lengthArgs) . ')';
     }
 }

@@ -7,6 +7,8 @@ namespace CoolBeans\Tests\Unit\TestBean;
 //@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
 //@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
 #[\CoolBeans\Attribute\ClassUniqueConstraint(['col4', 'col5'])]
+#[\CoolBeans\Attribute\Collation('cz_collation')]
+#[\CoolBeans\Attribute\Charset('cz_charset')]
 final class SimpleBeanClassAttribute extends \CoolBeans\Bean
 {
     private int $col1;

@@ -11,7 +11,7 @@
     }
   ],
   "require": {
-    "php": ">=8.0",
+    "php": ">=8.1",
     "infinityloop-dev/utils": "^2.1",
     "nette/utils": "^3.0",
     "nette/database": "^3.1",
@@ -31,7 +31,7 @@
     "phpunit/phpunit": "^9.3",
     "mockery/mockery": "^1.4",
     "infection/infection": "^0.20",
-    "phpstan/phpstan": "^0.12",
+    "phpstan/phpstan": "^1.4",
     "infinityloop-dev/coding-standard": "^0.2"
   },
   "autoload": {

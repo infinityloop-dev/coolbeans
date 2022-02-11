@@ -100,8 +100,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $toReturn .= $this->printSection($unique);
         $toReturn .= $this->printSection($foreignKeys);
         $toReturn .= \PHP_EOL . ')' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'CHARSET = `utf8mb4`' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . 'COLLATE = `utf8mb4_general_ci`';
+        $toReturn .= self::INDENTATION . $this->getTableCharset($bean) . \PHP_EOL;
+        $toReturn .= self::INDENTATION . $this->getTableCollation($bean);
         $toReturn .= $this->getTableComment($bean);
         $toReturn .= ';';
 
@@ -165,10 +165,42 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return \PHP_EOL . self::INDENTATION . 'COMMENT = \'' . $commentAttribute[0]->newInstance()->comment . '\'';
     }
 
+    private function getTableCharset(\ReflectionClass $bean) : string
+    {
+        $charsetAttribute = $bean->getAttributes(\CoolBeans\Attribute\Charset::class);
+
+        if (\count($charsetAttribute) === 0) {
+            return 'CHARSET = `utf8mb4`';
+        }
+
+        return 'CHARSET = `' . $charsetAttribute[0]->newInstance()->charset . '`';
+    }
+
+    private function getTableCollation(\ReflectionClass $bean) : string
+    {
+        $collationAttribute = $bean->getAttributes(\CoolBeans\Attribute\Collation::class);
+
+        if (\count($collationAttribute) === 0) {
+            return 'COLLATE = `utf8mb4_general_ci`';
+        }
+
+        return 'COLLATE = `' . $collationAttribute[0]->newInstance()->collation . '`';
+    }
+
     private function getDefault(\ReflectionProperty $property) : string
     {
         if ($property->getName() === 'id') {
             return ' AUTO_INCREMENT PRIMARY KEY';
+        }
+
+        if (!$property->getType()->isBuiltin()) {
+            $instance = new \ReflectionClass($property->getType()->getName());
+
+            if ($instance->isEnum()) {
+                return $property->hasDefaultValue()
+                    ? ' DEFAULT \'' . $property->getDefaultValue()->value . '\''
+                    : '';
+            }
         }
 
         $type = $property->getType();
@@ -178,15 +210,15 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $typeOverrideAttribute = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
 
         $propertyType = \count($typeOverrideAttribute) > 0
-            ? \strtolower($typeOverrideAttribute[0]->newInstance()->type)
+            ? \strtolower($typeOverrideAttribute[0]->newInstance()->type->value)
             : $type->getName();
 
         if (!$property->hasDefaultValue() && \count($defaultValueAttribute) === 0) {
             return '';
         }
 
-        if (\count($defaultValueAttribute) === 1) {
-            return ' DEFAULT ' . $defaultValueAttribute[0]->getArguments()[0];
+        if (\count($defaultValueAttribute) > 0) {
+            return ' DEFAULT ' . $defaultValueAttribute[0]->getArguments()[0]->value;
         }
 
         $defaultValue = $property->getDefaultValue();
@@ -209,12 +241,56 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             : '        ';
     }
 
+    private function isBuiltInEnum(\ReflectionProperty $property) : bool
+    {
+        if (!$property->getType()->isBuiltin()) {
+            $instance = new \ReflectionClass($property->getType()->getName());
+
+            if ($instance->isEnum()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private function getBuildInEnum(\ReflectionProperty $property) : \ReflectionEnum
+    {
+        return new \ReflectionEnum($property->getType()->getName());
+    }
+
     private function getDataType(\ReflectionProperty $property) : string
     {
         $type = $property->getType();
         \assert($type instanceof \ReflectionNamedType);
 
         $typeOverride = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
+
+        if ($this->isBuiltInEnum($property) && \count($typeOverride) === 0) {
+            $enum = $this->getBuildInEnum($property);
+
+            if ((string) $enum->getBackingType() === 'string') {
+                $options = [];
+
+                foreach ($enum->getCases() as $case) {
+                    $options[] = $case->getBackingValue();
+                }
+
+                return 'ENUM(\'' . \implode('\',\'', $options) . '\')';
+            }
+
+            $longestOption = 0;
+
+            foreach ($enum->getCases() as $case) {
+                $length = \mb_strlen((string) $case->getBackingValue());
+
+                if ($length > $longestOption) {
+                    $longestOption = $length;
+                }
+            }
+
+            return 'TINYINT(' . $longestOption . ')';
+        }
 
         return \count($typeOverride) >= 1
             ? $typeOverride[0]->newInstance()->getType()
@@ -294,7 +370,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             $indexes[] = self::INDENTATION . 'INDEX `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
                 . '_' . $property->getName() . '_index` (`' . $property->getName() . '`' . ($index->order === null
                     ? ''
-                    : ' ' . $index->order
+                    : ' ' . $index->order->value
                 ) . ')';
         }
 
@@ -313,7 +389,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 }
 
                 $columns[] = '`' . $indexColumn . '`' . (isset($indexOrders[$i]) && $indexOrders[$i] !== null
-                    ? ' ' . $indexOrders[$i]
+                    ? ' ' . $indexOrders[$i]->value
                     : '');
                 $i++;
             }
@@ -381,12 +457,15 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             $foreignKeyConstraint = $foreignKeyConstraintAttribute[0]->newInstance();
 
             if ($foreignKeyConstraint->onUpdate !== null) {
-                $foreignKeyConstraintResult .= ' ON UPDATE ' . $foreignKeyConstraint->onUpdate;
+                $foreignKeyConstraintResult .= ' ON UPDATE ' . $foreignKeyConstraint->onUpdate->value;
             }
 
             if ($foreignKeyConstraint->onDelete !== null) {
-                $foreignKeyConstraintResult .= ' ON DELETE ' . $foreignKeyConstraint->onDelete;
+                $foreignKeyConstraintResult .= ' ON DELETE ' . $foreignKeyConstraint->onDelete->value;
             }
+        } else {
+            $foreignKeyConstraintResult .= ' ON UPDATE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
+            $foreignKeyConstraintResult .= ' ON DELETE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
         }
 
         if (\count($foreignKeyAttribute) > 0) {
