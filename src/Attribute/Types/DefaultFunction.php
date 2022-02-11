@@ -2,9 +2,9 @@
 
 declare(strict_types = 1);
 
-namespace CoolBeans\Attribute\Defaults;
+namespace CoolBeans\Attribute\Types;
 
-enum Defaults : string
+enum DefaultFunction : string
 {
     case CURRENT_TIMESTAMP = 'CURRENT_TIMESTAMP()';
     case NOW = 'NOW()';

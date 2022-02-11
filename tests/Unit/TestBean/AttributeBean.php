@@ -4,10 +4,10 @@ declare(strict_types = 1);
 
 namespace CoolBeans\Tests\Unit\TestBean;
 
-use \CoolBeans\Attribute\Types\ForeignKeyConstraintType;
-use \CoolBeans\Attribute\Types\Order;
-use \CoolBeans\Attribute\Defaults\Defaults;
-use \CoolBeans\Attribute\Types\ColumnType;
+use CoolBeans\Attribute\Types\ColumnType;
+use CoolBeans\Attribute\Types\DefaultFunction;
+use CoolBeans\Attribute\Types\ForeignKeyConstraintType;
+use CoolBeans\Attribute\Types\Order;
 
 //@phpcs:disable SlevomatCodingStandard.Classes.ClassStructure.IncorrectGroupOrder
 //@phpcs:disable SlevomatCodingStandard.Classes.UnusedPrivateElements.UnusedProperty
@@ -18,13 +18,13 @@ use \CoolBeans\Attribute\Types\ColumnType;
 #[\CoolBeans\Attribute\Comment('Some random comment')]
 final class AttributeBean extends \CoolBeans\Bean
 {
-    #[\CoolBeans\Attribute\DefaultValue(Defaults::NOW)]
+    #[\CoolBeans\Attribute\DefaultValue(DefaultFunction::NOW)]
     #[\CoolBeans\Attribute\TypeOverride(ColumnType::DATE)]
     private int $col1;
-    #[\CoolBeans\Attribute\DefaultValue(Defaults::NOW)]
+    #[\CoolBeans\Attribute\DefaultValue(DefaultFunction::NOW)]
     #[\CoolBeans\Attribute\TypeOverride(ColumnType::DATE)]
     public \DateTime $col2;
-    #[\CoolBeans\Attribute\DefaultValue(Defaults::NOW)]
+    #[\CoolBeans\Attribute\DefaultValue(DefaultFunction::NOW)]
     #[\CoolBeans\Attribute\TypeOverride(ColumnType::TIME)]
     public \Nette\Utils\DateTime $col3;
     #[\CoolBeans\Attribute\TypeOverride(ColumnType::BIGINT)]
