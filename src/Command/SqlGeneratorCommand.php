@@ -42,7 +42,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
     public function generate(string $source) : string
     {
-        $beans = $this->getBeans($destination);
+        $beans = $this->getBeans($source);
         $sorter = new \CoolBeans\Utils\TableSorter($beans);
 
         $sortedBeans = $sorter->sort();
