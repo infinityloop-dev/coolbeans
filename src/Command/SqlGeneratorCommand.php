@@ -397,8 +397,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 }
 
                 $columns[] = '`' . $indexColumn . '`' . (isset($indexOrders[$i]) && $indexOrders[$i] !== null
-                        ? ' ' . $indexOrders[$i]->value
-                        : '');
+                    ? ' ' . $indexOrders[$i]->value
+                    : '');
                 $i++;
             }
 
