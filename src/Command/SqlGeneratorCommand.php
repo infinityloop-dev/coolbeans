@@ -27,36 +27,41 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         \Symfony\Component\Console\Output\OutputInterface $output,
     ) : int
     {
-        $converted = '';
-        $destination = $input->getArgument('source');
-        $beans = $this->getBeans($destination);
-
-        $sorter = new \CoolBeans\Utils\TableSorter($beans);
-
-        $sortedBeans = $sorter->sort();
-
-        $lastBean = \array_key_last($sortedBeans);
-
-        foreach ($sortedBeans as $key => $bean) {
-            $converted .= $this->generateSqlForBean($bean);
-
-            if ($lastBean !== $key) {
-                $converted .= \PHP_EOL . \PHP_EOL;
-            }
-        }
-
+        $source = $input->getArgument('source');
         $outputFile = $input->getArgument('output');
+        $ddl = $this->generate($source);
 
         if (\is_string($outputFile)) {
-            \file_put_contents($outputFile, $converted);
+            \file_put_contents($outputFile, $ddl);
         } else {
-            $output->write($converted);
+            $output->write($ddl);
         }
 
         return 0;
     }
 
-    private function generateSqlForBean(string $className) : string
+    public function generate(string $source) : string
+    {
+        $beans = $this->getBeans($destination);
+        $sorter = new \CoolBeans\Utils\TableSorter($beans);
+
+        $sortedBeans = $sorter->sort();
+
+        $ddl = '';
+        $lastBean = \array_key_last($sortedBeans);
+
+        foreach ($sortedBeans as $key => $bean) {
+            $ddl .= $this->generateBean($bean);
+
+            if ($lastBean !== $key) {
+                $ddl .= \PHP_EOL . \PHP_EOL;
+            }
+        }
+
+        return $ddl;
+    }
+
+    private function generateBean(string $className) : string
     {
         $bean = new \ReflectionClass($className);
 
