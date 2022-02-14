@@ -114,7 +114,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col10`            INT(11)                 NOT NULL DEFAULT 5,
             `col11`            DOUBLE                  NOT NULL DEFAULT 0.005,
             `col12`            ENUM('abc','bca','xyz') NOT NULL DEFAULT 'abc',
-            `col13`            TINYINT(7)              NOT NULL DEFAULT '22',
+            `col13`            TINYINT(7)              NOT NULL DEFAULT 22,
             `col14`            VARCHAR(64)             NOT NULL DEFAULT 'abc',
         
             FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT

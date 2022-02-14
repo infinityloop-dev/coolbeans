@@ -197,8 +197,16 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             $instance = new \ReflectionClass($property->getType()->getName());
 
             if ($instance->isEnum()) {
+                $enum = $this->getBuildInEnum($property);
+
+                if ((string) $enum->getBackingType() === 'string') {
+                    return $property->hasDefaultValue()
+                        ? ' DEFAULT \'' . $property->getDefaultValue()->value . '\''
+                        : '';
+                }
+
                 return $property->hasDefaultValue()
-                    ? ' DEFAULT \'' . $property->getDefaultValue()->value . '\''
+                    ? ' DEFAULT ' . $property->getDefaultValue()->value
                     : '';
             }
         }
