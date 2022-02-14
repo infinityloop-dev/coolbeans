@@ -220,11 +220,6 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         \assert($type instanceof \ReflectionNamedType);
 
         $defaultValueAttribute = $property->getAttributes(\CoolBeans\Attribute\DefaultValue::class);
-        $typeOverrideAttribute = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
-
-        $propertyType = \count($typeOverrideAttribute) > 0
-            ? \strtolower($typeOverrideAttribute[0]->newInstance()->type->value)
-            : $type->getName();
 
         if (!$property->hasDefaultValue() && \count($defaultValueAttribute) === 0) {
             return '';
@@ -240,10 +235,13 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             return ' DEFAULT NULL';
         }
 
-        return match ($propertyType) {
-            'bool' => ' DEFAULT ' . ($defaultValue === true ? '1' : '0'),
-            'int', 'float' => ' DEFAULT ' . $defaultValue,
-            default => ' DEFAULT \'' . $defaultValue . '\'',
+        return ' DEFAULT ' . match ($property->getType()->getName()) {
+            'bool' => ($defaultValue === true ? '1' : '0'),
+            'int', 'float' => $defaultValue,
+            \Infinityloop\Utils\Json::class => '\'' . $defaultValue->toString() . '\'',
+            \CoolBeans\PrimaryKey\IntPrimaryKey::class => $defaultValue->getValue(),
+            'string' => '\'' . $defaultValue . '\'',
+            default => throw new \Exception('Unsupported default value.'),
         };
     }
 

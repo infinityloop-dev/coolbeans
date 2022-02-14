@@ -17,4 +17,5 @@ final class SimpleBean2 extends \CoolBeans\Bean
     public ?string $col6 = 'default';
     public \DateTime $col8;
     public \Nette\Utils\DateTime $col9;
+    public const ABC = 0;
 }

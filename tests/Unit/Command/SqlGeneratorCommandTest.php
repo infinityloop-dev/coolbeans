@@ -76,7 +76,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col3`             TIME             NOT NULL DEFAULT NOW(),
             `col4`             BIGINT           NOT NULL,
             `col5`             INT(44)          NOT NULL DEFAULT 1 COMMENT 'Some random comment',
-            `col6`             DECIMAL(1, 3)    NOT NULL DEFAULT '1.005',
+            `col6`             DECIMAL(1, 3)    NOT NULL DEFAULT 1.005,
             `simple_bean_2_id` INT(11) UNSIGNED NOT NULL,
             `col8`             DOUBLE(16, 2)    NOT NULL,
             `col9_id`          INT(11) UNSIGNED NOT NULL,
@@ -116,6 +116,8 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col12`            ENUM('abc','bca','xyz') NOT NULL DEFAULT 'abc',
             `col13`            TINYINT(7)              NOT NULL DEFAULT 22,
             `col14`            VARCHAR(64)             NOT NULL DEFAULT 'abc',
+            `col15`            INT(11)                 NOT NULL DEFAULT 0,
+            `col16`            JSON                    NOT NULL,
         
             FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT
         )

@@ -25,4 +25,6 @@ final class SimpleBean1 extends \CoolBeans\Bean
     public SimpleEnum2 $col13 = SimpleEnum2::BCA;
     #[\CoolBeans\Attribute\TypeOverride(\CoolBeans\Attribute\Types\ColumnType::VARCHAR, 64)]
     public SimpleEnum $col14 = SimpleEnum::ABC;
+    public int $col15 = SimpleBean2::ABC;
+    public \Infinityloop\Utils\Json $col16;
 }
