@@ -10,14 +10,10 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     protected const ROW_CLASS = \CoolBeans\Bean::class;
 
-    protected \ReflectionClass $reflection;
-
     final public function __construct(
         protected \Nette\Database\Table\Selection $selection,
     )
     {
-        $this->reflection = new \ReflectionClass(static::class);
-
         if (\CoolBeans\Config::$validateTableName) {
             $this->validateTableName();
         }
@@ -221,8 +217,9 @@ abstract class Selection implements \CoolBeans\Contract\Selection
      */
     protected function validateTableName() : void
     {
+        $reflection = new \ReflectionClass(static::class);
         $tableName = $this->getTableName();
-        $className = \substr($this->reflection->getShortName(), 0, -9);
+        $className = \substr($reflection->getShortName(), 0, -9);
         $sepIndex = \Nette\Utils\Strings::indexOf($tableName, '.');
 
         if (\is_int($sepIndex)) {
