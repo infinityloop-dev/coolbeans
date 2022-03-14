@@ -37,9 +37,7 @@ class Table implements \CoolBeans\Bridge\Nette\DataSource
 
     public function findAll() : \CoolBeans\Bridge\Nette\Selection
     {
-        $cache = \array_values((array) $this->getContext())[3];
-
-        return new \CoolBeans\Bridge\Nette\Selection($this->getContext(), $this->getContext()->getConventions(), $this->getName(), $cache);
+        return new \CoolBeans\Bridge\Nette\Selection($this->getContext(), $this->getContext()->getConventions(), $this->getName());
     }
 
     public function findByArray(array $filter) : \CoolBeans\Bridge\Nette\Selection
