@@ -81,6 +81,8 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col8`             DOUBLE(16, 2)    NOT NULL,
             `col9_id`          INT(11) UNSIGNED NOT NULL,
             `col10_id`         INT(11) UNSIGNED NOT NULL,
+            `code`             VARCHAR(255)     NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `id`               INT(11) UNSIGNED NOT NULL,
         
             INDEX `attribute_bean_col5_index` (`col5`),
             INDEX `attribute_bean_col6_index` (`col6` ASC),
@@ -188,7 +190,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         ]);
     }
 
-    public function testColumnCount() : void
+    public function testMissingPrimaryKey() : void
     {
         $application = new \Symfony\Component\Console\Application();
         $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
@@ -196,12 +198,46 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         $command = $application->find('sqlGenerator');
         $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
 
-        $this->expectException(\CoolBeans\Exception\InvalidClassUniqueConstraintColumnCount::class);
-        $this->expectExceptionMessage('ClassUniqueConstraint expects at least two column names.');
+        $this->expectException(\CoolBeans\Exception\MissingPrimaryKey::class);
+        $this->expectExceptionMessage('Bean InvalidBean has no primary key.');
 
         $commandTester->execute([
             'command' => 'sqlGenerator',
-            'source' => __DIR__ . '/../InvalidBean/ColumnCount/',
+            'source' => __DIR__ . '/../InvalidBean/MissingPrimaryKey/',
+        ]);
+    }
+
+    public function testPrimaryKeyAttributeMultipleColumns() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\PrimaryKeyMultipleColumnsNotImplemented::class);
+        $this->expectExceptionMessage('Multiple column PrimaryKey is not implemented yet.');
+
+        $commandTester->execute([
+            'command' => 'sqlGenerator',
+            'source' => __DIR__ . '/../InvalidBean/PrimaryKeyAttributeMultipleColumns/',
+        ]);
+    }
+
+    public function testPrimaryKeyAttributeMissingColumn() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\PrimaryKeyColumnDoesntExist::class);
+        $this->expectExceptionMessage('PrimaryKey attribute column(s) unknown doesn\'t exist in Bean InvalidBean.');
+
+        $commandTester->execute([
+            'command' => 'sqlGenerator',
+            'source' => __DIR__ . '/../InvalidBean/PrimaryKeyAttributeMissingColumn/',
         ]);
     }
 }

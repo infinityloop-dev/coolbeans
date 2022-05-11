@@ -58,9 +58,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
     public function testGetIterator() : void
     {
         $iteratorInstance = new class implements \Iterator {
-            public function rewind() : bool
+            public function rewind() : void
             {
-                return false;
             }
 
             public function current() : bool
@@ -73,9 +72,8 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
                 return false;
             }
 
-            public function next() : bool
+            public function next() : void
             {
-                return false;
             }
 
             public function valid() : bool

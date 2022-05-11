@@ -14,6 +14,27 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         parent::__construct(self::$defaultName);
     }
 
+    public function generate(string $source) : string
+    {
+        $beans = $this->getBeans($source);
+        $sorter = new \CoolBeans\Utils\TableSorter($beans);
+
+        $sortedBeans = $sorter->sort();
+
+        $ddl = '';
+        $lastBean = \array_key_last($sortedBeans);
+
+        foreach ($sortedBeans as $key => $bean) {
+            $ddl .= $this->generateBean($bean);
+
+            if ($lastBean !== $key) {
+                $ddl .= \PHP_EOL . \PHP_EOL;
+            }
+        }
+
+        return $ddl;
+    }
+
     protected function configure() : void
     {
         $this->setName(self::$defaultName);
@@ -40,30 +61,16 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return 0;
     }
 
-    public function generate(string $source) : string
+    private static function hasPrimaryKeyAttribute(\ReflectionClass $bean) : bool
     {
-        $beans = $this->getBeans($source);
-        $sorter = new \CoolBeans\Utils\TableSorter($beans);
-
-        $sortedBeans = $sorter->sort();
-
-        $ddl = '';
-        $lastBean = \array_key_last($sortedBeans);
-
-        foreach ($sortedBeans as $key => $bean) {
-            $ddl .= $this->generateBean($bean);
-
-            if ($lastBean !== $key) {
-                $ddl .= \PHP_EOL . \PHP_EOL;
-            }
-        }
-
-        return $ddl;
+        return \count($bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)) > 0
+            && \count($bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns) > 0;
     }
 
     private function generateBean(string $className) : string
     {
         $bean = new \ReflectionClass($className);
+        $this->validateBean($bean);
 
         $beanName = \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName());
         $toReturn = 'CREATE TABLE `' . $beanName . '`(' . \PHP_EOL;
@@ -83,11 +90,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 'name' => $this->getPropertyName($property),
                 'dataType' => $this->getDataType($property),
                 'notNull' => $this->getNotNull($property),
-                'default' => $this->getDefault($property),
+                'default' => $this->getDefault($property, $bean),
                 'comment' => $this->getComment($property),
             ];
 
-            $foreignKey = $this->getForeignKey($property);
+            $foreignKey = $this->getForeignKey($property, $bean);
             $uniqueConstraint = $this->getUnique($property, $beanName);
 
             if (\is_string($uniqueConstraint)) {
@@ -192,9 +199,17 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return 'COLLATE = `' . $collationAttribute[0]->newInstance()->collation . '`';
     }
 
-    private function getDefault(\ReflectionProperty $property) : string
+    private function getDefault(\ReflectionProperty $property, \ReflectionClass $bean) : string
     {
-        if ($property->getName() === 'id') {
+        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
+        $attributeColumns = $hasPrimaryKeyAttribute
+            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
+            : [];
+
+        if (
+            ($hasPrimaryKeyAttribute && $attributeColumns[0] === $property->getName())
+            || (!$hasPrimaryKeyAttribute && $property->getName() === 'id')
+        ) {
             return ' AUTO_INCREMENT PRIMARY KEY';
         }
 
@@ -450,12 +465,49 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return ',' . \PHP_EOL . \PHP_EOL . \implode(',' . \PHP_EOL, $data);
     }
 
-    private function getForeignKey(\ReflectionProperty $property) : ?string
+    private function validateBean(\ReflectionClass $bean) : void
+    {
+        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
+        $attributeColumns = $hasPrimaryKeyAttribute
+            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
+            : [];
+        $hasId = false;
+
+        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            if ($property->getName() === 'id') {
+                $hasId = true;
+            }
+
+            foreach ($attributeColumns as $key => $column) {
+                if ($column === $property->getName()) {
+                    $hasId = true;
+                    unset($attributeColumns[$key]);
+                }
+            }
+        }
+
+        if ($hasPrimaryKeyAttribute && \count($attributeColumns) > 0) {
+            throw new \CoolBeans\Exception\PrimaryKeyColumnDoesntExist(
+                'PrimaryKey attribute column(s) ' . \implode(', ', $attributeColumns) . ' doesn\'t exist in Bean ' . $bean->getShortName() . '.',
+            );
+        }
+
+        if (!$hasPrimaryKeyAttribute && !$hasId) {
+            throw new \CoolBeans\Exception\MissingPrimaryKey('Bean ' . $bean->getShortName() . ' has no primary key.');
+        }
+    }
+
+    private function getForeignKey(\ReflectionProperty $property, \ReflectionClass $bean) : ?string
     {
         $type = $property->getType();
         \assert($type instanceof \ReflectionNamedType);
 
-        if ($type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class || $property->getName() === 'id') {
+        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
+        $attributeColumns = $hasPrimaryKeyAttribute
+            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
+            : [];
+
+        if ($property->getName() === 'id' || ($this->hasPrimaryKeyAttribute($bean) && \in_array($property->getName(), $attributeColumns, true))) {
             return null;
         }
 
@@ -484,9 +536,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
             $table = $foreignKey->table;
             $column = $foreignKey->column;
-        } else {
+        } elseif (\str_contains($property->getName(), '_id')) {
             $table = \str_replace('_id', '', $property->getName());
             $column = 'id';
+        } else {
+            return null;
         }
 
         return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $table . '`(`' . $column . '`)'
