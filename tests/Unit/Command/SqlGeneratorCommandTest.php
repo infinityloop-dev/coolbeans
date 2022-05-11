@@ -81,6 +81,7 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col8`             DOUBLE(16, 2)    NOT NULL,
             `col9_id`          INT(11) UNSIGNED NOT NULL,
             `col10_id`         INT(11) UNSIGNED NOT NULL,
+            `code`             INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
         
             INDEX `attribute_bean_col5_index` (`col5`),
             INDEX `attribute_bean_col6_index` (`col6` ASC),
@@ -202,6 +203,57 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         $commandTester->execute([
             'command' => 'sqlGenerator',
             'source' => __DIR__ . '/../InvalidBean/ColumnCount/',
+        ]);
+    }
+
+    public function testMultiplePrimaryKeys() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\BeanWithMultiplePrimaryKeys::class);
+        $this->expectExceptionMessage('Bean InvalidBean has multiple foreign keys.');
+
+        $commandTester->execute([
+            'command' => 'sqlGenerator',
+            'source' => __DIR__ . '/../InvalidBean/PrimaryKey/',
+        ]);
+    }
+
+    public function testPrimaryKeyType() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\PrimaryKeyWithInvalidType::class);
+        $this->expectExceptionMessage('Column id has incorrect type. Expected \CoolBeans\PrimaryKey\IntPrimaryKey.');
+
+        $commandTester->execute([
+            'command' => 'sqlGenerator',
+            'source' => __DIR__ . '/../InvalidBean/PrimaryKeyType/',
+        ]);
+    }
+
+    public function testPrimaryKeyAttributeType() : void
+    {
+        $application = new \Symfony\Component\Console\Application();
+        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
+
+        $command = $application->find('sqlGenerator');
+        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
+
+        $this->expectException(\CoolBeans\Exception\PrimaryKeyWithInvalidType::class);
+        $this->expectExceptionMessage('Column code has incorrect type. Expected \CoolBeans\PrimaryKey\IntPrimaryKey.');
+
+        $commandTester->execute([
+            'command' => 'sqlGenerator',
+            'source' => __DIR__ . '/../InvalidBean/PrimaryKeyAttributeType/',
         ]);
     }
 }

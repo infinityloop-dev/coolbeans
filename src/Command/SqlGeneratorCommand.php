@@ -14,6 +14,27 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         parent::__construct(self::$defaultName);
     }
 
+    public function generate(string $source) : string
+    {
+        $beans = $this->getBeans($source);
+        $sorter = new \CoolBeans\Utils\TableSorter($beans);
+
+        $sortedBeans = $sorter->sort();
+
+        $ddl = '';
+        $lastBean = \array_key_last($sortedBeans);
+
+        foreach ($sortedBeans as $key => $bean) {
+            $ddl .= $this->generateBean($bean);
+
+            if ($lastBean !== $key) {
+                $ddl .= \PHP_EOL . \PHP_EOL;
+            }
+        }
+
+        return $ddl;
+    }
+
     protected function configure() : void
     {
         $this->setName(self::$defaultName);
@@ -40,30 +61,10 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return 0;
     }
 
-    public function generate(string $source) : string
-    {
-        $beans = $this->getBeans($source);
-        $sorter = new \CoolBeans\Utils\TableSorter($beans);
-
-        $sortedBeans = $sorter->sort();
-
-        $ddl = '';
-        $lastBean = \array_key_last($sortedBeans);
-
-        foreach ($sortedBeans as $key => $bean) {
-            $ddl .= $this->generateBean($bean);
-
-            if ($lastBean !== $key) {
-                $ddl .= \PHP_EOL . \PHP_EOL;
-            }
-        }
-
-        return $ddl;
-    }
-
     private function generateBean(string $className) : string
     {
         $bean = new \ReflectionClass($className);
+        $this->validateBean($bean);
 
         $beanName = \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName());
         $toReturn = 'CREATE TABLE `' . $beanName . '`(' . \PHP_EOL;
@@ -194,7 +195,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
     private function getDefault(\ReflectionProperty $property) : string
     {
-        if ($property->getName() === 'id') {
+        if ($property->getName() === 'id' || $this->hasPrimaryKeyAttribute($property)) {
             return ' AUTO_INCREMENT PRIMARY KEY';
         }
 
@@ -450,12 +451,44 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return ',' . \PHP_EOL . \PHP_EOL . \implode(',' . \PHP_EOL, $data);
     }
 
+    private function hasPrimaryKeyAttribute(\ReflectionProperty $property) : bool
+    {
+        return \count($property->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)) > 0;
+    }
+
+    private function validateBean(\ReflectionClass $bean) : void
+    {
+        $hasPrimaryKey = false;
+
+        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
+            if ($property->getName() === 'id' || $this->hasPrimaryKeyAttribute($property)) {
+                $type = $property->getType();
+                \assert($type instanceof \ReflectionNamedType);
+
+                if ($type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class) {
+                    throw new \CoolBeans\Exception\PrimaryKeyWithInvalidType(
+                        'Column ' . $property->getName() . ' has incorrect type. Expected \CoolBeans\PrimaryKey\IntPrimaryKey.',
+                    );
+                }
+
+                if ($hasPrimaryKey) {
+                    throw new \CoolBeans\Exception\BeanWithMultiplePrimaryKeys('Bean ' . $bean->getShortName() . ' has multiple foreign keys.');
+                }
+
+                $hasPrimaryKey = true;
+            }
+        }
+    }
+
     private function getForeignKey(\ReflectionProperty $property) : ?string
     {
         $type = $property->getType();
         \assert($type instanceof \ReflectionNamedType);
 
-        if ($type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class || $property->getName() === 'id') {
+        if (
+            $type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class
+            || ($property->getName() === 'id' || $this->hasPrimaryKeyAttribute($property))
+        ) {
             return null;
         }
 
