@@ -511,10 +511,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
             : [];
 
-        if (
-            $type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class
-            || ($property->getName() === 'id' || ($this->hasPrimaryKeyAttribute($bean) && isset($attributeColumns[$property->getName()])))
-        ) {
+        if ($property->getName() === 'id' || ($this->hasPrimaryKeyAttribute($bean) && \in_array($property->getName(), $attributeColumns, true))) {
             return null;
         }
 
@@ -543,9 +540,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
             $table = $foreignKey->table;
             $column = $foreignKey->column;
-        } else {
+        } elseif (\str_contains($property->getName(), '_id')) {
             $table = \str_replace('_id', '', $property->getName());
             $column = 'id';
+        } else {
+            return null;
         }
 
         return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $table . '`(`' . $column . '`)'
