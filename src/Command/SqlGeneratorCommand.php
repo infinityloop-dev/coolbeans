@@ -473,10 +473,6 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             : [];
         $hasId = false;
 
-        if (\count($attributeColumns) > 1) {
-            throw new \CoolBeans\Exception\PrimaryKeyMultipleColumnsNotImplemented('Multiple column PrimaryKey is not implemented yet.');
-        }
-
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             if ($property->getName() === 'id') {
                 $hasId = true;
