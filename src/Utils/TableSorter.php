@@ -69,11 +69,11 @@ final class TableSorter
             $type = $property->getType();
             \assert($type instanceof \ReflectionNamedType);
 
-            if ($type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class || !\str_ends_with($property->getName(), '_id')) {
+            $foreignKeyTarget = $this->getForeignKeyDependency($property);
+
+            if ($foreignKeyTarget === null) {
                 continue;
             }
-
-            $foreignKeyTarget = $this->getForeignKeyDependency($property);
 
             if ($foreignKeyTarget === \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())) {
                 continue; // self dependency
@@ -85,7 +85,7 @@ final class TableSorter
         return $toReturn;
     }
 
-    private function getForeignKeyDependency(\ReflectionProperty $property) : string
+    private function getForeignKeyDependency(\ReflectionProperty $property) : ?string
     {
         $foreignKeyAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKey::class);
 
@@ -93,6 +93,10 @@ final class TableSorter
             $foreignKey = $foreignKeyAttribute[0]->newInstance();
 
             return $foreignKey->table;
+        }
+
+        if (!\str_ends_with($property->getName(), '_id')) {
+            return null;
         }
 
         return \substr($property->getName(), 0, -3);
