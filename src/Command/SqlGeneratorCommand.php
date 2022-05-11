@@ -61,6 +61,12 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return 0;
     }
 
+    private static function hasPrimaryKeyAttribute(\ReflectionClass $bean) : bool
+    {
+        return \count($bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)) > 0
+            && \count($bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns) > 0;
+    }
+
     private function generateBean(string $className) : string
     {
         $bean = new \ReflectionClass($className);
@@ -84,11 +90,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 'name' => $this->getPropertyName($property),
                 'dataType' => $this->getDataType($property),
                 'notNull' => $this->getNotNull($property),
-                'default' => $this->getDefault($property),
+                'default' => $this->getDefault($property, $bean),
                 'comment' => $this->getComment($property),
             ];
 
-            $foreignKey = $this->getForeignKey($property);
+            $foreignKey = $this->getForeignKey($property, $bean);
             $uniqueConstraint = $this->getUnique($property, $beanName);
 
             if (\is_string($uniqueConstraint)) {
@@ -193,9 +199,17 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return 'COLLATE = `' . $collationAttribute[0]->newInstance()->collation . '`';
     }
 
-    private function getDefault(\ReflectionProperty $property) : string
+    private function getDefault(\ReflectionProperty $property, \ReflectionClass $bean) : string
     {
-        if ($property->getName() === 'id' || $this->hasPrimaryKeyAttribute($property)) {
+        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
+        $attributeColumns = $hasPrimaryKeyAttribute
+            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
+            : [];
+
+        if (
+            ($hasPrimaryKeyAttribute && $attributeColumns[0] === $property->getName())
+            || (!$hasPrimaryKeyAttribute && $property->getName() === 'id')
+        ) {
             return ' AUTO_INCREMENT PRIMARY KEY';
         }
 
@@ -451,43 +465,55 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return ',' . \PHP_EOL . \PHP_EOL . \implode(',' . \PHP_EOL, $data);
     }
 
-    private function hasPrimaryKeyAttribute(\ReflectionProperty $property) : bool
-    {
-        return \count($property->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)) > 0;
-    }
-
     private function validateBean(\ReflectionClass $bean) : void
     {
-        $hasPrimaryKey = false;
+        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
+        $attributeColumns = $hasPrimaryKeyAttribute
+            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
+            : [];
+        $hasId = false;
+
+        if (\count($attributeColumns) > 1) {
+            throw new \CoolBeans\Exception\PrimaryKeyMultipleColumnsNotImplemented('Multiple column PrimaryKey is not implemented yet.');
+        }
 
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if ($property->getName() === 'id' || $this->hasPrimaryKeyAttribute($property)) {
-                $type = $property->getType();
-                \assert($type instanceof \ReflectionNamedType);
-
-                if ($type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class) {
-                    throw new \CoolBeans\Exception\PrimaryKeyWithInvalidType(
-                        'Column ' . $property->getName() . ' has incorrect type. Expected \CoolBeans\PrimaryKey\IntPrimaryKey.',
-                    );
-                }
-
-                if ($hasPrimaryKey) {
-                    throw new \CoolBeans\Exception\BeanWithMultiplePrimaryKeys('Bean ' . $bean->getShortName() . ' has multiple foreign keys.');
-                }
-
-                $hasPrimaryKey = true;
+            if ($property->getName() === 'id') {
+                $hasId = true;
             }
+
+            foreach ($attributeColumns as $key => $column) {
+                if ($column === $property->getName()) {
+                    $hasId = true;
+                    unset($attributeColumns[$key]);
+                }
+            }
+        }
+
+        if ($hasPrimaryKeyAttribute && \count($attributeColumns) > 0) {
+            throw new \CoolBeans\Exception\PrimaryKeyColumnDoesntExist(
+                'PrimaryKey attribute column(s) ' . \implode(', ', $attributeColumns) . ' doesn\'t exist in Bean ' . $bean->getShortName() . '.',
+            );
+        }
+
+        if (!$hasPrimaryKeyAttribute && !$hasId) {
+            throw new \CoolBeans\Exception\MissingPrimaryKey('Bean ' . $bean->getShortName() . ' has no primary key.');
         }
     }
 
-    private function getForeignKey(\ReflectionProperty $property) : ?string
+    private function getForeignKey(\ReflectionProperty $property, \ReflectionClass $bean) : ?string
     {
         $type = $property->getType();
         \assert($type instanceof \ReflectionNamedType);
 
+        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
+        $attributeColumns = $hasPrimaryKeyAttribute
+            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
+            : [];
+
         if (
             $type->getName() !== \CoolBeans\PrimaryKey\IntPrimaryKey::class
-            || ($property->getName() === 'id' || $this->hasPrimaryKeyAttribute($property))
+            || ($property->getName() === 'id' || ($this->hasPrimaryKeyAttribute($bean) && isset($attributeColumns[$property->getName()])))
         ) {
             return null;
         }

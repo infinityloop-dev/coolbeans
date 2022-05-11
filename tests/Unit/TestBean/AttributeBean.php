@@ -16,6 +16,7 @@ use CoolBeans\Attribute\Types\Order;
 #[\CoolBeans\Attribute\ClassUniqueConstraint(['col4', 'col5', 'col6'])]
 #[\CoolBeans\Attribute\ClassIndex(['col4', 'col5', 'col6'], [null, Order::DESC, Order::ASC])]
 #[\CoolBeans\Attribute\Comment('Some random comment')]
+#[\CoolBeans\Attribute\PrimaryKey('code')]
 final class AttributeBean extends \CoolBeans\Bean
 {
     #[\CoolBeans\Attribute\DefaultValue(DefaultFunction::NOW)]
@@ -50,6 +51,6 @@ final class AttributeBean extends \CoolBeans\Bean
     #[\CoolBeans\Attribute\ForeignKey('simple_bean_2')]
     #[\CoolBeans\Attribute\ForeignKeyConstraint(ForeignKeyConstraintType::RESTRICT, ForeignKeyConstraintType::RESTRICT)]
     public \CoolBeans\PrimaryKey\IntPrimaryKey $col10_id;
-    #[\CoolBeans\Attribute\PrimaryKey]
-    public \CoolBeans\PrimaryKey\IntPrimaryKey $code;
+    public string $code;
+    public \CoolBeans\PrimaryKey\IntPrimaryKey $id;
 }
