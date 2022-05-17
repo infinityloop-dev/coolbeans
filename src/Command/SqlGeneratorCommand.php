@@ -33,7 +33,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
     public static function getForeignKeyFromName(string $columnName) : array
     {
-        $parts = \explode('_', $property->getName());
+        $parts = \explode('_', $columnName);
         $column = \array_pop($parts);
 
         return [\implode('_', $parts), $column];
