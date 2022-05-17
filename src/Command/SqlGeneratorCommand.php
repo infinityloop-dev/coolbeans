@@ -14,6 +14,31 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         parent::__construct(self::$defaultName);
     }
 
+    public static function isForeignKeyColumn(\ReflectionProperty $property) : bool
+    {
+        if (!\str_contains($property->getName(), '_')) {
+            return false;
+        }
+
+        $type = $property->getType();
+
+        if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
+            return false;
+        }
+
+        $typeReflection = new \ReflectionClass($type->getName());
+
+        return $typeReflection->isSubclassOf(\CoolBeans\Contract\PrimaryKey::class);
+    }
+
+    public static function getForeignKeyFromName(string $columnName) : array
+    {
+        $parts = \explode('_', $property->getName());
+        $column = \array_pop($parts);
+
+        return [\implode('_', $parts), $column];
+    }
+
     public function generate(string $source) : string
     {
         $beans = $this->getBeans($source);
@@ -499,8 +524,9 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
     private function getForeignKey(\ReflectionProperty $property, \ReflectionClass $bean) : ?string
     {
-        $type = $property->getType();
-        \assert($type instanceof \ReflectionNamedType);
+        if (!self::isForeignKeyColumn($property)) {
+            return null;
+        }
 
         $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
         $attributeColumns = $hasPrimaryKeyAttribute
@@ -536,9 +562,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
             $table = $foreignKey->table;
             $column = $foreignKey->column;
-        } elseif (\str_contains($property->getName(), '_id')) {
-            $table = \str_replace('_id', '', $property->getName());
-            $column = 'id';
+        } elseif (\str_contains($property->getName(), '_')) {
+            [$table, $column] = self::getForeignKeyFromName($property->getName());
         } else {
             return null;
         }
