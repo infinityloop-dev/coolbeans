@@ -62,15 +62,7 @@ final class TableSorter
         $toReturn = [];
 
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            $type = $property->getType();
-
-            if (!$type instanceof \ReflectionNamedType || $type->isBuiltin() || !\str_contains($property->getName(), '_')) {
-                continue;
-            }
-
-            $typeReflection = new \ReflectionClass($type->getName());
-
-            if (!$typeReflection->isSubclassOf(\CoolBeans\Contract\PrimaryKey::class)) {
+            if (!\CoolBeans\Command\SqlGeneratorCommand::isForeignKeyColumn($property)) {
                 continue;
             }
 
@@ -100,9 +92,8 @@ final class TableSorter
             return $foreignKey->table;
         }
 
-        $parts = \explode('_', $property->getName());
-        \array_pop($parts);
+        [$table, $column] = \CoolBeans\Command\SqlGeneratorCommand::getForeignKeyFromName($property->getName());
 
-        return \implode('_', $parts);
+        return $table;
     }
 }
