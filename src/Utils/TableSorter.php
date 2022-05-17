@@ -62,12 +62,17 @@ final class TableSorter
         $toReturn = [];
 
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if (!$property->getType() instanceof \ReflectionNamedType) {
+            $type = $property->getType();
+
+            if (!$type instanceof \ReflectionNamedType || $type->isBuiltin() || !\str_contains($property->getName(), '_')) {
                 continue;
             }
 
-            $type = $property->getType();
-            \assert($type instanceof \ReflectionNamedType);
+            $typeReflection = new \ReflectionClass($type->getName());
+
+            if (!$typeReflection->isSubclassOf(\CoolBeans\Contract\PrimaryKey::class)) {
+                continue;
+            }
 
             $foreignKeyTarget = $this->getForeignKeyDependency($property);
 
@@ -95,10 +100,9 @@ final class TableSorter
             return $foreignKey->table;
         }
 
-        if (!\str_ends_with($property->getName(), '_id')) {
-            return null;
-        }
+        $parts = \explode('_', $property->getName());
+        \array_pop($parts);
 
-        return \substr($property->getName(), 0, -3);
+        return \implode('_', $parts);
     }
 }
