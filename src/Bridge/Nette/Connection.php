@@ -6,7 +6,20 @@ namespace CoolBeans\Bridge\Nette;
 
 final class Connection extends \Nette\Database\Connection
 {
-    public function query(string $sql, ...$params): \Nette\Database\ResultSet
+    public function connect() : void
+    {
+        try {
+            parent::connect();
+        } catch (\PDOException $e) {
+            if (\str_contains($e->getMessage(), 'reset by peer')) {
+                parent::connect(); // retry
+            }
+
+            throw $e;
+        }
+    }
+    
+    public function query(string $sql, ...$params) : \Nette\Database\ResultSet
     {
         try {
             return parent::query($sql, $params);
