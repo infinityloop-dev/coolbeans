@@ -15,6 +15,7 @@
     "infinityloop-dev/utils": "^2.1",
     "nette/utils": "^3.0",
     "nette/database": "^3.1",
+    "nette/di": "^3.0",
     "nette/robot-loader": "^3.3",
     "symfony/console": "^5.2"
   },
@@ -42,6 +43,12 @@
   "autoload-dev": {
     "psr-4": {
       "CoolBeans\\Tests\\": "tests/"
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true,
+      "infection/extension-installer": true
     }
   }
 }
