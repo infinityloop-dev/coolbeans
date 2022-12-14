@@ -13,6 +13,8 @@ final class Connection extends \Nette\Database\Connection
         } catch (\PDOException $e) {
             if (\str_contains($e->getMessage(), 'reset by peer')) {
                 parent::connect(); // retry
+                
+                return;
             }
 
             throw $e;
