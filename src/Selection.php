@@ -146,7 +146,7 @@ abstract class Selection implements \CoolBeans\Contract\Selection
     /**
      * Clones object - same as: $copy = clone $orig;
      */
-    public function clone() : self
+    public function clone() : static
     {
         $newSel = clone $this->selection;
 
