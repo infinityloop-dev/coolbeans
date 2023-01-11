@@ -108,7 +108,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
      */
     public function refresh() : void
     {
-        $this->row = $this->row->getTable()->get($this->primaryKey->getValue());
+        $this->row = $this->row->getTable()->createSelectionInstance($this->getTableName())->get($this->primaryKey->getValue());
         $this->initiateProperties();
     }
 
