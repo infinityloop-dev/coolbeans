@@ -43,14 +43,14 @@ final class TableSorter
                 $beanName = \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName());
 
                 foreach ($dependencies as $classNameTmp => $dependencyTmp) {
-                    if (\in_array($beanName, $dependencyTmp)) {
+                    if (\in_array($beanName, $dependencyTmp, true)) {
                         $dependencies[$classNameTmp] = \array_diff($dependencies[$classNameTmp], [$beanName]);
                     }
                 }
             }
 
             if (!$tableOutputted) {
-                throw new \Exception('Cycle detected');
+                throw new \RuntimeException('Cycle detected');
             }
         }
 
@@ -62,15 +62,13 @@ final class TableSorter
         $toReturn = [];
 
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if (!\CoolBeans\Command\SqlGeneratorCommand::isForeignKeyColumn($property)) {
+            $reference = \CoolBeans\Command\SqlGeneratorCommand::getForeignKeyReference($property);
+
+            if (!\is_array($reference)) {
                 continue;
             }
 
-            $foreignKeyTarget = $this->getForeignKeyDependency($property);
-
-            if ($foreignKeyTarget === null) {
-                continue;
-            }
+            [$foreignKeyTarget] = $reference;
 
             if ($foreignKeyTarget === \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())) {
                 continue; // self dependency
@@ -80,20 +78,5 @@ final class TableSorter
         }
 
         return $toReturn;
-    }
-
-    private function getForeignKeyDependency(\ReflectionProperty $property) : ?string
-    {
-        $foreignKeyAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKey::class);
-
-        if (\count($foreignKeyAttribute) > 0) {
-            $foreignKey = $foreignKeyAttribute[0]->newInstance();
-
-            return $foreignKey->table;
-        }
-
-        [$table, $column] = \CoolBeans\Command\SqlGeneratorCommand::getForeignKeyFromName($property->getName());
-
-        return $table;
     }
 }

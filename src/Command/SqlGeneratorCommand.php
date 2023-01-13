@@ -14,26 +14,33 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         parent::__construct(self::$defaultName);
     }
 
-    public static function isForeignKeyColumn(\ReflectionProperty $property) : bool
+    public static function getForeignKeyReference(\ReflectionProperty $property) : ?array
     {
         if (!\str_contains($property->getName(), '_')) {
-            return false;
+            return null;
         }
 
         $type = $property->getType();
 
         if (!$type instanceof \ReflectionNamedType || $type->isBuiltin()) {
-            return false;
+            return null;
         }
 
-        $typeReflection = new \ReflectionClass($type->getName());
+        $class = new \ReflectionClass($type->getName());
 
-        return $typeReflection->isSubclassOf(\CoolBeans\Contract\PrimaryKey::class);
-    }
+        if (!$class->isSubclassOf(\CoolBeans\Contract\PrimaryKey::class)) {
+            return null;
+        }
 
-    public static function getForeignKeyFromName(string $columnName) : array
-    {
-        $parts = \explode('_', $columnName);
+        $foreignKeyAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKey::class);
+
+        if (\count($foreignKeyAttribute) > 0) {
+            $foreignKey = $foreignKeyAttribute[0]->newInstance();
+
+            return [$foreignKey->table, $foreignKey->column];
+        }
+
+        $parts = \explode('_', $property->getName());
         $column = \array_pop($parts);
 
         return [\implode('_', $parts), $column];
@@ -98,57 +105,69 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $this->validateBean($bean);
 
         $beanName = \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName());
-        $toReturn = 'CREATE TABLE `' . $beanName . '`(' . \PHP_EOL;
-        $foreignKeys = [];
-        $unique = [];
-        $data = [];
-
-        $classUnique = $this->getClassUnique($bean);
-        $classIndex = $this->getClassIndex($bean);
+        $columns = [];
+        $indexes = $this->getClassIndex($bean);
+        $foreignKeyConstraints = [];
+        $uniqueConstraints = $this->getClassUnique($bean);
+        $checkConstraints = $this->getClassCheck($bean);
 
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             if (!$property->getType() instanceof \ReflectionNamedType) {
                 continue;
             }
 
-            $data[] = [
-                'name' => $this->getPropertyName($property),
+            $columns[] = [
+                'name' => '`' . $property->getName() . '`',
                 'dataType' => $this->getDataType($property),
-                'notNull' => $this->getNotNull($property),
+                'notNull' => $property->getType()->allowsNull() === false
+                    ? 'NOT NULL'
+                    : '        ',
                 'default' => $this->getDefault($property, $bean),
                 'comment' => $this->getComment($property),
             ];
 
-            $foreignKey = $this->getForeignKey($property, $bean);
+            $foreignKey = $this->getForeignKey($property);
+
+            if (\is_string($foreignKey)) {
+                $foreignKeyConstraints[] = $foreignKey;
+            }
+
             $uniqueConstraint = $this->getUnique($property, $beanName);
 
             if (\is_string($uniqueConstraint)) {
-                $unique[] = $uniqueConstraint;
+                $uniqueConstraints[] = $uniqueConstraint;
             }
 
-            if (\is_string($foreignKey)) {
-                $foreignKeys[] = $foreignKey;
+            $checkConstraint = $this->getCheck($property, $beanName);
+
+            if (\is_string($checkConstraint)) {
+                $checkConstraints[] = $checkConstraint;
             }
         }
 
-        $toReturn .= $this->buildTable($data);
-        $toReturn .= $this->printSection($classIndex);
-        $toReturn .= $this->printSection($classUnique);
-        $toReturn .= $this->printSection($unique);
-        $toReturn .= $this->printSection($foreignKeys);
-        $toReturn .= \PHP_EOL . ')' . \PHP_EOL;
-        $toReturn .= self::INDENTATION . $this->getTableCharset($bean) . \PHP_EOL;
-        $toReturn .= self::INDENTATION . $this->getTableCollation($bean);
-        $toReturn .= $this->getTableComment($bean);
-        $toReturn .= ';';
-
-        return $toReturn;
+        return 'CREATE TABLE `' . $beanName . '`(' . \PHP_EOL
+            . $this->buildTable($columns)
+            . $this->printSection($indexes)
+            . $this->printSection($foreignKeyConstraints)
+            . $this->printSection($uniqueConstraints)
+            . $this->printSection($checkConstraints). \PHP_EOL
+            . ')' . \PHP_EOL
+            . self::INDENTATION . $this->getTableCharset($bean) . \PHP_EOL
+            . self::INDENTATION . $this->getTableCollation($bean)
+            . $this->getTableComment($bean)
+            . ';';
     }
 
     private function buildTable(array $data) : string
     {
-        $longestNameLength = $this->getLongestByType($data, 'name');
-        $longestDataTypeLength = $this->getLongestByType($data, 'dataType');
+        $longestNameLength = 0;
+        $longestDataTypeLength = 0;
+
+        foreach ($data as $row) {
+            $longestNameLength = \max(\mb_strlen($row['name']), $longestNameLength);
+            $longestDataTypeLength = \max(\mb_strlen($row['dataType']), $longestDataTypeLength);
+        }
+
         $toReturn = [];
 
         foreach ($data as $row) {
@@ -163,21 +182,6 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
 
         return \implode(',' . \PHP_EOL, $toReturn);
-    }
-
-    private function getLongestByType(array $data, string $type) : int
-    {
-        $maxLength = 0;
-
-        foreach ($data as $row) {
-            $length = \mb_strlen($row[$type]);
-
-            if ($length > $maxLength) {
-                $maxLength = $length;
-            }
-        }
-
-        return $maxLength;
     }
 
     private function getComment(\ReflectionProperty $property) : string
@@ -285,13 +289,6 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         };
     }
 
-    private function getNotNull(\ReflectionProperty $property) : string
-    {
-        return $property->getType()->allowsNull() === false
-            ? 'NOT NULL'
-            : '        ';
-    }
-
     private function isBuiltInEnum(\ReflectionProperty $property) : bool
     {
         if (!$property->getType()->isBuiltin()) {
@@ -347,19 +344,14 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             ? $typeOverride[0]->newInstance()->getType()
             : match ($type->getName()) {
                 'string' => 'VARCHAR(255)',
-                \Infinityloop\Utils\Json::class => 'JSON',
                 'int' => 'INT(11)',
                 'float' => 'DOUBLE',
                 'bool' => 'TINYINT(1)',
+                \Infinityloop\Utils\Json::class => 'JSON',
                 \CoolBeans\PrimaryKey\IntPrimaryKey::class => 'INT(11) UNSIGNED',
                 \DateTime::class, \Nette\Utils\DateTime::class => 'DATETIME',
                 default => throw new \CoolBeans\Exception\DataTypeNotSupported('Data type ' . $type->getName() . ' is not supported.'),
             };
-    }
-
-    private function getPropertyName(\ReflectionProperty $property) : string
-    {
-        return '`' . $property->getName() . '`';
     }
 
     private function getClassUnique(\ReflectionClass $bean) : array
@@ -398,6 +390,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
 
         return $constrains;
+    }
+
+    private function getClassCheck(\ReflectionClass $bean) : array
+    {
+        return [];
     }
 
     private function getClassIndex(\ReflectionClass $bean) : array
@@ -481,6 +478,11 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             : null;
     }
 
+    private function getCheck(\ReflectionProperty $property, string $beanName) : ?string
+    {
+        return null;
+    }
+
     private function printSection(array $data) : string
     {
         if (\count($data) === 0) {
@@ -522,24 +524,16 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
     }
 
-    private function getForeignKey(\ReflectionProperty $property, \ReflectionClass $bean) : ?string
+    private function getForeignKey(\ReflectionProperty $property) : ?string
     {
-        if (!self::isForeignKeyColumn($property)) {
+        $reference = self::getForeignKeyReference($property);
+
+        if (!\is_array($reference)) {
             return null;
         }
 
-        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
-        $attributeColumns = $hasPrimaryKeyAttribute
-            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
-            : [];
-
-        if ($property->getName() === 'id' || ($this->hasPrimaryKeyAttribute($bean) && \in_array($property->getName(), $attributeColumns, true))) {
-            return null;
-        }
-
-        $foreignKeyAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKey::class);
+        [$table, $column] = $reference;
         $foreignKeyConstraintAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKeyConstraint::class);
-
         $foreignKeyConstraintResult = '';
 
         if (\count($foreignKeyConstraintAttribute) > 0) {
@@ -555,17 +549,6 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         } else {
             $foreignKeyConstraintResult .= ' ON UPDATE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
             $foreignKeyConstraintResult .= ' ON DELETE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
-        }
-
-        if (\count($foreignKeyAttribute) > 0) {
-            $foreignKey = $foreignKeyAttribute[0]->newInstance();
-
-            $table = $foreignKey->table;
-            $column = $foreignKey->column;
-        } elseif (\str_contains($property->getName(), '_')) {
-            [$table, $column] = self::getForeignKeyFromName($property->getName());
-        } else {
-            return null;
         }
 
         return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $table . '`(`' . $column . '`)'

@@ -88,17 +88,16 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             INDEX `attribute_bean_col6_index` (`col6` ASC),
             INDEX `attribute_bean_col8_index` (`col8` DESC),
             INDEX `attribute_bean_col4_col5_col6_index` (`col4`,`col5` DESC,`col6` ASC),
-        
-            CONSTRAINT `unique_attribute_bean_col2_col3` UNIQUE (`col2`,`col3`),
-            CONSTRAINT `unique_attribute_bean_col4_col5_col6` UNIQUE (`col4`,`col5`,`col6`),
-        
-            CONSTRAINT `unique_attribute_bean_col4` UNIQUE (`col4`),
-            CONSTRAINT `unique_attribute_bean_col5` UNIQUE (`col5`),
-            CONSTRAINT `unique_attribute_bean_col6` UNIQUE (`col6`),
-        
+
             FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`),
             FOREIGN KEY (`col9_id`) REFERENCES `simple_bean_2`(`id`) ON DELETE RESTRICT,
-            FOREIGN KEY (`col10_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT
+            FOREIGN KEY (`col10_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT,
+
+            CONSTRAINT `unique_attribute_bean_col2_col3` UNIQUE (`col2`,`col3`),
+            CONSTRAINT `unique_attribute_bean_col4_col5_col6` UNIQUE (`col4`,`col5`,`col6`),
+            CONSTRAINT `unique_attribute_bean_col4` UNIQUE (`col4`),
+            CONSTRAINT `unique_attribute_bean_col5` UNIQUE (`col5`),
+            CONSTRAINT `unique_attribute_bean_col6` UNIQUE (`col6`)
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`
