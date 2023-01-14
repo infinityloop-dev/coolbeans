@@ -57,7 +57,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         $lastBean = \array_key_last($sortedBeans);
 
         foreach ($sortedBeans as $key => $bean) {
-            $ddl .= $this->generateBean($bean);
+            $ddl .= self::generateBean($bean);
 
             if ($lastBean !== $key) {
                 $ddl .= \PHP_EOL . \PHP_EOL;
@@ -93,23 +93,15 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return 0;
     }
 
-    private static function hasPrimaryKeyAttribute(\ReflectionClass $bean) : bool
-    {
-        return \count($bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)) > 0
-            && \count($bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns) > 0;
-    }
-
-    private function generateBean(string $className) : string
+    private static function generateBean(string $className) : string
     {
         $bean = new \ReflectionClass($className);
-        $this->validateBean($bean);
-
-        $beanName = \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName());
+        $beanName = $bean->getShortName();
         $columns = [];
-        $indexes = $this->getClassIndex($bean);
+        $indexes = self::getClassIndex($bean);
         $foreignKeyConstraints = [];
-        $uniqueConstraints = $this->getClassUnique($bean);
-        $checkConstraints = $this->getClassCheck($bean);
+        $uniqueConstraints = self::getClassUnique($bean);
+        $checkConstraints = self::getClassCheck($bean);
 
         foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             if (!$property->getType() instanceof \ReflectionNamedType) {
@@ -118,47 +110,54 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
             $columns[] = [
                 'name' => '`' . $property->getName() . '`',
-                'dataType' => $this->getDataType($property),
+                'dataType' => self::getDataType($property),
                 'notNull' => $property->getType()->allowsNull() === false
                     ? 'NOT NULL'
                     : '        ',
-                'default' => $this->getDefault($property, $bean),
-                'comment' => $this->getComment($property),
+                'default' => self::getDefault($property, $bean),
+                'comment' => self::getComment($property),
             ];
 
-            $foreignKey = $this->getForeignKey($property);
+            $foreignKey = self::getForeignKey($property);
 
             if (\is_string($foreignKey)) {
                 $foreignKeyConstraints[] = $foreignKey;
             }
 
-            $uniqueConstraint = $this->getUnique($property, $beanName);
+            $uniqueConstraint = self::getUnique($property, $beanName);
 
             if (\is_string($uniqueConstraint)) {
                 $uniqueConstraints[] = $uniqueConstraint;
             }
 
-            $checkConstraint = $this->getCheck($property, $beanName);
+            $checkConstraint = self::getCheck($property, $beanName);
 
-            if (\is_string($checkConstraint)) {
-                $checkConstraints[] = $checkConstraint;
+            if (\count($checkConstraint) > 0) {
+                $checkConstraints = \array_merge($checkConstraints, $checkConstraint);
+            }
+
+            $index = self::getIndex($property, $beanName);
+
+            if (\count($index) > 0) {
+                $indexes = \array_merge($indexes, $index);
             }
         }
 
-        return 'CREATE TABLE `' . $beanName . '`(' . \PHP_EOL
-            . $this->buildTable($columns)
-            . $this->printSection($indexes)
-            . $this->printSection($foreignKeyConstraints)
-            . $this->printSection($uniqueConstraints)
-            . $this->printSection($checkConstraints). \PHP_EOL
-            . ')' . \PHP_EOL
-            . self::INDENTATION . $this->getTableCharset($bean) . \PHP_EOL
-            . self::INDENTATION . $this->getTableCollation($bean)
-            . $this->getTableComment($bean)
+        return 'CREATE TABLE `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($beanName) . '`(' . \PHP_EOL
+            . self::printColumns($columns)
+            . self::printSection($indexes)
+            . self::printSection($foreignKeyConstraints)
+            . self::printSection($uniqueConstraints)
+            . self::printSection($checkConstraints)
+            . self::printPrimaryKey($bean)
+            . \PHP_EOL . ')'
+            . self::getTableCharset($bean)
+            . self::getTableCollation($bean)
+            . self::getTableComment($bean)
             . ';';
     }
 
-    private function buildTable(array $data) : string
+    private static function printColumns(array $data) : string
     {
         $longestNameLength = 0;
         $longestDataTypeLength = 0;
@@ -184,7 +183,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return \implode(',' . \PHP_EOL, $toReturn);
     }
 
-    private function getComment(\ReflectionProperty $property) : string
+    private static function getComment(\ReflectionProperty $property) : string
     {
         $commentAttribute = $property->getAttributes(\CoolBeans\Attribute\Comment::class);
 
@@ -195,7 +194,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return ' COMMENT \'' . $commentAttribute[0]->newInstance()->comment . '\'';
     }
 
-    private function getTableComment(\ReflectionClass $bean) : string
+    private static function getTableComment(\ReflectionClass $bean) : string
     {
         $commentAttribute = $bean->getAttributes(\CoolBeans\Attribute\Comment::class);
 
@@ -206,47 +205,60 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return \PHP_EOL . self::INDENTATION . 'COMMENT = \'' . $commentAttribute[0]->newInstance()->comment . '\'';
     }
 
-    private function getTableCharset(\ReflectionClass $bean) : string
+    private static function getTableCharset(\ReflectionClass $bean) : string
     {
         $charsetAttribute = $bean->getAttributes(\CoolBeans\Attribute\Charset::class);
+        $charset = \count($charsetAttribute) === 0
+            ? \CoolBeans\Attribute\Charset::DEFAULT
+            : $charsetAttribute[0]->newInstance()->charset;
 
-        if (\count($charsetAttribute) === 0) {
-            return 'CHARSET = `utf8mb4`';
-        }
-
-        return 'CHARSET = `' . $charsetAttribute[0]->newInstance()->charset . '`';
+        return \PHP_EOL . self::INDENTATION . 'CHARSET = `' . $charset . '`';
     }
 
-    private function getTableCollation(\ReflectionClass $bean) : string
+    private static function getTableCollation(\ReflectionClass $bean) : string
     {
         $collationAttribute = $bean->getAttributes(\CoolBeans\Attribute\Collation::class);
+        $collation = \count($collationAttribute) === 0
+            ? \CoolBeans\Attribute\Collation::DEFAULT
+            : $collationAttribute[0]->newInstance()->collation;
 
-        if (\count($collationAttribute) === 0) {
-            return 'COLLATE = `utf8mb4_general_ci`';
-        }
-
-        return 'COLLATE = `' . $collationAttribute[0]->newInstance()->collation . '`';
+        return \PHP_EOL . self::INDENTATION . 'COLLATE = `' . $collation . '`';
     }
 
-    private function getDefault(\ReflectionProperty $property, \ReflectionClass $bean) : string
+    private static function getDefault(\ReflectionProperty $property, \ReflectionClass $bean) : string
     {
-        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
-        $attributeColumns = $hasPrimaryKeyAttribute
-            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
-            : [];
+        $type = $property->getType();
+        \assert($type instanceof \ReflectionNamedType);
 
-        if (
-            ($hasPrimaryKeyAttribute && $attributeColumns[0] === $property->getName())
-            || (!$hasPrimaryKeyAttribute && $property->getName() === 'id')
-        ) {
-            return ' AUTO_INCREMENT PRIMARY KEY';
+        $defaultValueAttribute = $property->getAttributes(\CoolBeans\Attribute\DefaultValue::class);
+
+        if (\count($defaultValueAttribute) > 0) {
+            return ' DEFAULT ' . $defaultValueAttribute[0]->getArguments()[0]->value;
         }
 
-        if (!$property->getType()->isBuiltin()) {
-            $instance = new \ReflectionClass($property->getType()->getName());
+        if (!$property->hasDefaultValue()) {
+            $primaryKeys = self::getPrimaryKeyColumns($bean);
 
-            if ($instance->isEnum()) {
-                $enum = $this->getBuildInEnum($property);
+            if (\count($primaryKeys) === 1 && $property->getName() === $primaryKeys[0]) {
+                if (\in_array($type->getName(), ['int', \CoolBeans\PrimaryKey\IntPrimaryKey::class], true)) {
+                    return ' AUTO_INCREMENT';
+                }
+            }
+
+            return '';
+        }
+
+        $defaultValue = $property->getDefaultValue();
+
+        if ($defaultValue === null) {
+            return ' DEFAULT NULL';
+        }
+
+        if (!$type->isBuiltin()) {
+            $typeReflection = new \ReflectionClass($type->getName());
+
+            if ($typeReflection->isEnum()) {
+                $enum = new \ReflectionEnum($type->getName());
 
                 if ((string) $enum->getBackingType() === 'string') {
                     return $property->hasDefaultValue()
@@ -260,26 +272,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             }
         }
 
-        $type = $property->getType();
-        \assert($type instanceof \ReflectionNamedType);
-
-        $defaultValueAttribute = $property->getAttributes(\CoolBeans\Attribute\DefaultValue::class);
-
-        if (!$property->hasDefaultValue() && \count($defaultValueAttribute) === 0) {
-            return '';
-        }
-
-        if (\count($defaultValueAttribute) > 0) {
-            return ' DEFAULT ' . $defaultValueAttribute[0]->getArguments()[0]->value;
-        }
-
-        $defaultValue = $property->getDefaultValue();
-
-        if ($defaultValue === null) {
-            return ' DEFAULT NULL';
-        }
-
-        return ' DEFAULT ' . match ($property->getType()->getName()) {
+        return ' DEFAULT ' . match ($type->getName()) {
             'bool' => ($defaultValue === true ? '1' : '0'),
             'int', 'float' => $defaultValue,
             \Infinityloop\Utils\Json::class => '\'' . $defaultValue->toString() . '\'',
@@ -289,201 +282,147 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         };
     }
 
-    private function isBuiltInEnum(\ReflectionProperty $property) : bool
-    {
-        if (!$property->getType()->isBuiltin()) {
-            $instance = new \ReflectionClass($property->getType()->getName());
-
-            if ($instance->isEnum()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private function getBuildInEnum(\ReflectionProperty $property) : \ReflectionEnum
-    {
-        return new \ReflectionEnum($property->getType()->getName());
-    }
-
-    private function getDataType(\ReflectionProperty $property) : string
+    private static function getDataType(\ReflectionProperty $property) : string
     {
         $type = $property->getType();
         \assert($type instanceof \ReflectionNamedType);
 
         $typeOverride = $property->getAttributes(\CoolBeans\Attribute\TypeOverride::class);
 
-        if ($this->isBuiltInEnum($property) && \count($typeOverride) === 0) {
-            $enum = $this->getBuildInEnum($property);
+        if (\count($typeOverride) > 0) {
+            return $typeOverride[0]->newInstance()->getType();
+        }
 
-            if ((string) $enum->getBackingType() === 'string') {
-                $options = [];
+        if (!$type->isBuiltin()) {
+            $typeReflection = new \ReflectionClass($type->getName());
+
+            if ($typeReflection->isEnum()) {
+                $enum = new \ReflectionEnum($type->getName());
+
+                if ((string) $enum->getBackingType() === 'string') {
+                    $options = [];
+
+                    foreach ($enum->getCases() as $case) {
+                        $options[] = $case->getBackingValue();
+                    }
+
+                    return 'ENUM(\'' . \implode('\',\'', $options) . '\')';
+                }
+
+                $longestOption = 0;
 
                 foreach ($enum->getCases() as $case) {
-                    $options[] = $case->getBackingValue();
+                    $length = \mb_strlen((string) $case->getBackingValue());
+
+                    if ($length > $longestOption) {
+                        $longestOption = $length;
+                    }
                 }
 
-                return 'ENUM(\'' . \implode('\',\'', $options) . '\')';
+                return 'TINYINT(' . $longestOption . ')';
             }
-
-            $longestOption = 0;
-
-            foreach ($enum->getCases() as $case) {
-                $length = \mb_strlen((string) $case->getBackingValue());
-
-                if ($length > $longestOption) {
-                    $longestOption = $length;
-                }
-            }
-
-            return 'TINYINT(' . $longestOption . ')';
         }
 
-        return \count($typeOverride) >= 1
-            ? $typeOverride[0]->newInstance()->getType()
-            : match ($type->getName()) {
-                'string' => 'VARCHAR(255)',
-                'int' => 'INT(11)',
-                'float' => 'DOUBLE',
-                'bool' => 'TINYINT(1)',
-                \Infinityloop\Utils\Json::class => 'JSON',
-                \CoolBeans\PrimaryKey\IntPrimaryKey::class => 'INT(11) UNSIGNED',
-                \DateTime::class, \Nette\Utils\DateTime::class => 'DATETIME',
-                default => throw new \CoolBeans\Exception\DataTypeNotSupported('Data type ' . $type->getName() . ' is not supported.'),
-            };
+        return match ($type->getName()) {
+            'string' => 'VARCHAR(255)',
+            'int' => 'INT(11)',
+            'float' => 'DOUBLE',
+            'bool' => 'TINYINT(1)',
+            \Infinityloop\Utils\Json::class => 'JSON',
+            \CoolBeans\PrimaryKey\IntPrimaryKey::class => 'INT(11) UNSIGNED',
+            \DateTime::class, \Nette\Utils\DateTime::class => 'DATETIME',
+            default => throw new \CoolBeans\Exception\DataTypeNotSupported('Data type ' . $type->getName() . ' is not supported.'),
+        };
     }
 
-    private function getClassUnique(\ReflectionClass $bean) : array
+    private static function getIndex(\ReflectionProperty $property, string $beanName) : array
     {
-        if (\count($bean->getAttributes(\CoolBeans\Attribute\ClassUniqueConstraint::class)) === 0) {
-            return [];
+        $return = [];
+
+        foreach ($property->getAttributes(\CoolBeans\Attribute\Index::class) as $i => $attribute) {
+            $indexName = 'index_' . $beanName . '_' . $property->getName() . '_' . $i;
+
+            $return[] = self::INDENTATION . 'INDEX `' . $indexName . '` (`' . $property->getName() . '` ' . $attribute->newInstance()->order->value . ')';
         }
 
-        $this->validateClassUniqueConstraintDuplication($bean);
-
-        $declaredColumns = [];
-
-        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            $declaredColumns[$property->getName()] = true;
-        }
-
-        $constrains = [];
-
-        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassUniqueConstraint::class) as $uniqueColumnAttribute) {
-            $uniqueColumns = $uniqueColumnAttribute->newInstance()->columns;
-
-            $columns = [];
-
-            foreach ($uniqueColumns as $uniqueColumn) {
-                if (!\array_key_exists($uniqueColumn, $declaredColumns)) {
-                    throw new \CoolBeans\Exception\ClassUniqueConstraintUndefinedProperty(
-                        'Property with name "' . $uniqueColumn . '" given in ClassUniqueConstraint is not defined.',
-                    );
-                }
-
-                $columns[] = '`' . $uniqueColumn . '`';
-            }
-
-            $constrains[] = self::INDENTATION . 'CONSTRAINT `unique_' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
-                . '_' . \implode('_', $uniqueColumns) . '` UNIQUE (' . \implode(',', $columns) . ')';
-        }
-
-        return $constrains;
+        return $return;
     }
 
-    private function getClassCheck(\ReflectionClass $bean) : array
+    private static function getClassIndex(\ReflectionClass $bean) : array
     {
-        return [];
-    }
+        $return = [];
 
-    private function getClassIndex(\ReflectionClass $bean) : array
-    {
-        if (\count($bean->getAttributes(\CoolBeans\Attribute\ClassIndex::class)) === 0) {
-            return [];
-        }
+        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassIndex::class) as $i => $attribute) {
+            $indexName = 'index_' . $bean->getShortName() . '_' . $i;
+            $columns = $attribute->newInstance()->columns;
+            self::validateColumnsExists($bean, $columns);
+            $indexOrders = $attribute->newInstance()->orders;
+            $columnsWithOrder = [];
 
-        $declaredColumns = [];
-        $indexes = [];
-
-        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            $declaredColumns[$property->getName()] = true;
-
-            if (\count($property->getAttributes(\CoolBeans\Attribute\Index::class)) === 0) {
-                continue;
+            foreach ($columns as $j => $indexColumn) {
+                $order = \array_key_exists($j, $indexOrders) && $indexOrders[$j] instanceof \CoolBeans\Attribute\Types\Order
+                    ? $indexOrders[$j]
+                    : \CoolBeans\Attribute\Types\Order::ASC;
+                $columnsWithOrder[] = '`' . $indexColumn . '` ' . $order->value;
             }
 
-            $index = $property->getAttributes(\CoolBeans\Attribute\Index::class)[0]->newInstance();
-
-            $indexes[] = self::INDENTATION . 'INDEX `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
-                . '_' . $property->getName() . '_index` (`' . $property->getName() . '`' . ($index->order === null
-                    ? ''
-                    : ' ' . $index->order->value
-                ) . ')';
+            $return[] = self::INDENTATION . 'INDEX `' . $indexName .'` (' . \implode(', ', $columnsWithOrder) . ')';
         }
 
-        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassIndex::class) as $indexAttribute) {
-            $indexColumns = $indexAttribute->newInstance()->columns;
-            $indexOrders = $indexAttribute->newInstance()->orders;
-
-            $columns = [];
-            $i = 0;
-
-            foreach ($indexColumns as $indexColumn) {
-                if (!\array_key_exists($indexColumn, $declaredColumns)) {
-                    throw new \CoolBeans\Exception\ClassUniqueConstraintUndefinedProperty(
-                        'Property with name "' . $indexColumn . '" given in ClassIndex is not defined.',
-                    );
-                }
-
-                $columns[] = '`' . $indexColumn . '`' . (isset($indexOrders[$i]) && $indexOrders[$i] !== null
-                    ? ' ' . $indexOrders[$i]->value
-                    : '');
-                $i++;
-            }
-
-            $indexes[] = self::INDENTATION . 'INDEX `' . \Infinityloop\Utils\CaseConverter::toSnakeCase($bean->getShortName())
-                . '_' . \implode('_', $indexColumns) . '_index` (' . \implode(',', $columns) . ')';
-        }
-
-        return $indexes;
+        return $return;
     }
 
-    private function validateClassUniqueConstraintDuplication(\ReflectionClass $bean) : void
+    private static function getUnique(\ReflectionProperty $property, string $beanName) : ?string
     {
-        $constraints = [];
+        $constraintName = 'unique_' . $beanName . '_' . $property->getName();
 
-        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassUniqueConstraint::class) as $uniqueColumnAttribute) {
-            $columns = $uniqueColumnAttribute->newInstance()->columns;
-            \sort($columns, \SORT_STRING);
-
-            $constraints[] = $columns;
-        }
-
-        foreach ($constraints as $key => $columns) {
-            foreach ($constraints as $key2 => $columns2) {
-                if ($key !== $key2 && $columns === $columns2) {
-                    throw new \CoolBeans\Exception\ClassUniqueConstraintDuplicateColumns(
-                        'Found duplicate columns defined in ClassUniqueConstraint attribute.',
-                    );
-                }
-            }
-        }
-    }
-
-    private function getUnique(\ReflectionProperty $property, string $beanName) : ?string
-    {
         return \count($property->getAttributes(\CoolBeans\Attribute\UniqueConstraint::class)) > 0
-            ? self::INDENTATION . 'CONSTRAINT `unique_' . $beanName . '_' . $property->getName() . '` UNIQUE (`' . $property->getName() . '`)'
+            ? self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` UNIQUE (`' . $property->getName() . '`)'
             : null;
     }
 
-    private function getCheck(\ReflectionProperty $property, string $beanName) : ?string
+    private static function getClassUnique(\ReflectionClass $bean) : array
     {
-        return null;
+        $return = [];
+
+        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassUniqueConstraint::class) as $index => $attribute) {
+            $constraintName = 'unique_' . $bean->getShortName() . '_' . $index;
+            $columns = $attribute->newInstance()->columns;
+            self::validateColumnsExists($bean, $columns);
+
+            $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` UNIQUE (' . \implode(', ', self::quoteColumns($columns)) . ')';
+        }
+
+        return $return;
     }
 
-    private function printSection(array $data) : string
+    private static function getCheck(\ReflectionProperty $property, string $beanName) : array
+    {
+        $return = [];
+
+        foreach ($property->getAttributes(\CoolBeans\Attribute\CheckConstraint::class) as $index => $attribute) {
+            $constraintName = 'check_' . $beanName . '_' . $property->getName() . '_' . $index;
+
+            $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` CHECK (`' . $attribute->newInstance()->expression . '`)';
+        }
+
+        return $return;
+    }
+
+    private static function getClassCheck(\ReflectionClass $bean) : array
+    {
+        $return = [];
+
+        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassCheckConstraint::class) as $index => $attribute) {
+            $constraintName = 'check_' . $bean->getShortName() . '_' . $index;
+
+            $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` CHECK (' . $attribute->newInstance()->expression . ')';
+        }
+
+        return $return;
+    }
+
+    private static function printSection(array $data) : string
     {
         if (\count($data) === 0) {
             return '';
@@ -492,39 +431,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         return ',' . \PHP_EOL . \PHP_EOL . \implode(',' . \PHP_EOL, $data);
     }
 
-    private function validateBean(\ReflectionClass $bean) : void
-    {
-        $hasPrimaryKeyAttribute = self::hasPrimaryKeyAttribute($bean);
-        $attributeColumns = $hasPrimaryKeyAttribute
-            ? $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class)[0]->newInstance()->columns
-            : [];
-        $hasId = false;
-
-        foreach ($bean->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
-            if ($property->getName() === 'id') {
-                $hasId = true;
-            }
-
-            foreach ($attributeColumns as $key => $column) {
-                if ($column === $property->getName()) {
-                    $hasId = true;
-                    unset($attributeColumns[$key]);
-                }
-            }
-        }
-
-        if ($hasPrimaryKeyAttribute && \count($attributeColumns) > 0) {
-            throw new \CoolBeans\Exception\PrimaryKeyColumnDoesntExist(
-                'PrimaryKey attribute column(s) ' . \implode(', ', $attributeColumns) . ' doesn\'t exist in Bean ' . $bean->getShortName() . '.',
-            );
-        }
-
-        if (!$hasPrimaryKeyAttribute && !$hasId) {
-            throw new \CoolBeans\Exception\MissingPrimaryKey('Bean ' . $bean->getShortName() . ' has no primary key.');
-        }
-    }
-
-    private function getForeignKey(\ReflectionProperty $property) : ?string
+    private static function getForeignKey(\ReflectionProperty $property) : ?string
     {
         $reference = self::getForeignKeyReference($property);
 
@@ -533,26 +440,77 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
 
         [$table, $column] = $reference;
-        $foreignKeyConstraintAttribute = $property->getAttributes(\CoolBeans\Attribute\ForeignKeyConstraint::class);
-        $foreignKeyConstraintResult = '';
+        $attributes = $property->getAttributes(\CoolBeans\Attribute\ForeignKeyConstraint::class);
+        $constraint = '';
 
-        if (\count($foreignKeyConstraintAttribute) > 0) {
-            $foreignKeyConstraint = $foreignKeyConstraintAttribute[0]->newInstance();
+        if (\count($attributes) > 0) {
+            $foreignKeyConstraint = $attributes[0]->newInstance();
 
             if ($foreignKeyConstraint->onUpdate !== null) {
-                $foreignKeyConstraintResult .= ' ON UPDATE ' . $foreignKeyConstraint->onUpdate->value;
+                $constraint .= ' ON UPDATE ' . $foreignKeyConstraint->onUpdate->value;
             }
 
             if ($foreignKeyConstraint->onDelete !== null) {
-                $foreignKeyConstraintResult .= ' ON DELETE ' . $foreignKeyConstraint->onDelete->value;
+                $constraint .= ' ON DELETE ' . $foreignKeyConstraint->onDelete->value;
             }
         } else {
-            $foreignKeyConstraintResult .= ' ON UPDATE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
-            $foreignKeyConstraintResult .= ' ON DELETE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
+            $constraint .= ' ON UPDATE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
+            $constraint .= ' ON DELETE ' . \CoolBeans\Attribute\Types\ForeignKeyConstraintType::getDefault();
         }
 
-        return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $table . '`(`' . $column . '`)'
-            . $foreignKeyConstraintResult;
+        return self::INDENTATION . 'FOREIGN KEY (`' . $property->getName() . '`) REFERENCES `' . $table . '`(`' . $column . '`)' . $constraint;
+    }
+
+    private static function getPrimaryKeyColumns(\ReflectionClass $bean) : array
+    {
+        $attributes = $bean->getAttributes(\CoolBeans\Attribute\PrimaryKey::class);
+
+        if (\count($attributes) > 0) {
+            $primaryColumns = $attributes[0]->newInstance()->columns;
+
+            if (\count($primaryColumns) === 0) {
+                throw new \CoolBeans\Exception\MissingPrimaryKey('Bean ' . $bean->getShortName() . ' has no primary key.');
+            }
+        } else {
+            $primaryColumns = ['id'];
+        }
+
+        self::validateColumnsExists($bean, $primaryColumns);
+
+        return $primaryColumns;
+    }
+
+    private static function printPrimaryKey(\ReflectionClass $bean) : string
+    {
+        $columns = self::getPrimaryKeyColumns($bean);
+
+        return  ',' . \PHP_EOL . \PHP_EOL . self::INDENTATION . 'PRIMARY KEY (' . \implode(', ', self::quoteColumns($columns)) . ')';
+    }
+
+    private static function validateColumnsExists(\ReflectionClass $bean, array $columns) : void
+    {
+        if (\count($columns) !== \count(\array_flip($columns))) {
+            throw new \RuntimeException('Column array has duplicates in Bean ' . $bean->getShortName() . '.');
+        }
+
+        foreach ($columns as $column) {
+            try {
+                $property = $bean->getProperty($column);
+            } catch (\ReflectionException) {
+                throw new \RuntimeException('Column [' . $column . '] given in column array doesnt exist in Bean ' . $bean->getShortName() . '.');
+            }
+        }
+    }
+
+    private static function quoteColumns(array $columns) : array
+    {
+        $quotedColumns = [];
+
+        foreach ($columns as $column) {
+            $quotedColumns[] = '`' . $column . '`';
+        }
+
+        return $quotedColumns;
     }
 
     private function getBeans(string $destination) : array

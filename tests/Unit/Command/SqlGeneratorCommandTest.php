@@ -17,47 +17,53 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
     {
         $expected = <<<'EOL'
         CREATE TABLE `simple_bean_2`(
-            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             `col3` VARCHAR(255)     NOT NULL,
             `col4` VARCHAR(255),
             `col5` VARCHAR(255)              DEFAULT NULL,
             `col6` VARCHAR(255)              DEFAULT 'default',
             `col8` DATETIME         NOT NULL,
-            `col9` DATETIME         NOT NULL
+            `col9` DATETIME         NOT NULL,
+
+            PRIMARY KEY (`id`)
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`;
         
         CREATE TABLE `simple_bean_attribute`(
-            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             `col3` VARCHAR(255)     NOT NULL,
             `col4` VARCHAR(255),
             `col5` VARCHAR(255)              DEFAULT NULL,
             `col6` VARCHAR(255)              DEFAULT 'default',
             `col8` DATETIME         NOT NULL,
             `col9` DATETIME         NOT NULL,
-        
-            CONSTRAINT `unique_simple_bean_attribute_col3` UNIQUE (`col3`)
+
+            CONSTRAINT `unique_SimpleBeanAttribute_col3` UNIQUE (`col3`),
+
+            PRIMARY KEY (`id`)
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`;
         
         CREATE TABLE `simple_bean_class_attribute`(
-            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             `col3` VARCHAR(255)     NOT NULL,
             `col4` VARCHAR(255),
             `col5` VARCHAR(255)              DEFAULT NULL,
             `col6` VARCHAR(255)              DEFAULT 'default',
             `col8` DATETIME         NOT NULL,
             `col9` DATETIME         NOT NULL,
-        
-            CONSTRAINT `unique_simple_bean_class_attribute_col4_col5` UNIQUE (`col4`,`col5`)
+
+            CONSTRAINT `unique_SimpleBeanClassAttribute_0` UNIQUE (`col4`, `col5`),
+
+            PRIMARY KEY (`id`)
         )
             CHARSET = `cz_charset`
             COLLATE = `cz_collation`;
         
         CREATE TABLE `simple_bean_class_attribute_2`(
-            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `id`   INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
             `col3` VARCHAR(255)     NOT NULL,
             `col4` VARCHAR(255),
             `col5` VARCHAR(255)              DEFAULT NULL,
@@ -65,8 +71,10 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col8` DATETIME         NOT NULL,
             `col9` DATETIME         NOT NULL,
         
-            CONSTRAINT `unique_simple_bean_class_attribute_2_col4_col5` UNIQUE (`col4`,`col5`),
-            CONSTRAINT `unique_simple_bean_class_attribute_2_col4_col6` UNIQUE (`col4`,`col6`)
+            CONSTRAINT `unique_SimpleBeanClassAttribute2_0` UNIQUE (`col4`, `col5`),
+            CONSTRAINT `unique_SimpleBeanClassAttribute2_1` UNIQUE (`col4`, `col6`),
+
+            PRIMARY KEY (`id`)
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`;
@@ -81,30 +89,32 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col8`             DOUBLE(16, 2)    NOT NULL,
             `col9_id`          INT(11) UNSIGNED NOT NULL,
             `col10_id`         INT(11) UNSIGNED NOT NULL,
-            `code`             VARCHAR(255)     NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `code`             VARCHAR(255)     NOT NULL,
             `id`               INT(11) UNSIGNED NOT NULL,
-        
-            INDEX `attribute_bean_col5_index` (`col5`),
-            INDEX `attribute_bean_col6_index` (`col6` ASC),
-            INDEX `attribute_bean_col8_index` (`col8` DESC),
-            INDEX `attribute_bean_col4_col5_col6_index` (`col4`,`col5` DESC,`col6` ASC),
+
+            INDEX `index_AttributeBean_0` (`col4` ASC, `col5` DESC, `col6` ASC),
+            INDEX `index_AttributeBean_col5_0` (`col5` ASC),
+            INDEX `index_AttributeBean_col6_0` (`col6` ASC),
+            INDEX `index_AttributeBean_col8_0` (`col8` DESC),
 
             FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`),
             FOREIGN KEY (`col9_id`) REFERENCES `simple_bean_2`(`id`) ON DELETE RESTRICT,
             FOREIGN KEY (`col10_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT,
 
-            CONSTRAINT `unique_attribute_bean_col2_col3` UNIQUE (`col2`,`col3`),
-            CONSTRAINT `unique_attribute_bean_col4_col5_col6` UNIQUE (`col4`,`col5`,`col6`),
-            CONSTRAINT `unique_attribute_bean_col4` UNIQUE (`col4`),
-            CONSTRAINT `unique_attribute_bean_col5` UNIQUE (`col5`),
-            CONSTRAINT `unique_attribute_bean_col6` UNIQUE (`col6`)
+            CONSTRAINT `unique_AttributeBean_0` UNIQUE (`col2`, `col3`),
+            CONSTRAINT `unique_AttributeBean_1` UNIQUE (`col4`, `col5`, `col6`),
+            CONSTRAINT `unique_AttributeBean_col4` UNIQUE (`col4`),
+            CONSTRAINT `unique_AttributeBean_col5` UNIQUE (`col5`),
+            CONSTRAINT `unique_AttributeBean_col6` UNIQUE (`col6`),
+
+            PRIMARY KEY (`code`)
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`
             COMMENT = 'Some random comment';
         
         CREATE TABLE `simple_bean_1`(
-            `id`               INT(11) UNSIGNED        NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `id`               INT(11) UNSIGNED        NOT NULL AUTO_INCREMENT,
             `col3`             VARCHAR(255)            NOT NULL,
             `col4`             VARCHAR(255),
             `col5`             VARCHAR(255)                     DEFAULT NULL,
@@ -120,7 +130,9 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col15`            INT(11)                 NOT NULL DEFAULT 0,
             `col16`            JSON                    NOT NULL,
         
-            FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT
+            FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT,
+
+            PRIMARY KEY (`id`)
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`;

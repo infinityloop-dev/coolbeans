@@ -8,7 +8,7 @@ namespace CoolBeans\Attribute;
 final class Index
 {
     public function __construct(
-        public ?\CoolBeans\Attribute\Types\Order $order = null,
+        public \CoolBeans\Attribute\Types\Order $order = \CoolBeans\Attribute\Types\Order::ASC,
     )
     {
     }
