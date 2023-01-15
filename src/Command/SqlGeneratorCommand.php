@@ -278,7 +278,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             \Infinityloop\Utils\Json::class => '\'' . $defaultValue->toString() . '\'',
             \CoolBeans\PrimaryKey\IntPrimaryKey::class => $defaultValue->getValue(),
             'string' => '\'' . $defaultValue . '\'',
-            default => throw new \Exception('Unsupported default value.'),
+            default => '',
         };
     }
 
