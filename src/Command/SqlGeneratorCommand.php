@@ -403,7 +403,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         foreach ($property->getAttributes(\CoolBeans\Attribute\CheckConstraint::class) as $index => $attribute) {
             $constraintName = 'check_' . $beanName . '_' . $property->getName() . '_' . $index;
 
-            $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` CHECK (`' . $attribute->newInstance()->expression . '`)';
+            $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` CHECK (' . $attribute->newInstance()->expression . ')';
         }
 
         return $return;

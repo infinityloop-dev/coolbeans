@@ -25,6 +25,9 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col8` DATETIME         NOT NULL,
             `col9` DATETIME         NOT NULL,
 
+            CONSTRAINT `check_SimpleBean2_0` CHECK (IF(`col3` = 'abc', `col4` IS NOT NULL, TRUE)),
+            CONSTRAINT `check_SimpleBean2_col3_0` CHECK (CHAR_LENGTH(`col3`) > 3),
+
             PRIMARY KEY (`id`)
         )
             CHARSET = `utf8mb4`
@@ -78,7 +81,16 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         )
             CHARSET = `utf8mb4`
             COLLATE = `utf8mb4_general_ci`;
-        
+
+        CREATE TABLE `two_primary_keys_bean`(
+            `col1` INT(11) NOT NULL,
+            `col2` INT(11) NOT NULL,
+
+            PRIMARY KEY (`col1`, `col2`)
+        )
+            CHARSET = `utf8mb4`
+            COLLATE = `utf8mb4_general_ci`;
+
         CREATE TABLE `attribute_bean`(
             `col2`             DATE             NOT NULL DEFAULT NOW(),
             `col3`             TIME             NOT NULL DEFAULT NOW(),
