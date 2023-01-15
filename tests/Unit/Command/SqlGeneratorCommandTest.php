@@ -167,23 +167,6 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         self::assertSame('sqlGenerator', $command->getName());
     }
 
-    public function testDuplicateColumns() : void
-    {
-        $application = new \Symfony\Component\Console\Application();
-        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
-
-        $command = $application->find('sqlGenerator');
-        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
-
-        $this->expectException(\CoolBeans\Exception\ClassUniqueConstraintDuplicateColumns::class);
-        $this->expectExceptionMessage('Found duplicate columns defined in ClassUniqueConstraint attribute.');
-
-        $commandTester->execute([
-            'command' => 'sqlGenerator',
-            'source' => __DIR__ . '/../InvalidBean/DuplicateColumns/',
-        ]);
-    }
-
     public function testUndefinedProperty() : void
     {
         $application = new \Symfony\Component\Console\Application();
@@ -192,8 +175,8 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         $command = $application->find('sqlGenerator');
         $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
 
-        $this->expectException(\CoolBeans\Exception\ClassUniqueConstraintUndefinedProperty::class);
-        $this->expectExceptionMessage('Property with name "invalid" given in ClassUniqueConstraint is not defined.');
+        $this->expectException(\CoolBeans\Exception\UnknownColumnInColumnArray::class);
+        $this->expectExceptionMessage('Column [invalid] given in column array doesnt exist in Bean InvalidBean.');
 
         $commandTester->execute([
             'command' => 'sqlGenerator',
@@ -209,29 +192,12 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         $command = $application->find('sqlGenerator');
         $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
 
-        $this->expectException(\CoolBeans\Exception\MissingPrimaryKey::class);
-        $this->expectExceptionMessage('Bean InvalidBean has no primary key.');
+        $this->expectException(\CoolBeans\Exception\UnknownColumnInColumnArray::class);
+        $this->expectExceptionMessage('Column [id] given in column array doesnt exist in Bean InvalidBean.');
 
         $commandTester->execute([
             'command' => 'sqlGenerator',
             'source' => __DIR__ . '/../InvalidBean/MissingPrimaryKey/',
-        ]);
-    }
-
-    public function testPrimaryKeyAttributeMultipleColumns() : void
-    {
-        $application = new \Symfony\Component\Console\Application();
-        $application->addCommands([new \CoolBeans\Command\SqlGeneratorCommand()]);
-
-        $command = $application->find('sqlGenerator');
-        $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
-
-        $this->expectException(\CoolBeans\Exception\PrimaryKeyMultipleColumnsNotImplemented::class);
-        $this->expectExceptionMessage('Multiple column PrimaryKey is not implemented yet.');
-
-        $commandTester->execute([
-            'command' => 'sqlGenerator',
-            'source' => __DIR__ . '/../InvalidBean/PrimaryKeyAttributeMultipleColumns/',
         ]);
     }
 
@@ -243,8 +209,8 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
         $command = $application->find('sqlGenerator');
         $commandTester = new \Symfony\Component\Console\Tester\CommandTester($command);
 
-        $this->expectException(\CoolBeans\Exception\PrimaryKeyColumnDoesntExist::class);
-        $this->expectExceptionMessage('PrimaryKey attribute column(s) unknown doesn\'t exist in Bean InvalidBean.');
+        $this->expectException(\CoolBeans\Exception\UnknownColumnInColumnArray::class);
+        $this->expectExceptionMessage('Column [unknown] given in column array doesnt exist in Bean InvalidBean.');
 
         $commandTester->execute([
             'command' => 'sqlGenerator',

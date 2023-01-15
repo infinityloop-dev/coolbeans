@@ -239,10 +239,10 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         if (!$property->hasDefaultValue()) {
             $primaryKeys = self::getPrimaryKeyColumns($bean);
 
-            if (\count($primaryKeys) === 1 && $property->getName() === $primaryKeys[0]) {
-                if (\in_array($type->getName(), ['int', \CoolBeans\PrimaryKey\IntPrimaryKey::class], true)) {
-                    return ' AUTO_INCREMENT';
-                }
+            if (\count($primaryKeys) === 1 &&
+                $property->getName() === $primaryKeys[0] &&
+                \in_array($type->getName(), ['int', \CoolBeans\PrimaryKey\IntPrimaryKey::class], true)) {
+                return ' AUTO_INCREMENT';
             }
 
             return '';
@@ -467,11 +467,8 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
         if (\count($attributes) > 0) {
             $primaryColumns = $attributes[0]->newInstance()->columns;
-
-            if (\count($primaryColumns) === 0) {
-                throw new \CoolBeans\Exception\MissingPrimaryKey('Bean ' . $bean->getShortName() . ' has no primary key.');
-            }
         } else {
+            // default
             $primaryColumns = ['id'];
         }
 
@@ -489,15 +486,19 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
 
     private static function validateColumnsExists(\ReflectionClass $bean, array $columns) : void
     {
+        if (\count($columns) === 0) {
+            throw new \CoolBeans\Exception\EmptyColumnArray($bean->getShortName());
+        }
+
         if (\count($columns) !== \count(\array_flip($columns))) {
-            throw new \RuntimeException('Column array has duplicates in Bean ' . $bean->getShortName() . '.');
+            throw new \CoolBeans\Exception\DuplicateInColumnArray($bean->getShortName());
         }
 
         foreach ($columns as $column) {
             try {
                 $property = $bean->getProperty($column);
             } catch (\ReflectionException) {
-                throw new \RuntimeException('Column [' . $column . '] given in column array doesnt exist in Bean ' . $bean->getShortName() . '.');
+                throw new \CoolBeans\Exception\UnknownColumnInColumnArray($column, $bean->getShortName());
             }
         }
     }
