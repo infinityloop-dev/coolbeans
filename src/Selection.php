@@ -40,7 +40,7 @@ abstract class Selection implements \CoolBeans\Contract\Selection
     /**
      * Function to pass where query.
      */
-    public function where(string $col, string|int|float|array|\BackedEnum ...$val) : static
+    public function where(string $col, string|int|float|array|\BackedEnum|\DateTime ...$val) : static
     {
         $this->selection->where($col, ...$val);
 
