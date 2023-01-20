@@ -15,6 +15,7 @@ final class SimpleBean2 extends \CoolBeans\Bean
     #[\CoolBeans\Attribute\CheckConstraint('CHAR_LENGTH(`col3`) > 3')]
     public string $col3;
     public ?string $col4;
+    #[\CoolBeans\Attribute\AllowEmptyString]
     public ?string $col5 = null;
     public ?string $col6 = 'default';
     public \DateTime $col8;

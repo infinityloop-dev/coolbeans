@@ -406,6 +406,16 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` CHECK (' . $attribute->newInstance()->expression . ')';
         }
 
+        $type = $property->getType();
+
+        if ($type instanceof \ReflectionNamedType &&
+            $type->isBuiltin() &&
+            $type->getName() === 'string' &&
+            \count($property->getAttributes(\CoolBeans\Attribute\AllowEmptyString::class)) === 0) {
+            $constraintName = 'check_' . $beanName . '_' . $property->getName() . '_string_not_empty';
+            $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` CHECK (`' . $property->name . '` != \'\')';
+        }
+
         return $return;
     }
 

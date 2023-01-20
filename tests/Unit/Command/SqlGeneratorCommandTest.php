@@ -27,6 +27,9 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
 
             CONSTRAINT `check_SimpleBean2_0` CHECK (IF(`col3` = 'abc', `col4` IS NOT NULL, TRUE)),
             CONSTRAINT `check_SimpleBean2_col3_0` CHECK (CHAR_LENGTH(`col3`) > 3),
+            CONSTRAINT `check_SimpleBean2_col3_string_not_empty` CHECK (`col3` != ''),
+            CONSTRAINT `check_SimpleBean2_col4_string_not_empty` CHECK (`col4` != ''),
+            CONSTRAINT `check_SimpleBean2_col6_string_not_empty` CHECK (`col6` != ''),
 
             PRIMARY KEY (`id`)
         )
@@ -43,6 +46,11 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col9` DATETIME         NOT NULL,
 
             CONSTRAINT `unique_SimpleBeanAttribute_col3` UNIQUE (`col3`),
+
+            CONSTRAINT `check_SimpleBeanAttribute_col3_string_not_empty` CHECK (`col3` != ''),
+            CONSTRAINT `check_SimpleBeanAttribute_col4_string_not_empty` CHECK (`col4` != ''),
+            CONSTRAINT `check_SimpleBeanAttribute_col5_string_not_empty` CHECK (`col5` != ''),
+            CONSTRAINT `check_SimpleBeanAttribute_col6_string_not_empty` CHECK (`col6` != ''),
 
             PRIMARY KEY (`id`)
         )
@@ -119,6 +127,8 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             CONSTRAINT `unique_AttributeBean_col5` UNIQUE (`col5`),
             CONSTRAINT `unique_AttributeBean_col6` UNIQUE (`col6`),
 
+            CONSTRAINT `check_AttributeBean_code_string_not_empty` CHECK (`code` != ''),
+
             PRIMARY KEY (`code`)
         )
             CHARSET = `utf8mb4`
@@ -143,6 +153,11 @@ final class SqlGeneratorCommandTest extends \Mockery\Adapter\Phpunit\MockeryTest
             `col16`            JSON                    NOT NULL,
         
             FOREIGN KEY (`simple_bean_2_id`) REFERENCES `simple_bean_2`(`id`) ON UPDATE RESTRICT ON DELETE RESTRICT,
+
+            CONSTRAINT `check_SimpleBean1_col3_string_not_empty` CHECK (`col3` != ''),
+            CONSTRAINT `check_SimpleBean1_col4_string_not_empty` CHECK (`col4` != ''),
+            CONSTRAINT `check_SimpleBean1_col5_string_not_empty` CHECK (`col5` != ''),
+            CONSTRAINT `check_SimpleBean1_col6_string_not_empty` CHECK (`col6` != ''),
 
             PRIMARY KEY (`id`)
         )

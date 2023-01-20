@@ -13,9 +13,13 @@ final class SimpleBeanClassAttribute2 extends \CoolBeans\Bean
     private int $col1;
     protected string $col2 = 'default';
     public \CoolBeans\PrimaryKey\IntPrimaryKey $id;
+    #[\CoolBeans\Attribute\AllowEmptyString]
     public string $col3;
+    #[\CoolBeans\Attribute\AllowEmptyString]
     public ?string $col4;
+    #[\CoolBeans\Attribute\AllowEmptyString]
     public ?string $col5 = null;
+    #[\CoolBeans\Attribute\AllowEmptyString]
     public ?string $col6 = 'default';
     public \DateTime $col8;
     public \Nette\Utils\DateTime $col9;
