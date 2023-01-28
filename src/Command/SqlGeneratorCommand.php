@@ -332,7 +332,6 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 return 'TINYINT(' . $longestOption . ')';
             }
         }
-        }
 
         return match ($type->getName()) {
             'string' => 'VARCHAR(255)',
