@@ -300,6 +300,19 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                 $enum = new \ReflectionEnum($type->getName());
 
                 if ((string) $enum->getBackingType() === 'string') {
+                    $cases = $enum->getCases();
+
+                    // save large enums as varchar
+                    if (\count($cases) > 10) {
+                        $longestOption = 0;
+
+                        foreach ($enum->getCases() as $case) {
+                            $longestOption = \max($longestOption, \strlen($case->getBackingValue()));
+                        }
+
+                        return 'VARCHAR(' . $longestOption . ')';
+                    }
+
                     $options = [];
 
                     foreach ($enum->getCases() as $case) {
@@ -309,18 +322,16 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
                     return 'ENUM(\'' . \implode('\',\'', $options) . '\')';
                 }
 
+                // max number of digits in backing of integer
                 $longestOption = 0;
 
                 foreach ($enum->getCases() as $case) {
-                    $length = \mb_strlen((string) $case->getBackingValue());
-
-                    if ($length > $longestOption) {
-                        $longestOption = $length;
-                    }
+                    $longestOption = \max($longestOption, \strlen((string) $case->getBackingValue()));
                 }
 
                 return 'TINYINT(' . $longestOption . ')';
             }
+        }
         }
 
         return match ($type->getName()) {
