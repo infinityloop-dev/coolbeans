@@ -362,7 +362,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
     {
         $return = [];
 
-        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassIndex::class) as $i => $attribute) {
+        foreach (self::getClassAttributes($bean, \CoolBeans\Attribute\ClassIndex::class) as $i => $attribute) {
             $indexName = 'index_' . $bean->getShortName() . '_' . $i;
             $columns = $attribute->newInstance()->columns;
             self::validateColumnsExists($bean, $columns);
@@ -395,7 +395,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
     {
         $return = [];
 
-        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassUniqueConstraint::class) as $index => $attribute) {
+        foreach (self::getClassAttributes($bean, \CoolBeans\Attribute\ClassUniqueConstraint::class) as $index => $attribute) {
             $constraintName = 'unique_' . $bean->getShortName() . '_' . $index;
             $columns = $attribute->newInstance()->columns;
             self::validateColumnsExists($bean, $columns);
@@ -423,6 +423,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
             $type->getName() === 'string' &&
             \count($property->getAttributes(\CoolBeans\Attribute\AllowEmptyString::class)) === 0) {
             $constraintName = 'check_' . $beanName . '_' . $property->getName() . '_string_not_empty';
+
             $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` CHECK (`' . $property->name . '` != \'\')';
         }
 
@@ -433,7 +434,7 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
     {
         $return = [];
 
-        foreach ($bean->getAttributes(\CoolBeans\Attribute\ClassCheckConstraint::class) as $index => $attribute) {
+        foreach (self::getClassAttributes($bean, \CoolBeans\Attribute\ClassCheckConstraint::class) as $index => $attribute) {
             $constraintName = 'check_' . $bean->getShortName() . '_' . $index;
 
             $return[] = self::INDENTATION . 'CONSTRAINT `' . $constraintName . '` CHECK (' . $attribute->newInstance()->expression . ')';
@@ -563,5 +564,18 @@ final class SqlGeneratorCommand extends \Symfony\Component\Console\Command\Comma
         }
 
         return $beans;
+    }
+
+    private static function getClassAttributes(\ReflectionClass $bean, string $attributeClass) : array
+    {
+        $return = $bean->getAttributes($attributeClass);
+        $parent = $bean->getParentClass();
+
+        while ($parent instanceof \ReflectionClass) {
+            $return = \array_merge($return, $parent->getAttributes($attributeClass));
+            $parent = $parent->getParentClass();
+        }
+
+        return $return;
     }
 }
