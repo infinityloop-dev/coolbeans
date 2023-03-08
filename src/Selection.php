@@ -70,9 +70,9 @@ abstract class Selection implements \CoolBeans\Contract\Selection
     /**
      * Function to pass group query.
      */
-    public function order(string $order, string|int|float|array|\BackedEnum|\DateTime ...$params) : static
+    public function group(string $group) : static
     {
-        $this->selection->order($order, ...$params);
+        $this->selection->group($group);
 
         return $this;
     }
@@ -80,9 +80,9 @@ abstract class Selection implements \CoolBeans\Contract\Selection
     /**
      * Function to pass order query.
      */
-    public function order(string $order) : static
+    public function order(string $order, string|int|float|array|\BackedEnum|\DateTime ...$params) : static
     {
-        $this->selection->order($order);
+        $this->selection->order($order, ...$params);
 
         return $this;
     }
