@@ -12,6 +12,7 @@ abstract class Selection implements \CoolBeans\Contract\Selection
 
     final public function __construct(
         protected \Nette\Database\Table\Selection $selection,
+        private bool $extraColumns = false,
     )
     {
         if (\CoolBeans\Config::$validateTableName) {
@@ -33,6 +34,7 @@ abstract class Selection implements \CoolBeans\Contract\Selection
     public function select(string $select) : static
     {
         $this->selection->select($select);
+        $this->extraColumns = true;
 
         return $this;
     }
@@ -112,7 +114,7 @@ abstract class Selection implements \CoolBeans\Contract\Selection
      */
     public function fetch() : ?\CoolBeans\Bean
     {
-        return static::createRow($this->selection->fetch());
+        return $this->createRow($this->selection->fetch());
     }
 
     /**
@@ -185,7 +187,7 @@ abstract class Selection implements \CoolBeans\Contract\Selection
         $current = $this->selection->current();
 
         return $current instanceof \Nette\Database\Table\ActiveRow ?
-            static::createRow($current) :
+            $this->createRow($current) :
             null;
     }
 
@@ -198,14 +200,22 @@ abstract class Selection implements \CoolBeans\Contract\Selection
     }
 
     /**
+     * Returns internal Nette selection.
+     */
+    final public function getInternalSelection() : \Nette\Database\Table\Selection
+    {
+        return $this->selection;
+    }
+
+    /**
      * Function to return specific Row class.
      */
-    final protected static function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\CoolBeans\Bean
+    final protected function createRow(?\Nette\Database\Table\ActiveRow $row) : ?\CoolBeans\Bean
     {
         $rowClassName = static::ROW_CLASS;
 
         return $row instanceof \Nette\Database\Table\ActiveRow
-            ? new $rowClassName($row)
+            ? new $rowClassName($row, $this->extraColumns)
             : null;
     }
 
