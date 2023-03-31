@@ -17,7 +17,7 @@
     "nette/database": "^3.1",
     "nette/di": "^3.0",
     "nette/robot-loader": "^3.3",
-    "symfony/console": "^5.2 || ^6.4"
+    "symfony/console": "^5.2 || ^6.2"
   },
   "scripts": {
     "phpunit": "phpunit tests",

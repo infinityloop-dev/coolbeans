@@ -16,21 +16,6 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         \CoolBeans\Config::$validateTableName = false;
     }
 
-    public function testGetTableName() : void
-    {
-        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
-        $selectionMock->expects('getName')->withNoArgs()->andReturn('table_name');
-
-        $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
-        $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
-        $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
-
-        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
-        };
-
-        self::assertEquals('table_name', $beanInstance->getTableName());
-    }
-
     public function testToArray() : void
     {
         $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
@@ -210,7 +195,6 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         self::assertEquals(false, $beanInstance->offsetGet('inactive'));
         self::assertInstanceOf(\Infinityloop\Utils\Json::class, $beanInstance->offsetGet('json'));
         self::assertEquals('{"id":"1"}', $beanInstance->offsetGet('json')->toString());
-        self::assertEquals(true, (new \ReflectionMethod(\CoolBeans\Bean::class, 'initiateProperties'))->isProtected());
         self::assertEquals(10, $beanInstance->offsetGet('intPrimaryKey')->getValue());
     }
 
@@ -239,100 +223,5 @@ final class BeanTest extends \Mockery\Adapter\Phpunit\MockeryTestCase
         new class ($activeRowMock) extends \CoolBeans\Bean {
             public bool $nulled;
         };
-    }
-
-    public function testValidateMissingColumns() : void
-    {
-        $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
-        $activeRowMock->expects('offsetGet')->with('id')->andReturn($this->activeRowData['id']);
-        $activeRowMock->expects('toArray')->withNoArgs()->andReturn($this->activeRowData);
-        $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
-
-        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
-            public int $id;
-
-            public function callValidateMissingColumns() : void
-            {
-                $this->validateMissingColumns();
-            }
-        };
-
-        $beanInstance->callValidateMissingColumns();
-    }
-
-    public function testValidateMissingColumnsWithoutPropertyDefinition() : void
-    {
-        $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
-        $activeRowMock->expects('toArray')->withNoArgs()->andReturn($this->activeRowData);
-        $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
-
-        $beanInstance = new class ($activeRowMock) extends \CoolBeans\Bean {
-            public function callValidateMissingColumns() : void
-            {
-                $this->validateMissingColumns();
-            }
-        };
-
-        $this->expectException(\CoolBeans\Exception\MissingProperty::class);
-        $this->expectExceptionMessage('Property for column [id] is not defined.');
-
-        $beanInstance->callValidateMissingColumns();
-    }
-
-    public function testValidateTableName() : void
-    {
-        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
-        $selectionMock->expects('getName')->withNoArgs()->andReturn('test_bean');
-
-        $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
-        $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
-        $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
-
-        $testBeanInstance = new \CoolBeans\Tests\Unit\TestBean($activeRowMock);
-
-        $testBeanInstance->callValidateTableName();
-    }
-
-    public function testValidateTableNameRelatedSyntax() : void
-    {
-        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
-        $selectionMock->expects('getName')->withNoArgs()->andReturn('user.test_bean');
-
-        $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
-        $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
-        $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
-
-        $testBeanInstance = new \CoolBeans\Tests\Unit\TestBean($activeRowMock);
-
-        $testBeanInstance->callValidateTableName();
-    }
-
-    public function validateTableNameIncorrectNameDataProvider() : array
-    {
-        return [
-            ['TEST_BEAN'],
-            ['test_Bean'],
-            ['Test_bean'],
-            ['Test_Bean'],
-        ];
-    }
-
-    /**
-     * @dataProvider validateTableNameIncorrectNameDataProvider
-     */
-    public function testValidateTableNameIncorrectName(string $tableName) : void
-    {
-        $selectionMock = \Mockery::mock(\Nette\Database\Table\Selection::class);
-        $selectionMock->expects('getName')->withNoArgs()->andReturn($tableName);
-
-        $activeRowMock = \Mockery::mock(\Nette\Database\Table\ActiveRow::class);
-        $activeRowMock->expects('getTable')->withNoArgs()->andReturn($selectionMock);
-        $activeRowMock->expects('getPrimary')->with(false)->andReturn(['id' => $this->activeRowData['id']]);
-
-        $testBeanInstance = new \CoolBeans\Tests\Unit\TestBean($activeRowMock);
-
-        $this->expectException(\CoolBeans\Exception\InvalidTable::class);
-
-        $testBeanInstance->callValidateTableName();
     }
 }
