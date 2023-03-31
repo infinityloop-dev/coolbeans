@@ -11,15 +11,16 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     protected \ReflectionClass $reflection;
     protected \CoolBeans\Contract\PrimaryKey $primaryKey;
 
-    public function __construct(
+    final public function __construct(
         protected \Nette\Database\Table\ActiveRow $row,
+        private bool $extraColumns = false,
     )
     {
         $this->reflection = new \ReflectionClass(static::class);
         $this->primaryKey = \CoolBeans\Contract\PrimaryKey::create($this->row);
 
-        if (\CoolBeans\Config::$validateColumns) {
-            $this->validateMissingColumns();
+        if (\CoolBeans\Config::$validateColumns && !$this->extraColumns) {
+            $this->validateMissingProperties();
         }
 
         if (\CoolBeans\Config::$validateTableName) {
@@ -113,6 +114,14 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     }
 
     /**
+     * Returns internal Nette row.
+     */
+    public function getInternalRow() : \Nette\Database\Table\ActiveRow
+    {
+        return $this->row;
+    }
+
+    /**
      * Selects referenced row from $table where <referencedRowPrimary> = $throughColumn
      */
     protected function ref(string $table, ?string $throughColumn = null) : ?\Nette\Database\Table\ActiveRow
@@ -134,7 +143,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
      * Foo -> foo
      * FooBar -> foo_bar
      */
-    protected function validateTableName() : void
+    private function validateTableName() : void
     {
         $tableName = $this->getTableName();
         $className = $this->reflection->getShortName();
@@ -152,7 +161,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     /**
      * Validates whether every column in database have its column property.
      */
-    protected function validateMissingColumns() : void
+    private function validateMissingProperties() : void
     {
         foreach ($this->row->toArray() as $name => $value) {
             if (!$this->offsetExists($name)) {
@@ -164,7 +173,7 @@ abstract class Bean implements \CoolBeans\Contract\Row, \IteratorAggregate
     /**
      * Initiates values into column properties.
      */
-    protected function initiateProperties() : void
+    private function initiateProperties() : void
     {
         foreach ($this->reflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $property) {
             $type = $property->getType();
